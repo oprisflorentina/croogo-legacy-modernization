@@ -428,7 +428,7 @@ class FormHelper extends AppHelper {
 			serialize($fields) .
 			Configure::read('Security.salt')
 		);
-		$locked = implode(array_keys($locked), '|');
+		$locked = implode('|', array_keys($locked));
 
 		$out = $this->hidden('_Token.fields', array(
 			'value' => urlencode($fields . ':' . $locked),
@@ -576,7 +576,8 @@ class FormHelper extends AppHelper {
 
 		if ($text === null) {
 			if (strpos($fieldName, '.') !== false) {
-				$text = array_pop(explode('.', $fieldName));
+				$fieldParts = explode('.', $fieldName);
+				$text = array_pop($fieldParts);
 			} else {
 				$text = $fieldName;
 			}

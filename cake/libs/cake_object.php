@@ -182,7 +182,9 @@ class CakeObject {
  */
 	function cakeError($method, $messages = array()) {
 		if (!class_exists('ErrorHandler')) {
-			App::import('Core', 'Error');
+			// Not App::import('Core', 'Error'): PHP 7 added a built-in Error
+			// class, so App sees "Error" as loaded and skips the file.
+			require LIBS . 'error.php';
 
 			if (file_exists(APP . 'error.php')) {
 				include_once (APP . 'error.php');

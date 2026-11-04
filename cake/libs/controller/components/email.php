@@ -960,7 +960,8 @@ class EmailComponent extends CakeObject{
 				$this->smtpError = 'timeout';
 				return false;
 			}
-			$response = end(explode("\r\n", rtrim($response, "\r\n")));
+			$lines = explode("\r\n", rtrim($response, "\r\n"));
+			$response = end($lines);
 
 			if (preg_match('/^(' . $checkCode . ')(.)/', $response, $code)) {
 				if ($code[2] === '-') {

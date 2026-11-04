@@ -95,7 +95,9 @@ class PaginatorHelper extends AppHelper {
 
 		App::import('Helper', $ajaxProvider);
 		$classname = $ajaxProvider . 'Helper';
-		if (!is_callable(array($classname, 'link'))) {
+		// is_callable() on a class name now means "callable statically", which
+		// link() is not; the check only needs the method to exist.
+		if (!method_exists($classname, 'link')) {
 			trigger_error(sprintf(__('%s does not implement a link() method, it is incompatible with PaginatorHelper', true), $classname), E_USER_WARNING);
 		}
 	}

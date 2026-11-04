@@ -294,6 +294,12 @@ class Dispatcher extends CakeObject {
 
 		if (isset($_FILES['data'])) {
 			foreach ($_FILES['data'] as $key => $data) {
+				// PHP 8.1 added full_path to every upload. Copying it into the
+				// form data would add a field the form's security token never
+				// covered, and the Security component would reject the post.
+				if ($key === 'full_path') {
+					continue;
+				}
 				foreach ($data as $model => $fields) {
 					if (is_array($fields)) {
 						foreach ($fields as $field => $value) {
@@ -582,7 +588,8 @@ class Dispatcher extends CakeObject {
 			$this->_stop();
 		}
 		$controller = null;
-		$ext = array_pop(explode('.', $url));
+		$urlParts = explode('.', $url);
+		$ext = array_pop($urlParts);
 		$parts = explode('/', $url);
 		$assetFile = null;
 
