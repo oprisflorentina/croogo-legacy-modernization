@@ -781,7 +781,7 @@ class CakeSession extends CakeObject {
  * @return boolean Success
  * @access private
  */
-	function __gc($expires = null) {
+	static function __gc($expires = null) {
 		$model =& ClassRegistry::getObject('Session');
 
 		if (!$expires) {

@@ -178,7 +178,7 @@ class JsHelper extends AppHelper {
  * @return string a JavaScript-safe/JSON representation of $val
  * @access public
  **/
-	function value($val, $quoteString = true) {
+	function value($val = array(), $quoteString = true, $key = null) {
 		return $this->{$this->__engineName}->value($val, $quoteString);
 	}
 
@@ -644,7 +644,7 @@ class JsBaseEngineHelper extends AppHelper {
  * @return string a JavaScript-safe/JSON representation of $val
  * @access public
  */
-	function value($val, $quoteString = true) {
+	function value($val = array(), $quoteString = true, $key = null) {
 		switch (true) {
 			case (is_array($val) || is_object($val)):
 				$val = $this->object($val);

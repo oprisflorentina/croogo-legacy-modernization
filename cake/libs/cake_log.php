@@ -62,7 +62,7 @@ class CakeLog {
  * @return void
  * @static
  */
-	function &getInstance() {
+	static function &getInstance() {
 		static $instance = array();
 		if (!isset($instance[0])) {
 			$instance[0] = new CakeLog();
@@ -208,7 +208,7 @@ class CakeLog {
  * @access public
  * @static
  */
-	function write($type, $message) {
+	static function write($type, $message) {
 		if (!defined('LOG_ERROR')) {
 			define('LOG_ERROR', 2);
 		}

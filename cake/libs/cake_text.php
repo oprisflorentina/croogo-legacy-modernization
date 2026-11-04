@@ -34,7 +34,7 @@ class CakeText {
  * @return RFC 4122 UUID
  * @static
  */
-	function uuid() {
+	static function uuid() {
 		$node = env('SERVER_ADDR');
 		$pid = null;
 
@@ -114,7 +114,7 @@ class CakeText {
  * @access public
  * @static
  */
-	function tokenize($data, $separator = ',', $leftBound = '(', $rightBound = ')') {
+	static function tokenize($data, $separator = ',', $leftBound = '(', $rightBound = ')') {
 		if (empty($data) || is_array($data)) {
 			return $data;
 		}
@@ -205,7 +205,7 @@ class CakeText {
  * @access public
  * @static
  */
-	function insert($str, $data, $options = array()) {
+	static function insert($str, $data, $options = array()) {
 		$defaults = array(
 			'before' => ':', 'after' => null, 'escape' => '\\', 'format' => null, 'clean' => false
 		);
@@ -273,7 +273,7 @@ class CakeText {
  * @static
  * @see CakeText::insert()
  */
-	function cleanInsert($str, $options) {
+	static function cleanInsert($str, $options) {
 		$clean = $options['clean'];
 		if (!$clean) {
 			return $str;

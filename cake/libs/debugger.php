@@ -180,7 +180,7 @@ class Debugger extends CakeObject {
  * @access public
  * @static
  */
-	function &getInstance($class = null) {
+	static function &getInstance($class = null) {
 		static $instance = array();
 		if (!empty($class)) {
 			if (!$instance || strtolower($class) != strtolower(get_class($instance[0]))) {
@@ -414,7 +414,7 @@ class Debugger extends CakeObject {
  * @access public
  * @static
  */
-	function trimPath($path) {
+	static function trimPath($path) {
 		if (!defined('CAKE_CORE_INCLUDE_PATH') || !defined('APP')) {
 			return $path;
 		}
@@ -480,7 +480,7 @@ class Debugger extends CakeObject {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Common-Tasks-With-CakePHP/Debugging.html#Using-the-Debugger-Class
  */
-	function exportVar($var, $recursion = 0) {
+	static function exportVar($var, $recursion = 0) {
 		$_this =& Debugger::getInstance();
 		switch (strtolower(gettype($var))) {
 			case 'boolean':
@@ -692,7 +692,7 @@ class Debugger extends CakeObject {
  * @access public
  * @static
  */
-	function checkSecurityKeys() {
+	static function checkSecurityKeys() {
 		if (Configure::read('Security.salt') == 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi') {
 			trigger_error(__('Please change the value of \'Security.salt\' in app/config/core.php to a salt value specific to your application', true), E_USER_NOTICE);
 		}
@@ -711,7 +711,7 @@ class Debugger extends CakeObject {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Common-Tasks-With-CakePHP/Debugging.html#Using-the-Debugger-Class
  */
-	function invoke(&$debugger) {
+	static function invoke(&$debugger) {
 		set_error_handler(array(&$debugger, 'handleError'));
 	}
 }

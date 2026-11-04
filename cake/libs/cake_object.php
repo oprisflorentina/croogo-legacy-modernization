@@ -82,7 +82,13 @@ class CakeObject {
 		}
 		$params = array_merge(array('autoRender' => 0, 'return' => 1, 'bare' => 1, 'requested' => 1), $extra);
 		$dispatcher = new Dispatcher;
-		return $dispatcher->dispatch($url, $params);
+		$router =& Router::getInstance();
+		$router->requestDepth++;
+		try {
+			return $dispatcher->dispatch($url, $params);
+		} finally {
+			$router->requestDepth--;
+		}
 	}
 
 /**

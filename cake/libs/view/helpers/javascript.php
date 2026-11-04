@@ -680,7 +680,7 @@ class JavascriptHelper extends AppHelper {
  * @param boolean $quoteStrings If false, leaves string values unquoted
  * @return string a JavaScript-safe/JSON representation of $val
  */
-	function value($val, $quoteStrings = true) {
+	function value($val = array(), $quoteStrings = true, $key = null) {
 		switch (true) {
 			case (is_array($val) || is_object($val)):
 				$val = $this->object($val);

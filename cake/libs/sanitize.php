@@ -69,7 +69,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function escape($string, $connection = 'default') {
+	static function escape($string, $connection = 'default') {
 		$db =& ConnectionManager::getDataSource($connection);
 		if (is_numeric($string) || $string === null || is_bool($string)) {
 			return $string;
@@ -97,7 +97,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function html($string, $options = array()) {
+	static function html($string, $options = array()) {
 		static $defaultCharset = false;
 		if ($defaultCharset === false) {
 			$defaultCharset = Configure::read('App.encoding');
@@ -128,7 +128,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function stripWhitespace($str) {
+	static function stripWhitespace($str) {
 		$r = preg_replace('/[\n\r\t]+/', '', $str);
 		return preg_replace('/\s{2,}/u', ' ', $r);
 	}
@@ -141,7 +141,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function stripImages($str) {
+	static function stripImages($str) {
 		$str = preg_replace('/(<a[^>]*>)(<img[^>]+alt=")([^"]*)("[^>]*>)(<\/a>)/i', '$1$3$5<br />', $str);
 		$str = preg_replace('/(<img[^>]+alt=")([^"]*)("[^>]*>)/i', '$2<br />', $str);
 		$str = preg_replace('/<img[^>]*>/i', '', $str);
@@ -156,7 +156,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function stripScripts($str) {
+	static function stripScripts($str) {
 		return preg_replace('/(<link[^>]+rel="[^"]*stylesheet"[^>]*>|<img[^>]*>|style="[^"]*")|<script[^>]*>.*?<\/script>|<style[^>]*>.*?<\/style>|<!--.*?-->/is', '', $str);
 	}
 
@@ -219,7 +219,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function clean($data, $options = array()) {
+	static function clean($data, $options = array()) {
 		if (empty($data)) {
 			return $data;
 		}

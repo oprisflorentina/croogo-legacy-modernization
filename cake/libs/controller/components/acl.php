@@ -328,7 +328,6 @@ class DbAcl extends AclBase {
 							case -1:
 								return false;
 							case 0:
-								continue;
 							break;
 							case 1:
 								return true;

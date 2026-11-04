@@ -97,7 +97,7 @@ class Validation extends CakeObject {
  * @access public
  * @static
  */
-	function &getInstance() {
+	static function &getInstance() {
 		static $instance = array();
 
 		if (!$instance) {
@@ -146,7 +146,7 @@ class Validation extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function alphaNumeric($check) {
+	static function alphaNumeric($check) {
 		$_this =& Validation::getInstance();
 		$_this->__reset();
 		$_this->check = $check;
@@ -532,7 +532,7 @@ class Validation extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function extension($check, $extensions = array('gif', 'jpeg', 'png', 'jpg')) {
+	static function extension($check, $extensions = array('gif', 'jpeg', 'png', 'jpg')) {
 		if (is_array($check)) {
 			return Validation::extension(array_shift($check), $extensions);
 		}
@@ -558,7 +558,7 @@ class Validation extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function ip($check, $type = 'both') {
+	static function ip($check, $type = 'both') {
 		$_this =& Validation::getInstance();
 		$success = false;
 		$type = strtolower($type);

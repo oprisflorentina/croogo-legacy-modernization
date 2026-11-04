@@ -41,7 +41,7 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	function &getInstance() {
+	static function &getInstance() {
 		static $instance = array();
 		if (!$instance) {
 			$instance[0] = new Security;
@@ -56,7 +56,7 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	function inactiveMins() {
+	static function inactiveMins() {
 		switch (Configure::read('Security.level')) {
 			case 'high':
 				return 10;
@@ -78,7 +78,7 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	function generateAuthKey() {
+	static function generateAuthKey() {
 		if (!class_exists('CakeText')) {
 			App::import('Core', 'CakeText');
 		}
@@ -110,7 +110,7 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	function hash($string, $type = null, $salt = false) {
+	static function hash($string, $type = null, $salt = false) {
 		$_this =& Security::getInstance();
 
 		if ($salt) {

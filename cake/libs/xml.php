@@ -137,7 +137,7 @@ class XmlNode extends CakeObject {
  * @return void
  */
 	function removeNamespace($prefix) {
-		if (Xml::removeGlobalNs($prefix)) {
+		if (Xml::removeGlobalNs($prefix, $this)) {
 			return true;
 		}
 		return false;
@@ -1082,7 +1082,7 @@ class Xml extends XmlNode {
  * @return string String representation
  * @access public
  */
-	function toString($options = array()) {
+	function toString($options = array(), $depth = 0) {
 		if (is_bool($options)) {
 			$options = array('header' => $options);
 		}
@@ -1140,7 +1140,7 @@ class Xml extends XmlNode {
  * @access public
  * @static
  */
-	function addGlobalNs($name, $url = null) {
+	static function addGlobalNs($name, $url = null) {
 		$_this =& XmlManager::getInstance();
 		if ($ns = Xml::resolveNamespace($name, $url)) {
 			$_this->namespaces = array_merge($_this->namespaces, $ns);
@@ -1156,7 +1156,7 @@ class Xml extends XmlNode {
  * @param  string  $url
  * @return array
  */
-	function resolveNamespace($name, $url) {
+	static function resolveNamespace($name, $url) {
 		$_this =& XmlManager::getInstance();
 		if ($url == null && isset($_this->defaultNamespaceMap[$name])) {
 			$url = $_this->defaultNamespaceMap[$name];
@@ -1186,14 +1186,18 @@ class Xml extends XmlNode {
  * Removes a namespace added in addNs()
  *
  * @param  string  $name The namespace name or URI
+ * @param  Xml     $node Node whose own namespace list is cleaned too. It used to
+ *                       arrive as $this through a static call, which PHP 8 forbids.
  * @access public
  * @static
  */
-	function removeGlobalNs($name) {
+	static function removeGlobalNs($name, $node = null) {
 		$_this =& XmlManager::getInstance();
 		if (isset($_this->namespaces[$name])) {
 			unset($_this->namespaces[$name]);
-			unset($this->namespaces[$name]);
+			if ($node) {
+				unset($node->namespaces[$name]);
+			}
 			return true;
 		} elseif (in_array($name, $_this->namespaces)) {
 			$keys = array_keys($_this->namespaces);
@@ -1201,7 +1205,9 @@ class Xml extends XmlNode {
 			for ($i = 0; $i < $count; $i++) {
 				if ($_this->namespaces[$keys[$i]] == $name) {
 					unset($_this->namespaces[$keys[$i]]);
-					unset($this->namespaces[$keys[$i]]);
+					if ($node) {
+						unset($node->namespaces[$keys[$i]]);
+					}
 					return true;
 				}
 			}
@@ -1227,7 +1233,7 @@ class Xml extends XmlNode {
  * @access public
  * @static
  */
-	function options($options = array()) {
+	static function options($options = array()) {
 		$_this =& XmlManager::getInstance();
 		$_this->options = array_merge($_this->options, $options);
 		return $_this->options;
@@ -1365,8 +1371,9 @@ class XmlTextNode extends XmlNode {
  * @return boolean False - not supported
  * @todo make convertEntities work without mb support, convert entities to number entities
  */
-	function append() {
-		return false;
+	function &append(&$child, $options = array()) {
+		$appended = false;
+		return $appended;
 	}
 
 /**
@@ -1449,7 +1456,7 @@ class XmlManager {
  * @return object
  * @access public
  */
-	function &getInstance() {
+	static function &getInstance() {
 		static $instance = array();
 
 		if (!$instance) {

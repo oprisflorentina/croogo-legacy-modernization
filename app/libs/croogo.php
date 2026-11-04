@@ -16,7 +16,7 @@ class Croogo {
  *
  * @param string $pluginName plugin name
  */
-	public function hookRoutes($pluginName) {
+	public static function hookRoutes($pluginName) {
 		$pluginName = Inflector::underscore($pluginName);
 		$hooks = Configure::read('Hook.routes');
 		if (!$hooks || !is_array($hooks)) {
@@ -32,7 +32,7 @@ class Croogo {
  * @param string $controllerName Controller Name
  * @param string $componentName  Component name
  */
-	public function hookComponent($controllerName, $componentName) {
+	public static function hookComponent($controllerName, $componentName) {
 		self::hookControllerProperty($controllerName, 'components', array($componentName));
 	}
 
@@ -43,7 +43,7 @@ class Croogo {
  * @param string $behaviorName
  * @param array  $config
  */
-	public function hookBehavior($modelName, $behaviorName, $config = array()) {
+	public static function hookBehavior($modelName, $behaviorName, $config = array()) {
 		self::hookModelProperty($modelName, 'actsAs', array($behaviorName => $config));
 	}
 
@@ -53,7 +53,7 @@ class Croogo {
  * @param string $controllerName
  * @param string $helperName
  */
-	public function hookHelper($controllerName, $helperName) {
+	public static function hookHelper($controllerName, $helperName) {
 		self::hookControllerProperty($controllerName, 'helpers', array($helperName));
 	}
 
@@ -62,7 +62,7 @@ class Croogo {
  *
  * @param string $pluginName
  */
-	public function hookAdminMenu($pluginName) {
+	public static function hookAdminMenu($pluginName) {
 		$pluginName = Inflector::underscore($pluginName);
 		Configure::write('Admin.menus.'.$pluginName, 1);
 	}
@@ -74,7 +74,7 @@ class Croogo {
  * @param string $title Link title
  * @param string $url
  */
-	public function hookAdminRowAction($action, $title, $url) {
+	public static function hookAdminRowAction($action, $title, $url) {
 		$rowActions = Configure::read('Admin.rowActions');
 		if (!is_array($rowActions)) {
 			$rowActions = array();
@@ -94,7 +94,7 @@ class Croogo {
  * @param string $element element name, like plugin_name.element_name
  * @param array  $options array with options for the hook to take effect
  */
-	public function hookAdminTab($action, $title, $element, $options = array()) {
+	public static function hookAdminTab($action, $title, $element, $options = array()) {
 		$tabs = Configure::read('Admin.tabs');
 		if (!is_array($tabs)) {
 			$tabs = array();
@@ -116,7 +116,7 @@ class Croogo {
  * @param string $property  for e.g., actsAs
  * @param string $value     array or string
  */
-	public function hookModelProperty($modelName, $property, $value) {
+	public static function hookModelProperty($modelName, $property, $value) {
 		$configKeyPrefix = 'Hook.model_properties';
 		self::__hookProperty($configKeyPrefix, $modelName, $property, $value);
 	}
@@ -128,7 +128,7 @@ class Croogo {
  * @param string $property       for e.g., components
  * @param string $value          array or string
  */
-	public function hookControllerProperty($controllerName, $property, $value) {
+	public static function hookControllerProperty($controllerName, $property, $value) {
 		$configKeyPrefix = 'Hook.controller_properties';
 		self::__hookProperty($configKeyPrefix, $controllerName, $property, $value);
 	}
@@ -141,7 +141,7 @@ class Croogo {
  * @param string $property
  * @param string $value
  */
-	private function __hookProperty($configKeyPrefix, $name, $property, $value) {
+	private static function __hookProperty($configKeyPrefix, $name, $property, $value) {
 		$propertyValue = Configure::read($configKeyPrefix . '.' . $name . '.' . $property);
 		if (!is_array($propertyValue)) {
 			$propertyValue = null;
@@ -161,26 +161,30 @@ class Croogo {
 /**
  * Applies properties set from hooks to an object in __construct()
  *
+ * The object used to arrive as $this through a static call, which PHP 8
+ * no longer allows, so callers now pass themselves in.
+ *
  * @param string $configKey
+ * @param object $object Controller or model being constructed
  */
-	public function applyHookProperties($configKey) {
-		$hookProperties = Configure::read($configKey . '.' . $this->name);
+	public static function applyHookProperties($configKey, $object) {
+		$hookProperties = Configure::read($configKey . '.' . $object->name);
 		if (is_array(Configure::read($configKey . '.*'))) {
 			$hookProperties = Set::merge(Configure::read($configKey . '.*'), $hookProperties);
 		}
 		if (is_array($hookProperties)) {
 			foreach ($hookProperties AS $property => $value) {
-				if (!isset($this->$property)) {
-					$this->$property = $value;
+				if (!isset($object->$property)) {
+					$object->$property = $value;
 				} else {
-					if (is_array($this->$property)) {
+					if (is_array($object->$property)) {
 						if (is_array($value)) {
-							$this->$property = Set::merge($this->$property, $value);
+							$object->$property = Set::merge($object->$property, $value);
 						} else {
-							$this->$property = $value;
+							$object->$property = $value;
 						}
 					} else {
-						$this->$property = $value;
+						$object->$property = $value;
 					}
 				}
 			}

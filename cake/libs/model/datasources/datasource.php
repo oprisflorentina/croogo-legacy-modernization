@@ -577,7 +577,7 @@ class DataSource extends CakeObject {
  * @return string Key name for model.
  * @access public
  */
-	function resolveKey(&$model, $key) {
+	function resolveKey($model, $key) {
 		return $model->alias . $key;
 	}
 

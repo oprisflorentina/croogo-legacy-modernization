@@ -502,7 +502,7 @@ class Model extends Overloadable {
  * @access protected
  */
 	function call__($method, $params) {
-		$result = $this->Behaviors->dispatchMethod($this, $method, $params);
+		$result = $this->Behaviors->dispatchModelMethod($this, $method, $params);
 
 		if ($result !== array('unhandled')) {
 			return $result;
@@ -2635,7 +2635,7 @@ class Model extends Overloadable {
 					} elseif (in_array($rule, $behaviorMethods) || in_array(strtolower($rule), $behaviorMethods)) {
 						$ruleParams[] = $validator;
 						$ruleParams[0] = array($fieldName => $ruleParams[0]);
-						$valid = $this->Behaviors->dispatchMethod($this, $rule, $ruleParams);
+						$valid = $this->Behaviors->dispatchModelMethod($this, $rule, $ruleParams);
 					} elseif (method_exists($Validation, $rule)) {
 						$valid = $Validation->dispatchMethod($rule, $ruleParams);
 					} elseif (!is_array($validator['rule'])) {

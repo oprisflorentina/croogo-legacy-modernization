@@ -158,7 +158,7 @@ class ModelBehavior extends CakeObject {
  * @access public
  * @return mixed
  */
-	function dispatchMethod(&$model, $method, $params = array()) {
+	function dispatchModelMethod(&$model, $method, $params = array()) {
 		if (empty($params)) {
 			return $this->{$method}($model);
 		}
@@ -434,7 +434,7 @@ class BehaviorCollection extends CakeObject {
  * @return array All methods for all behaviors attached to this object
  * @access public
  */
-	function dispatchMethod(&$model, $method, $params = array(), $strict = false) {
+	function dispatchModelMethod(&$model, $method, $params = array(), $strict = false) {
 		$methods = array_keys($this->__methods);
 		foreach ($methods as $key => $value) {
 			$methods[$key] = strtolower($value);
@@ -464,7 +464,7 @@ class BehaviorCollection extends CakeObject {
 		}
 
 		if (!empty($call)) {
-			return $this->{$call[1]}->dispatchMethod($model, $call[0], $params);
+			return $this->{$call[1]}->dispatchModelMethod($model, $call[0], $params);
 		}
 		return array('unhandled');
 	}
@@ -491,7 +491,7 @@ class BehaviorCollection extends CakeObject {
 			if (in_array($name, $this->_disabled)) {
 				continue;
 			}
-			$result = $this->{$name}->dispatchMethod($model, $callback, $params);
+			$result = $this->{$name}->dispatchModelMethod($model, $callback, $params);
 
 			if ($options['break'] && ($result === $options['breakOn'] || (is_array($options['breakOn']) && in_array($result, $options['breakOn'], true)))) {
 				return $result;

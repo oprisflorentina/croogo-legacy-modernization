@@ -62,7 +62,7 @@ class Setting extends AppModel {
  *
  * @return void
  */
-	public function afterSave() {
+	public function afterSave($created) {
 		$this->updateYaml();
 		$this->writeConfiguration();
 	}
