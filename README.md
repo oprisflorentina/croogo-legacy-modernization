@@ -33,7 +33,7 @@ Two things differ from upstream:
 - **The root `.gitignore`:** CakePHP's own `.gitignore` was dropped, because it excludes `/app/config`, `/plugins` and `/vendors`, which belong to the application here.
 - **Placeholder folders:** the empty placeholder files in `app/tmp/`, `app/webroot/uploads/` and `app/views/themed/` are tracked even though `app/.gitignore` ignores them, so a fresh clone has the folders the app needs at runtime.
 
-## Running the original app
+## Running the app
 
 You need Docker.
 
@@ -41,22 +41,22 @@ You need Docker.
 docker compose up -d --build
 ```
 
-- **Site:** http://localhost:8056
-- **Admin:** http://localhost:8056/admin, user `admin`, password `password`. This is the account from Croogo's sample data (see security finding 6).
+- **Site:** http://localhost:8083 (PHP 8.3)
+- **Admin:** http://localhost:8083/admin, user `admin`, password `password`. This is the account from Croogo's sample data (see security finding 6).
 - **Email:** http://localhost:8025 shows every email the app sends, caught by [Mailpit](https://mailpit.axllent.org/) instead of being delivered.
 - **Reset:** `docker compose down -v` wipes the database, and the next `up` starts from the sample data again.
+
+**To see the original app on PHP 5.6,** check out the tag `last-php56` and run the same command. It's the last commit that runs on both versions, with the PHP 5.6 container on http://localhost:8056.
 
 The setup replaces Croogo's web installer, so every machine starts from the same state:
 
 - **Database:** MySQL loads `app/config/schema/sql/croogo.sql` and `croogo_data.sql` on its first start.
-- **Connection:** `docker/legacy/database.php` is mounted as `app/config/database.php`.
+- **Connection:** `docker/php83/database.php` is mounted as `app/config/database.php`.
 - **Settings:** the container copies `settings.yml.install` to `settings.yml`, as the installer's last screen does.
 
 `app/config/core.php` keeps its shipped salt, because the seeded admin password hash depends on it. The passwords in `compose.yaml` are throwaway values for local use only.
 
-The app runs on PHP 5.6 with Apache and mod_php. It adds the old `mysql` extension, which CakePHP 1.3's default driver needs, and GD for Croogo's image thumbnails.
-
-The Debian 9 package archive behind the PHP 5.6 image is signed with keys that have since expired. Rather than turning off apt's signature check, the Dockerfile builds zlib, libjpeg and libpng from their official source releases, downloaded over HTTPS and pinned by SHA-256.
+**About the PHP 5.6 image** (at `last-php56`): the Debian 9 package archive behind it is signed with keys that have since expired. Rather than turning off apt's signature check, its Dockerfile builds zlib, libjpeg and libpng from their official source releases, downloaded over HTTPS and pinned by SHA-256.
 
 PHP's `mail()` hands messages to Mailpit. That matters for more than convenience: the sample contact form only confirms a message *after* the email is sent, and it doesn't save the message anywhere (`message_archive` is off). Without a mail server, the form fails silently and the message is lost.
 
@@ -65,9 +65,8 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 `tests/characterization/` holds 18 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and only talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 ```bash
-docker compose run --rm tests composer install                # once
-docker compose run --rm tests                                 # against PHP 5.6
-docker compose run --rm -e CROOGO_URL=http://php83 tests      # against PHP 8.3
+docker compose run --rm tests composer install   # once
+docker compose run --rm tests                    # run them
 ```
 
 Besides what each test checks, **every page any test loads fails the test if it shows a PHP error**. The app runs in debug mode, so CakePHP prints warnings and notices into the HTML, and a page can show the right content while failing underneath. Forms are submitted exactly as a browser sends them, including CakePHP's hidden companion inputs.
@@ -93,9 +92,9 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
 
 ## Upgrade to PHP 8.3 (in progress)
 
-The same working tree runs in two containers, PHP 5.6 on :8056 and PHP 8.3 on :8083, sharing one database. After every change, both run the full test suite: the PHP 8.3 one shows progress, and the PHP 5.6 one proves nothing changed behavior along the way.
+**Steps 1-5 below:** the same working tree ran in two containers, PHP 5.6 on :8056 and PHP 8.3 on :8083, sharing one database. After every change, both ran the full test suite: the PHP 8.3 run showed progress, and the PHP 5.6 run proved nothing changed behavior along the way. The tag `last-php56` marks the end of that phase, with all 18 tests passing on both versions.
 
-**Done so far:** all 18 tests pass on both versions, and every admin screen renders without PHP errors on PHP 8.3. The work, one commit each:
+**Done so far,** one commit each:
 
 1. **PHP 4-era syntax:** `=& new`, `$str{0}`, `each()`, `create_function()` (now closures), magic quotes, PHP 4 constructors.
 2. **Reserved class names:** `Object` became `CakeObject` and `String` became `CakeText`, the names CakePHP itself moved to in 2.x.
@@ -108,7 +107,9 @@ The same working tree runs in two containers, PHP 5.6 on :8056 and PHP 8.3 on :8
     - The bundled Spyc YAML parser crashed on the Plugins page.
     - Smaller items: `implode()` argument order, `count()` on `false`, an invalid regex range.
 
-**Still to do in this step:** Rector, PHPStan with a baseline, the password migration and the security fixes. Then the `php83` tag.
+6. **Rector** (`tools/quality/rector.php`) applied the PHP 8.3 rule sets across 225 files: short arrays, explicit visibility, `str_contains()`, `??` and more. It skipped seven rules that would have changed behavior here. The sharpest: `RandomFunctionRector` would have replaced the seeded `rand()` in `Security::cipher()` with `random_int()`, which can't be seeded, and cookie encryption would have broken silently, untouched by any test. From this commit on, the code needs PHP 8, and the PHP 5.6 container is retired.
+
+**Still to do in this step:** PHPStan with a baseline, the password migration and the security fixes. Then the `php83` tag.
 
 ## Structure
 

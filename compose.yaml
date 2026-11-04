@@ -1,18 +1,9 @@
 # Local development only. The credentials below are throwaway values.
+# The PHP 5.6 version of the app lives at the tags legacy-original and
+# last-php56; check one out and run `docker compose up` there to see it.
 services:
-  legacy:
-    build: docker/legacy
-    ports:
-      - "8056:80"
-    volumes:
-      - .:/var/www/html
-      - ./docker/legacy/database.php:/var/www/html/app/config/database.php:ro
-    depends_on:
-      - db
-      - mailpit
-
-  # The same code on PHP 8.3, sharing the database. app/tmp is its own
-  # volume so the two PHP versions never read each other's cache files.
+  # The app on PHP 8.3. app/tmp is a volume, so cache files never land in
+  # the working tree.
   php83:
     build: docker/php83
     ports:
@@ -45,18 +36,16 @@ services:
       - db-data:/var/lib/mysql
 
   # Characterization tests: docker compose run --rm tests
-  # Against PHP 8.3:        docker compose run --rm -e CROOGO_URL=http://php83 tests
   tests:
     build: docker/tests
     profiles: [tests]
     environment:
-      CROOGO_URL: http://legacy
+      CROOGO_URL: http://php83
       MAILPIT_URL: http://mailpit:8025
     volumes:
       - ./tests/characterization:/tests
       - composer-cache:/root/.composer/cache
     depends_on:
-      - legacy
       - php83
     command: vendor/bin/phpunit
 
