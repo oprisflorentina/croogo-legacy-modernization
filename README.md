@@ -33,6 +33,28 @@ Two things differ from upstream:
 - **The root `.gitignore`:** CakePHP's own `.gitignore` was dropped, because it excludes `/app/config`, `/plugins` and `/vendors`, which belong to the application here.
 - **Placeholder folders:** the empty placeholder files in `app/tmp/`, `app/webroot/uploads/` and `app/views/themed/` are tracked even though `app/.gitignore` ignores them, so a fresh clone has the folders the app needs at runtime.
 
+## Running the original app
+
+You need Docker.
+
+```bash
+docker compose up -d --build
+```
+
+- **Site:** http://localhost:8056
+- **Admin:** http://localhost:8056/admin, user `admin`, password `password`. This is the account from Croogo's sample data (see security finding 6).
+- **Reset:** `docker compose down -v` wipes the database, and the next `up` starts from the sample data again.
+
+The setup replaces Croogo's web installer, so every machine starts from the same state:
+
+- **Database:** MySQL loads `app/config/schema/sql/croogo.sql` and `croogo_data.sql` on its first start.
+- **Connection:** `docker/legacy/database.php` is mounted as `app/config/database.php`.
+- **Settings:** the container copies `settings.yml.install` to `settings.yml`, as the installer's last screen does.
+
+`app/config/core.php` keeps its shipped salt, because the seeded admin password hash depends on it. The passwords in `compose.yaml` are throwaway values for local use only.
+
+The app runs on PHP 5.6 with Apache and mod_php, plus the old `mysql` extension, which CakePHP 1.3's default driver needs.
+
 ## Structure
 
 | Area | Files |

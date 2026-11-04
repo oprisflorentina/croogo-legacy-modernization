@@ -1,0 +1,28 @@
+# Local development only. The credentials below are throwaway values.
+services:
+  legacy:
+    build: docker/legacy
+    ports:
+      - "8056:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/legacy/database.php:/var/www/html/app/config/database.php:ro
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.5
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: croogo
+      MYSQL_USER: croogo
+      MYSQL_PASSWORD: croogo
+    command: --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    volumes:
+      # Same schema and sample data the web installer would load.
+      - ./app/config/schema/sql/croogo.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./app/config/schema/sql/croogo_data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
