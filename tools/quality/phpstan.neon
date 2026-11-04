@@ -1,0 +1,34 @@
+# Static analysis of the CakePHP 1.3 core and Croogo. Run from tools/quality:
+#   docker compose run --rm quality vendor/bin/phpstan
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    # Level 5 for new and changed code. phpstan-baseline.neon records the
+    # findings the 2012 code already had (most are CakePHP's magic
+    # properties such as $this->Session), so they don't block changes.
+    # The level 0 findings were all read first; the real bugs were fixed.
+    level: 5
+    phpVersion: 80300
+    paths:
+        - /app/cake
+        - /app/app
+    excludePaths:
+        # Read for class information, but not analyzed: bundled third-party code.
+        analyse:
+            - /app/app/vendors
+        # Neither read nor analyzed: CakePHP's and Croogo's SimpleTest suites,
+        # the console and its generator templates (developer tooling the site
+        # never runs), runtime files and the front controllers.
+        analyseAndScan:
+            - /app/cake/tests
+            - /app/cake/console
+            - /app/app/tests
+            - /app/app/tmp
+            - /app/app/webroot
+            - /app/app/index.php
+    fileExtensions:
+        - php
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    tmpDir: /tmp/phpstan
