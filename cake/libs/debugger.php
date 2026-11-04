@@ -245,7 +245,9 @@ class Debugger extends CakeObject {
  * @access public
  */
 	function handleError($code, $description, $file = null, $line = null, $context = null) {
-		if (error_reporting() == 0 || $code === 2048 || $code === 8192) {
+		// Inside an @-silenced call PHP 8 no longer reports 0 here, so check
+		// whether this error's level is enabled instead of comparing to 0.
+		if (!(error_reporting() & $code) || $code === 2048 || $code === 8192) {
 			return;
 		}
 
