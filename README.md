@@ -53,7 +53,9 @@ The setup replaces Croogo's web installer, so every machine starts from the same
 
 `app/config/core.php` keeps its shipped salt, because the seeded admin password hash depends on it. The passwords in `compose.yaml` are throwaway values for local use only.
 
-The app runs on PHP 5.6 with Apache and mod_php, plus the old `mysql` extension, which CakePHP 1.3's default driver needs.
+The app runs on PHP 5.6 with Apache and mod_php. It adds the old `mysql` extension, which CakePHP 1.3's default driver needs, and GD for Croogo's image thumbnails.
+
+The Debian 9 package archive behind the PHP 5.6 image is signed with keys that have since expired. Rather than turning off apt's signature check, the Dockerfile builds zlib, libjpeg and libpng from their official source releases, downloaded over HTTPS and pinned by SHA-256.
 
 ## Structure
 
