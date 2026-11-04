@@ -30,5 +30,20 @@ services:
       - ./app/config/schema/sql/croogo_data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
       - db-data:/var/lib/mysql
 
+  # Characterization tests: docker compose run --rm tests
+  tests:
+    build: docker/tests
+    profiles: [tests]
+    environment:
+      CROOGO_URL: http://legacy
+      MAILPIT_URL: http://mailpit:8025
+    volumes:
+      - ./tests/characterization:/tests
+      - composer-cache:/root/.composer/cache
+    depends_on:
+      - legacy
+    command: vendor/bin/phpunit
+
 volumes:
   db-data:
+  composer-cache:

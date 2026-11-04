@@ -43,6 +43,7 @@ docker compose up -d --build
 
 - **Site:** http://localhost:8056
 - **Admin:** http://localhost:8056/admin, user `admin`, password `password`. This is the account from Croogo's sample data (see security finding 6).
+- **Email:** http://localhost:8025 shows every email the app sends, caught by [Mailpit](https://mailpit.axllent.org/) instead of being delivered.
 - **Reset:** `docker compose down -v` wipes the database, and the next `up` starts from the sample data again.
 
 The setup replaces Croogo's web installer, so every machine starts from the same state:
@@ -56,6 +57,35 @@ The setup replaces Croogo's web installer, so every machine starts from the same
 The app runs on PHP 5.6 with Apache and mod_php. It adds the old `mysql` extension, which CakePHP 1.3's default driver needs, and GD for Croogo's image thumbnails.
 
 The Debian 9 package archive behind the PHP 5.6 image is signed with keys that have since expired. Rather than turning off apt's signature check, the Dockerfile builds zlib, libjpeg and libpng from their official source releases, downloaded over HTTPS and pinned by SHA-256.
+
+PHP's `mail()` hands messages to Mailpit. That matters for more than convenience: the sample contact form only confirms a message *after* the email is sent, and it doesn't save the message anywhere (`message_archive` is off). Without a mail server, the form fails silently and the message is lost.
+
+## Characterization tests
+
+`tests/characterization/` holds 17 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and only talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+
+```bash
+docker compose run --rm tests composer install   # once
+docker compose run --rm tests                    # run them
+```
+
+| File | What it pins down |
+| --- | --- |
+| `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
+| `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts |
+| `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
+| `KnownIssuesTest` | Behavior that is wrong but real: the `javascript:` website link, double-encoded comment names, PHP running from an attachment upload, and the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. |
+
+**Built to run again and again:**
+- Every run uses fresh random values.
+- Test posts aren't promoted, and they're deleted at the end.
+- Uploaded probe files are removed.
+
+The suite passed three runs in a row on the same database. Writing it surfaced two behaviors the code review missed:
+- **The account lockout:** using `admin` for the wrong-password test locked the other tests out.
+- **The silent contact form:** described above.
+
+**Checked the other way too:** changing one confirmation message in `contacts_controller.php` made exactly one test fail.
 
 ## Structure
 
@@ -152,11 +182,15 @@ These come from reading the code, then checking it against the running app (step
     - `Security.salt` and `Security.cipherSeed` ship as CakePHP's public defaults. The installer replaces them.
     - The installer creates `admin` with the password `password`.
 7. **Old frontend libraries** bundled for the admin and TinyMCE have known issues. To be inventoried in step 2.
+8. **Anyone can lock out any account.** After 5 failed logins in 5 minutes, a username is blocked for everyone, including its owner with the right password (`UsersController::beforeFilter`). Knowing that the admin is called `admin` is enough to keep them out.
+
+    *Found while writing the tests:* the wrong-password test locked out the admin account the other tests use.
 
 **Fixed in this project:**
 - **Fixed in code:** 1, 2, 4 and 6.
 - **Removed:** findings 3 and 5 are resolved by removing the File Manager completely, rather than repairing its forms and then hardening them. A CMS doesn't need a web-based editor for server files, and media uploads stay available through Attachments, where finding 4 gets fixed.
 - **Documented only:** 7 is left for a later frontend step.
+- **Still to decide:** 8.
 
 **Already in place:**
 - **Form protection:** CakePHP's Security component is active on every controller, which gives form tampering protection and CSRF tokens on forms.

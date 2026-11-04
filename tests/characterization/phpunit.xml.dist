@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         executionOrder="defects"
+         failOnWarning="true"
+         failOnRisky="true">
+    <testsuites>
+        <testsuite name="characterization">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!-- Overridden by compose.yaml; set it to point the tests at another server. -->
+        <env name="CROOGO_URL" value="http://localhost:8056" force="false"/>
+    </php>
+</phpunit>
