@@ -53,7 +53,7 @@ final class AdminAuthTest extends CroogoTestCase
             'data[User][username]' => $username,
             'data[User][password]' => $password,
         ]);
-        $this->browser->submit($form);
+        $this->submit($form);
     }
 
     public function testAdminCanLogInAndOpenTheContentList(): void

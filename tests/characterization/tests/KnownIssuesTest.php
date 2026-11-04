@@ -46,7 +46,7 @@ final class KnownIssuesTest extends CroogoTestCase
         try {
             $form = $this->visit('/admin/attachments/add')->filter('#NodeAdminAddForm')->form();
             $form['data[Node][file]']->upload($file);
-            $this->browser->submit($form);
+            $this->submit($form);
 
             $this->browser->request('GET', $this->url('/uploads/' . $name));
             $this->assertSame('php-exec-42', $this->browser->getInternalResponse()->getContent());
@@ -66,7 +66,7 @@ final class KnownIssuesTest extends CroogoTestCase
 
         $form = $this->visit('/admin/filemanager/create_file?path=' . urlencode('/var/www/html/app/tmp/'))
             ->selectButton('Create')->form(['data[Filemanager][name]' => 'probe.txt']);
-        $this->browser->submit($form);
+        $this->submit($form);
 
         $this->assertStringContainsString('Security Error', $this->pageText());
     }
@@ -79,7 +79,7 @@ final class KnownIssuesTest extends CroogoTestCase
             'data[Comment][website]' => $website,
             'data[Comment][body]' => $body,
         ]);
-        $this->browser->submit($form);
+        $this->submit($form);
     }
 
     private function deleteAttachment(string $name): void

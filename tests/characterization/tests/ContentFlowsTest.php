@@ -21,7 +21,7 @@ final class ContentFlowsTest extends CroogoTestCase
         ]);
         // Not promoted, so test posts never push the sample post off the home page.
         $form['data[Node][promote]']->untick();
-        $this->browser->submit($form);
+        $this->submit($form);
 
         try {
             $this->visit('/blog/' . $slug);
@@ -32,7 +32,7 @@ final class ContentFlowsTest extends CroogoTestCase
             $form = $this->browser->click($this->adminNodeLink($title, 'edit'))->selectButton('Save')->form([
                 'data[Node][title]' => $newTitle,
             ]);
-            $this->browser->submit($form);
+            $this->submit($form);
 
             $this->visit('/blog/' . $slug);
             $this->assertSame($newTitle . ' » Croogo', $this->title());
@@ -68,7 +68,7 @@ final class ContentFlowsTest extends CroogoTestCase
             'data[Message][title]' => 'Question',
             'data[Message][body]' => 'Hello ' . $marker,
         ]);
-        $this->browser->submit($form);
+        $this->submit($form);
         $this->assertStringContainsString('Your message has been received...', $this->pageText());
 
         $found = HttpClient::create()
@@ -91,7 +91,7 @@ final class ContentFlowsTest extends CroogoTestCase
             'data[Comment][website]' => 'http://example.com',
             'data[Comment][body]' => $body,
         ]);
-        $this->browser->submit($form);
+        $this->submit($form);
 
         $this->visit('/blog/hello-world');
         $this->assertStringContainsString($body, $this->pageText());
