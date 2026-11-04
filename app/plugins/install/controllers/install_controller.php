@@ -45,7 +45,7 @@ class InstallController extends InstallAppController {
  */
 	public $defaultConfig = [
 		'name' => 'default',
-		'driver'=> 'mysql',
+		'driver'=> 'mysqli',
 		'persistent'=> false,
 		'host'=> 'localhost',
 		'login'=> 'root',

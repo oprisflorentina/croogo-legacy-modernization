@@ -4,19 +4,11 @@
 		echo $this->Form->create('Install', array('url' => array('plugin' => 'install', 'controller' => 'install', 'action' => 'database')));
 		echo $this->Form->input('Install.driver', array(
 			'label' => 'Driver',
-			'default' => 'mysql',
+			'default' => 'mysqli',
 			'empty' => false,
+			// The only driver left that runs on PHP 8.
 			'options' => array(
-				'mysql' => 'mysql',
 				'mysqli' => 'mysqli',
-				'sqlite' => 'sqlite',
-				'postgres' => 'postgres',
-				'mssql' => 'mssql',
-				'db2' => 'db2',
-				'oracle' => 'oracle',
-				'firebird' => 'firebird',
-				'sybase' => 'sybase',
-				'odbc' => 'odbc',
 			),
 		));
 		echo $this->Form->input('Install.host', array('label' => 'Host', 'default' => 'localhost'));
