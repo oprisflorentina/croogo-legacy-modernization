@@ -772,6 +772,8 @@ class Spyc {
 
       $_arr = array_merge ($_arr, $value);
     } else if ($key || $key === '' || $key === '0') {
+      // PHP < 7.1 turned '' into an array on keyed assignment; PHP 8 throws.
+      if ($_arr === '') { $_arr = array(); }
       $_arr[$key] = $value;
     } else {
       if (!is_array ($_arr)) { $_arr = array ($value); $key = 0; }
@@ -783,6 +785,7 @@ class Spyc {
     $reverse_history[0] = $_arr;
     $cnt = count($reverse_history) - 1;
     for ($i = 0; $i < $cnt; $i++) {
+      if ($reverse_history[$i+1] === '') { $reverse_history[$i+1] = array(); }
       $reverse_history[$i+1][$reverse_path[$i]] = $reverse_history[$i];
     }
     $this->result = $reverse_history[$cnt];
