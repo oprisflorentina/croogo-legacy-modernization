@@ -611,7 +611,10 @@ class JavascriptHelper extends AppHelper {
 			'block' => false, 'prefix' => '', 'postfix' => '',
 			'stringKeys' => [], 'quoteKeys' => true, 'q' => '"'
 		];
-		$options = array_merge($defaultOptions, $options, array_filter(compact(array_keys($defaultOptions))));
+		// compact() of the option names once picked up same-named local
+		// variables; none exist here, so it always added nothing (and warns
+		// on PHP 8).
+		$options = array_merge($defaultOptions, $options);
 
 		if (is_object($data)) {
 			$data = get_object_vars($data);

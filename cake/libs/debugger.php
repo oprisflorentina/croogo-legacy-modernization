@@ -476,7 +476,7 @@ class Debugger extends CakeObject {
 /**
  * Converts a variable to a string for debug output.
  *
- * @param string $var Variable to convert
+ * @param mixed $var Variable to convert
  * @return string Variable as a formatted string
  * @access public
  * @static
@@ -499,7 +499,7 @@ class Debugger extends CakeObject {
 				return '"' . h($var) . '"';
 			break;
 			case 'object':
-				return $var::class . "\n" . $_this->__object($var);
+				return get_class($var) . "\n" . $_this->__object($var);
 			case 'array':
 				$var = array_merge($var,  array_intersect_key([
 					'password' => '*****',
@@ -536,6 +536,8 @@ class Debugger extends CakeObject {
 				return 'null';
 			break;
 		}
+		// "resource (closed)" and "unknown type" used to fall through to null.
+		return strtolower(gettype($var));
 	}
 
 /**

@@ -307,7 +307,8 @@ class DboMysqli extends DboMysqlBase {
  * @return string The database encoding
  */
 	public function getEncoding() {
-		return mysqli_client_encoding($this->connection);
+		// mysqli_client_encoding() was an alias, removed in PHP 8.0.
+		return mysqli_character_set_name($this->connection);
 	}
 
 /**

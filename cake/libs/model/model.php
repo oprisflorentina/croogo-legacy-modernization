@@ -2948,7 +2948,7 @@ class Model extends Overloadable {
 			return [$with, array_unique(array_merge($assoc[$with], $keys))];
 		}
 		trigger_error(
-			sprintf(__('Invalid join model settings in %s', true), $model->alias),
+			sprintf(__('Invalid join model settings in %s', true), $this->alias),
 			E_USER_WARNING
 		);
 	}

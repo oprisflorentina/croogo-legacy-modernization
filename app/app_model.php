@@ -139,7 +139,8 @@ class AppModel extends Model {
  * @return bool true when validation successful
  */
 	protected function _validAlias($check) {
-		return preg_match('/^[\p{Ll}\p{Lm}\p{Lo}\p{Lt}\p{Lu}\p{Nd}-_]+$/mu', $check[key($check)]);
+		// The hyphen is escaped: PCRE2 (PHP 7.3+) rejects "\p{Nd}-_" as a range.
+		return preg_match('/^[\p{Ll}\p{Lm}\p{Lo}\p{Lt}\p{Lu}\p{Nd}\-_]+$/mu', $check[key($check)]);
 	}
 
 /**
@@ -147,7 +148,7 @@ class AppModel extends Model {
  * @return bool true when validation successful
  */
 	protected function _validName($check) {
-		return preg_match('/^[\p{Ll}\p{Lm}\p{Lo}\p{Lt}\p{Lu}\p{Nd}-_\[\]\(\) ]+$/mu', $check[key($check)]);
+		return preg_match('/^[\p{Ll}\p{Lm}\p{Lo}\p{Lt}\p{Lu}\p{Nd}\-_\[\]\(\) ]+$/mu', $check[key($check)]);
 	}
 
 }

@@ -552,7 +552,8 @@ class AuthComponent extends CakeObject {
 			case 'object':
 				$action ??= $this->action(':action');
 				if (empty($object)) {
-					trigger_error(sprintf(__('Could not find %s. Set AuthComponent::$object in beforeFilter() or pass a valid object', true), $object::class), E_USER_WARNING);
+					// $object is empty here, so get_class()/::class would throw on PHP 8.
+					trigger_error(sprintf(__('Could not find %s. Set AuthComponent::$object in beforeFilter() or pass a valid object', true), get_debug_type($object)), E_USER_WARNING);
 					return;
 				}
 				if (method_exists($object, 'isAuthorized')) {

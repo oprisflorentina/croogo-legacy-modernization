@@ -1777,7 +1777,7 @@ class FormHelper extends AppHelper {
 				$selected = $meridian;
 			} else {
 				if (empty($value)) {
-					if (!$attribues['empty']) {
+					if (!$attributes['empty']) {
 						$selected = date('a');
 					}
 				} else {

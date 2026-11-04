@@ -31,7 +31,7 @@ class ExtensionsLocalesController extends AppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		App::import('Core', 'File');
-		APP::import('Core', 'Folder');
+		App::import('Core', 'Folder');
 	}
 
 	public function admin_index() {
