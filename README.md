@@ -62,15 +62,19 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 17 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and only talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 18 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and only talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 ```bash
-docker compose run --rm tests composer install   # once
-docker compose run --rm tests                    # run them
+docker compose run --rm tests composer install                # once
+docker compose run --rm tests                                 # against PHP 5.6
+docker compose run --rm -e CROOGO_URL=http://php83 tests      # against PHP 8.3
 ```
+
+Besides what each test checks, **every page any test loads fails the test if it shows a PHP error**. The app runs in debug mode, so CakePHP prints warnings and notices into the HTML, and a page can show the right content while failing underneath. Forms are submitted exactly as a browser sends them, including CakePHP's hidden companion inputs.
 
 | File | What it pins down |
 | --- | --- |
+| `AdminPagesTest` | Every admin screen reachable from the menu (about 240 pages) renders without PHP errors. Links that change data through a GET request are never followed. |
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
@@ -85,7 +89,26 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
 - **The account lockout:** using `admin` for the wrong-password test locked the other tests out.
 - **The silent contact form:** described above.
 
-**Checked the other way too:** changing one confirmation message in `contacts_controller.php` made exactly one test fail.
+**Checked the other way too:** changing one confirmation message in `contacts_controller.php` made exactly one test fail. Reintroducing a fixed PHP 8 warning made the error check fail the tests that load that page.
+
+## Upgrade to PHP 8.3 (in progress)
+
+The same working tree runs in two containers, PHP 5.6 on :8056 and PHP 8.3 on :8083, sharing one database. After every change, both run the full test suite: the PHP 8.3 one shows progress, and the PHP 5.6 one proves nothing changed behavior along the way.
+
+**Done so far:** all 18 tests pass on both versions, and every admin screen renders without PHP errors on PHP 8.3. The work, one commit each:
+
+1. **PHP 4-era syntax:** `=& new`, `$str{0}`, `each()`, `create_function()` (now closures), magic quotes, PHP 4 constructors.
+2. **Reserved class names:** `Object` became `CakeObject` and `String` became `CakeText`, the names CakePHP itself moved to in 2.x.
+3. **Static calls to instance methods**, about 1,650 call sites. A tokenizer pass marked 149 methods `static`. Three relied on PHP 5 letting the caller's `$this` leak into a static call and were reworked by hand.
+4. **Method signatures:** about 30 overrides that PHP 8 rejects as incompatible with their parent. `tools/check-declarations.php` loads every class in its own process to list them all in one pass. The MSSQL, Oracle, Postgres and SQLite drivers were removed rather than ported untested.
+5. **Runtime differences**, found by the tests and the admin crawl:
+    - PHP 8.1's new `full_path` upload key broke the form security check.
+    - PHP 7's built-in `Error` class made CakePHP skip loading its own error handler.
+    - `@` no longer silences warnings under CakePHP's error handler.
+    - The bundled Spyc YAML parser crashed on the Plugins page.
+    - Smaller items: `implode()` argument order, `count()` on `false`, an invalid regex range.
+
+**Still to do in this step:** Rector, PHPStan with a baseline, the password migration and the security fixes. Then the `php83` tag.
 
 ## Structure
 
