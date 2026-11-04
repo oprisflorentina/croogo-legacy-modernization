@@ -187,10 +187,9 @@ These come from reading the code, then checking it against the running app (step
     *Found while writing the tests:* the wrong-password test locked out the admin account the other tests use.
 
 **Fixed in this project:**
-- **Fixed in code:** 1, 2, 4 and 6.
+- **Fixed in code:** 1, 2, 4, 6 and 8. For 8, failed attempts are counted per username *and* IP address, so an attacker only locks out themselves.
 - **Removed:** findings 3 and 5 are resolved by removing the File Manager completely, rather than repairing its forms and then hardening them. A CMS doesn't need a web-based editor for server files, and media uploads stay available through Attachments, where finding 4 gets fixed.
 - **Documented only:** 7 is left for a later frontend step.
-- **Still to decide:** 8.
 
 **Already in place:**
 - **Form protection:** CakePHP's Security component is active on every controller, which gives form tampering protection and CSRF tokens on forms.
