@@ -118,19 +118,27 @@ There are 22 tables, defined in `config/schema/schema.php`, with SQL versions in
 
 ## Security findings
 
-These come from reading the code. Each is confirmed or refuted against the running app in step 2.
+These come from reading the code, then checking it against the running app (step 2). Each finding says what the check showed.
 
 1. **Weak password hashing.** Passwords are `sha1(salt + password)`: `Security::hash()` with CakePHP 1.3's default settings. That is fast and unsuited to passwords. **Fix:** `password_hash()` / `password_verify()`, with old hashes checked once more at login and then rehashed.
-2. **Stored XSS from public comments into the admin.**
-    - In `views/elements/comment.ctp`, a commenter's name is printed without escaping.
-    - In `views/comments/admin_index.ctp`, the comment body goes into a `title` attribute with `'escape' => false`. A comment left by an anonymous visitor could run script in an administrator's browser.
-    - The commenter's website becomes a link `href` without validation, which allows `javascript:` URLs.
-    - Across the views, only 5 `h()` calls appear in 141 templates. Escaping depends on helpers, and the raw `echo` calls need a review.
-3. **The file manager upload accepts any path and any file type.** `FilemanagerController::admin_upload()` takes the target folder from the URL and doesn't run the `_isEditable()` check that `admin_editfile()` uses. It also doesn't check the extension, so an admin session (or a forged request) could write a `.php` file into the web root.
-4. **Attachment uploads aren't validated.**
-    - `AttachmentsController::admin_add()` saves uploads into `webroot/uploads` with the client's file name and trusts the client's MIME type.
-    - There is no extension allow-list.
-    - `explode(...) > 0` compares an array with a number, which is a logic bug.
+
+    *Confirmed:* the seeded admin hash `c054b15…` is exactly `sha1(default salt + "password")`.
+2. **XSS through the commenter's website.** The comment form accepts any value as the website, and the public page turns it into the link on the commenter's name. A visitor who clicks that name runs the script.
+
+    *Confirmed:* a comment posted without logging in, with the website `javascript:alert(1)`, was published immediately and rendered as `<a href="javascript:alert(1)">`.
+
+    *Corrected after testing:* the code reading also suspected the comment name and body. They turned out not to be exploitable, because `CommentsController` runs `htmlspecialchars()` on them **before saving**. That's escaping at the wrong layer, though:
+    - The database holds HTML entities instead of the text people typed.
+    - Pages that escape again show them double-encoded, for example `&amp;lt;i&amp;gt;`.
+    - Any other way of writing comments would skip the protection.
+
+    The fix escapes on output and stores raw text.
+3. **The file manager upload accepts any path and any file type.** `FilemanagerController::admin_upload()` takes the target folder from the URL and doesn't run the `_isEditable()` check that `admin_editfile()` uses. It also doesn't check the extension, so an admin session could write a `.php` file anywhere the web server can write, including the web root.
+
+    *Confirmed in the code.* A scripted reproduction was stopped by CakePHP's form token check, so it gets reproduced by hand in the browser.
+4. **Attachment uploads aren't validated.** `AttachmentsController::admin_add()` saves uploads into `webroot/uploads` with the client's file name. It trusts the MIME type the client sends and has no extension allow-list. It also contains a logic bug: `explode(...) > 0` compares an array with a number.
+
+    *Confirmed:* a file `probe.php` uploaded as an attachment with the type `image/png` was saved to `/uploads/probe.php`, and requesting it **ran the PHP code**. Anyone with an admin session (or who steals one) can run code on the server.
 5. **The file manager can edit any file under `app/`,** PHP code included. It is a feature, but in practice it means code execution for anyone with an admin session. The modernized version should remove it or limit it to theme assets. `_isEditable()` also matches by prefix, so `/app` would match `/app_backup`.
 6. **Insecure defaults:**
     - `debug` is 1 in `config/core.php`.
@@ -140,7 +148,10 @@ These come from reading the code. Each is confirmed or refuted against the runni
 
 **Fixed in this project:** 1, 2, 3, 4 and 6. For 5, the decision is to remove the file editor instead of hardening it. 7 is documented and left for a later frontend step.
 
-**Already in place:** CakePHP's Security component is active on every controller, which gives form tampering protection and CSRF tokens on forms. Whether destructive actions can still be triggered by GET links is checked in step 2. No `eval()`, `unserialize()` or raw `->query()` calls were found in Croogo's own code.
+**Already in place:**
+- **Form protection:** CakePHP's Security component is active on every controller, which gives form tampering protection and CSRF tokens on forms.
+- **Delete links:** admin deletes are GET links, but each carries the session's token (`/admin/nodes/delete/2/token:…`), so a forged link from another site doesn't work.
+- **No risky calls:** no `eval()`, `unserialize()` or raw `->query()` calls were found in Croogo's own code.
 
 ## Modernization plan
 
