@@ -18,9 +18,9 @@ class CroogoComponent extends CakeObject {
  * @var array
  * @access public
  */
-	public $components = array(
+	public $components = [
 		'Session',
-	);
+	];
 
 /**
  * Role ID of current user
@@ -38,35 +38,35 @@ class CroogoComponent extends CakeObject {
  * @var string
  * @access public
  */
-	public $menus_for_layout = array();
+	public $menus_for_layout = [];
  /**
  * Blocks for layout
  *
  * @var string
  * @access public
  */
-	public $blocks_for_layout = array();
+	public $blocks_for_layout = [];
  /**
  * Vocabularies for layout
  *
  * @var string
  * @access public
  */
-	public $vocabularies_for_layout = array();
+	public $vocabularies_for_layout = [];
  /**
  * Types for layout
  *
  * @var string
  * @access public
  */
-	public $types_for_layout = array();
+	public $types_for_layout = [];
  /**
  * Nodes for layout
  *
  * @var string
  * @access public
  */
-	public $nodes_for_layout = array();
+	public $nodes_for_layout = [];
 
 /**
  * Blocks data: contains parsed value of bb-code like strings
@@ -74,11 +74,11 @@ class CroogoComponent extends CakeObject {
  * @var array
  * @access public
  */
-	public $blocksData = array(
-		'menus' => array(),
-		'vocabularies' => array(),
-		'nodes' => array(),
-	);
+	public $blocksData = [
+		'menus' => [],
+		'vocabularies' => [],
+		'nodes' => [],
+	];
 
 /**
  * Startup
@@ -112,29 +112,29 @@ class CroogoComponent extends CakeObject {
  */
 	private function __adminData() {
 		// menus
-		$menus = $this->controller->Link->Menu->find('all', array(
+		$menus = $this->controller->Link->Menu->find('all', [
 			'recursive' => '-1',
 			'order' => 'Menu.id ASC',
-		));
+		]);
 		$this->controller->set('menus_for_admin_layout', $menus);
 
 		// types
-		$types = $this->controller->Node->Taxonomy->Vocabulary->Type->find('all', array(
-			'conditions' => array(
+		$types = $this->controller->Node->Taxonomy->Vocabulary->Type->find('all', [
+			'conditions' => [
 				'Type.plugin <>' => null,
-			),
+			],
 			'order' => 'Type.alias ASC',
-		));
+		]);
 		$this->controller->set('types_for_admin_layout', $types);
 
 		// vocabularies
-		$vocabularies = $this->controller->Node->Taxonomy->Vocabulary->find('all', array(
+		$vocabularies = $this->controller->Node->Taxonomy->Vocabulary->find('all', [
 			'recursive' => '-1',
-			'conditions' => array(
+			'conditions' => [
 				'Vocabulary.plugin <>' => null,
-			),
+			],
 			'order' => 'Vocabulary.alias ASC',
-		));
+		]);
 		$this->controller->set('vocabularies_for_admin_layout', $vocabularies);
 	}
 
@@ -146,51 +146,51 @@ class CroogoComponent extends CakeObject {
  * @return void
  */
 	public function blocks() {
-		$regions = $this->controller->Block->Region->find('list', array(
-			'conditions' => array(
+		$regions = $this->controller->Block->Region->find('list', [
+			'conditions' => [
 				'Region.block_count >' => '0',
-			),
-			'fields' => array(
+			],
+			'fields' => [
 				'Region.id',
 				'Region.alias',
-			),
-			'cache' => array(
+			],
+			'cache' => [
 				'name' => 'croogo_regions',
 				'config' => 'croogo_blocks',
-			),
-		));
+			],
+		]);
 		foreach ($regions AS $regionId => $regionAlias) {
-			$this->blocks_for_layout[$regionAlias] = array();
-			$findOptions = array(
-				'conditions' => array(
+			$this->blocks_for_layout[$regionAlias] = [];
+			$findOptions = [
+				'conditions' => [
 					'Block.status' => 1,
 					'Block.region_id' => $regionId,
-					'AND' => array(
-						array(
-							'OR' => array(
+					'AND' => [
+						[
+							'OR' => [
 								'Block.visibility_roles' => '',
 								'Block.visibility_roles LIKE' => '%"' . $this->roleId . '"%',
-							),
-						),
-						array(
-							'OR' => array(
+							],
+						],
+						[
+							'OR' => [
 								'Block.visibility_paths' => '',
 								'Block.visibility_paths LIKE' => '%"' . $this->controller->params['url']['url'] . '"%',
 								//'Block.visibility_paths LIKE' => '%"' . 'controller:' . $this->params['controller'] . '"%',
 								//'Block.visibility_paths LIKE' => '%"' . 'controller:' . $this->params['controller'] . '/' . 'action:' . $this->params['action'] . '"%',
-							),
-						),
-					),
-				),
-				'order' => array(
+							],
+						],
+					],
+				],
+				'order' => [
 					'Block.weight' => 'ASC'
-				),
-				'cache' => array(
+				],
+				'cache' => [
 					'prefix' => 'croogo_blocks_'.$regionAlias.'_'.$this->roleId.'_',
 					'config' => 'croogo_blocks',
-				),
+				],
 				'recursive' => '-1',
-			);
+			];
 			$blocks = $this->controller->Block->find('all', $findOptions);
 			$this->processBlocksData($blocks);
 			$this->blocks_for_layout[$regionAlias] = $blocks;
@@ -207,9 +207,9 @@ class CroogoComponent extends CakeObject {
 		foreach ($blocks AS $block) {
 			$this->blocksData['menus'] = Set::merge($this->blocksData['menus'], $this->parseString('menu|m', $block['Block']['body']));
 			$this->blocksData['vocabularies'] = Set::merge($this->blocksData['vocabularies'], $this->parseString('vocabulary|v', $block['Block']['body']));
-			$this->blocksData['nodes'] = Set::merge($this->blocksData['nodes'], $this->parseString('node|n', $block['Block']['body'], array(
+			$this->blocksData['nodes'] = Set::merge($this->blocksData['nodes'], $this->parseString('node|n', $block['Block']['body'], [
 				'convertOptionsToArray' => true,
-			)));
+			]));
 		}
 	}
 
@@ -221,7 +221,7 @@ class CroogoComponent extends CakeObject {
  * @return void
  */
 	public function menus() {
-		$menus = array();
+		$menus = [];
 		$themeData = $this->getThemeData(Configure::read('Site.theme'));
 		if (isset($themeData['menus']) && is_array($themeData['menus'])) {
 			$menus = Set::merge($menus, $themeData['menus']);
@@ -229,43 +229,43 @@ class CroogoComponent extends CakeObject {
 		$menus = Set::merge($menus, array_keys($this->blocksData['menus']));
 
 		foreach ($menus AS $menuAlias) {
-			$menu = $this->controller->Link->Menu->find('first', array(
-				'conditions' => array(
+			$menu = $this->controller->Link->Menu->find('first', [
+				'conditions' => [
 					'Menu.status' => 1,
 					'Menu.alias' => $menuAlias,
 					'Menu.link_count >' => 0,
-				),
-				'cache' => array(
+				],
+				'cache' => [
 					'name' => 'croogo_menu_'.$menuAlias,
 					'config' => 'croogo_menus',
-				),
+				],
 				'recursive' => '-1',
-			));
+			]);
 			if (isset($menu['Menu']['id'])) {
-				$this->menus_for_layout[$menuAlias] = array();
+				$this->menus_for_layout[$menuAlias] = [];
 				$this->menus_for_layout[$menuAlias]['Menu'] = $menu['Menu'];
-				$findOptions = array(
-					'conditions' => array(
+				$findOptions = [
+					'conditions' => [
 						'Link.menu_id' => $menu['Menu']['id'],
 						'Link.status' => 1,
-						'AND' => array(
-							array(
-								'OR' => array(
+						'AND' => [
+							[
+								'OR' => [
 									'Link.visibility_roles' => '',
 									'Link.visibility_roles LIKE' => '%"' . $this->roleId . '"%',
-								),
-							),
-						),
-					),
-					'order' => array(
+								],
+							],
+						],
+					],
+					'order' => [
 						'Link.lft' => 'ASC',
-					),
-					'cache' => array(
+					],
+					'cache' => [
 						'name' => 'croogo_menu_'.$menu['Menu']['id'].'_links_'.$this->roleId,
 						'config' => 'croogo_menus',
-					),
+					],
 					'recursive' => -1,
-				);
+				];
 				$links = $this->controller->Link->find('threaded', $findOptions);
 				$this->menus_for_layout[$menuAlias]['threaded'] = $links;
 			}
@@ -280,7 +280,7 @@ class CroogoComponent extends CakeObject {
  * @return void
  */
 	public function vocabularies() {
-		$vocabularies = array();
+		$vocabularies = [];
 		$themeData = $this->getThemeData(Configure::read('Site.theme'));
 		if (isset($themeData['vocabularies']) && is_array($themeData['vocabularies'])) {
 			$vocabularies = Set::merge($vocabularies, $themeData['vocabularies']);
@@ -288,31 +288,31 @@ class CroogoComponent extends CakeObject {
 		$vocabularies = Set::merge($vocabularies, array_keys($this->blocksData['vocabularies']));
 		$vocabularies = array_unique($vocabularies);
 		foreach ($vocabularies AS $vocabularyAlias) {
-			$vocabulary = $this->controller->Node->Taxonomy->Vocabulary->find('first', array(
-				'conditions' => array(
+			$vocabulary = $this->controller->Node->Taxonomy->Vocabulary->find('first', [
+				'conditions' => [
 					'Vocabulary.alias' => $vocabularyAlias,
-				),
-				'cache' => array(
+				],
+				'cache' => [
 					'name' => 'croogo_vocabulary_'.$vocabularyAlias,
 					'config' => 'croogo_vocabularies',
-				),
+				],
 				'recursive' => '-1',
-			));
+			]);
 			if (isset($vocabulary['Vocabulary']['id'])) {
-				$threaded = $this->controller->Node->Taxonomy->find('threaded', array(
-					'conditions' => array(
+				$threaded = $this->controller->Node->Taxonomy->find('threaded', [
+					'conditions' => [
 						'Taxonomy.vocabulary_id' => $vocabulary['Vocabulary']['id'],
-					),
-					'contain' => array(
+					],
+					'contain' => [
 						'Term',
-					),
-					'cache' => array(
+					],
+					'cache' => [
 						'name' => 'croogo_vocabulary_threaded_'.$vocabularyAlias,
 						'config' => 'croogo_vocabularies',
-					),
+					],
 					'order' => 'Taxonomy.lft ASC',
-				));
-				$this->vocabularies_for_layout[$vocabularyAlias] = array();
+				]);
+				$this->vocabularies_for_layout[$vocabularyAlias] = [];
 				$this->vocabularies_for_layout[$vocabularyAlias]['Vocabulary'] = $vocabulary['Vocabulary'];
 				$this->vocabularies_for_layout[$vocabularyAlias]['threaded'] = $threaded;
 			}
@@ -327,12 +327,12 @@ class CroogoComponent extends CakeObject {
  * @return void
  */
 	public function types() {
-		$types = $this->controller->Node->Taxonomy->Vocabulary->Type->find('all', array(
-			'cache' => array(
+		$types = $this->controller->Node->Taxonomy->Vocabulary->Type->find('all', [
+			'cache' => [
 				'name' => 'croogo_types',
 				'config' => 'croogo_types',
-			),
-		));
+			],
+		]);
 		foreach ($types AS $type) {
 			$alias = $type['Type']['alias'];
 			$this->types_for_layout[$alias] = $type;
@@ -348,31 +348,31 @@ class CroogoComponent extends CakeObject {
  */
 	public function nodes() {
 		$nodes = $this->blocksData['nodes'];
-		$_nodeOptions = array(
+		$_nodeOptions = [
 			'find' => 'all',
-			'conditions' => array(
+			'conditions' => [
 				'Node.status' => 1,
-				'OR' => array(
+				'OR' => [
 					'Node.visibility_roles' => '',
 					'Node.visibility_roles LIKE' => '%"' . $this->roleId . '"%',
-				),
-			),
+				],
+			],
 			'order' => 'Node.created DESC',
 			'limit' => 5,
-		);
+		];
 
 		foreach ($nodes AS $alias => $options) {
 			$options = Set::merge($_nodeOptions, $options);
 			$options['limit'] = str_replace('"', '', $options['limit']);
-			$node = $this->controller->Node->find($options['find'], array(
+			$node = $this->controller->Node->find($options['find'], [
 				'conditions' => $options['conditions'],
 				'order' => $options['order'],
 				'limit' => $options['limit'],
-				'cache' => array(
+				'cache' => [
 					'prefix' => 'croogo_nodes_'.$alias.'_',
 					'config' => 'croogo_nodes',
-				),
-			));
+				],
+			]);
 			$this->nodes_for_layout[$alias] = $node;
 		}
 	}
@@ -388,7 +388,7 @@ class CroogoComponent extends CakeObject {
  */
 	public function stringToArray($string) {
 		$string = explode(';', $string);
-		$stringArr = array();
+		$stringArr = [];
 		foreach ($string AS $stringElement) {
 			if ($stringElement != null) {
 				$stringElementE = explode(':', $stringElement);
@@ -439,7 +439,7 @@ class CroogoComponent extends CakeObject {
  */
 	public function extractFilter() {
 		$filter = explode(';', $this->controller->params['named']['filter']);
-		$filterData = array();
+		$filterData = [];
 		foreach ($filter AS $f) {
 			$fData = explode(':', $f);
 			$fKey = $fData['0'];
@@ -475,30 +475,30 @@ class CroogoComponent extends CakeObject {
  * @param array $allowRoles Role aliases
  * @return void
  */
-	public function addAco($action, $allowRoles = array()) {
+	public function addAco($action, $allowRoles = []) {
 		// AROs
-		$aroIds = array();
+		$aroIds = [];
 		if (count($allowRoles) > 0) {
-			$roles = ClassRegistry::init('Role')->find('list', array(
-				'conditions' => array(
+			$roles = ClassRegistry::init('Role')->find('list', [
+				'conditions' => [
 					'Role.alias' => $allowRoles,
-				),
-				'fields' => array(
+				],
+				'fields' => [
 					'Role.id',
 					'Role.alias',
-				),
-			));
+				],
+			]);
 			$roleIds = array_keys($roles);
-			$aros = $this->controller->Acl->Aro->find('list', array(
-				'conditions' => array(
+			$aros = $this->controller->Acl->Aro->find('list', [
+				'conditions' => [
 					'Aro.model' => 'Role',
 					'Aro.foreign_key' => $roleIds,
-				),
-				'fields' => array(
+				],
+				'fields' => [
 					'Aro.id',
 					'Aro.alias',
-				),
-			));
+				],
+			]);
 			$aroIds = array_keys($aros);
 		}
 
@@ -516,12 +516,12 @@ class CroogoComponent extends CakeObject {
 				$parentNode = $this->controller->Acl->Aco->node($this->controller->Auth->actionPath.$controllerName);
 			}
 			$parentId = $parentNode['0']['Aco']['id'];
-			$acoData = array(
+			$acoData = [
 				'parent_id' => $parentId,
 				'model' => null,
 				'foreign_key' => null,
 				'alias' => $alias,
-			);
+			];
 			$this->controller->Acl->Aco->id = false;
 			$this->controller->Acl->Aco->save($acoData);
 			$acoId = $this->controller->Acl->Aco->id;
@@ -531,22 +531,22 @@ class CroogoComponent extends CakeObject {
 
 		// Permissions (aros_acos)
 		foreach ($aroIds AS $aroId) {
-			$permission = $this->controller->Acl->Aro->Permission->find('first', array(
-				'conditions' => array(
+			$permission = $this->controller->Acl->Aro->Permission->find('first', [
+				'conditions' => [
 					'Permission.aro_id' => $aroId,
 					'Permission.aco_id' => $acoId,
-				),
-			));
+				],
+			]);
 			if (!isset($permission['Permission']['id'])) {
 				// create a new record
-				$permissionData = array(
+				$permissionData = [
 					'aro_id' => $aroId,
 					'aco_id' => $acoId,
 					'_create' => 1,
 					'_read' => 1,
 					'_update' => 1,
 					'_delete' => 1,
-				);
+				];
 				$this->controller->Acl->Aco->Permission->id = false;
 				$this->controller->Acl->Aco->Permission->save($permissionData);
 			} else {
@@ -555,7 +555,7 @@ class CroogoComponent extends CakeObject {
 					$permission['Permission']['_read'] == 0 ||
 					$permission['Permission']['_update'] == 0 ||
 					$permission['Permission']['_delete'] == 0) {
-					$permissionData = array(
+					$permissionData = [
 						'id' => $permission['Permission']['id'],
 						'aro_id' => $aroId,
 						'aco_id' => $acoId,
@@ -563,7 +563,7 @@ class CroogoComponent extends CakeObject {
 						'_read' => 1,
 						'_update' => 1,
 						'_delete' => 1,
-					);
+					];
 					$this->controller->Acl->Aco->Permission->id = $permission['Permission']['id'];
 					$this->controller->Acl->Aco->Permission->save($permissionData);
 				}
@@ -595,7 +595,7 @@ class CroogoComponent extends CakeObject {
 	public function addPluginBootstrap($plugin) {
 		$hookBootstraps = Configure::read('Hook.bootstraps');
 		if (!$hookBootstraps) {
-			$plugins = array();
+			$plugins = [];
 		} else {
 			$plugins = explode(',', $hookBootstraps);
 		}
@@ -653,25 +653,25 @@ class CroogoComponent extends CakeObject {
  * @param array  $options
  * @return array
  */
-	public function parseString($exp, $text, $options = array()) {
-		$_options = array(
+	public function parseString($exp, $text, $options = []) {
+		$_options = [
 			'convertOptionsToArray' => false,
-		);
+		];
 		$options = array_merge($_options, $options);
 
-		$output = array();
+		$output = [];
 		preg_match_all('/\[('.$exp.'):([A-Za-z0-9_\-]*)(.*?)\]/i', $text, $tagMatches);
 		for ($i=0; $i < count($tagMatches[1]); $i++) {
 			$regex = '/(\S+)=[\'"]?((?:.(?![\'"]?\s+(?:\S+)=|[>\'"]))+.)[\'"]?/i';
 			preg_match_all($regex, $tagMatches[3][$i], $attributes);
 			$alias = $tagMatches[2][$i];
-			$aliasOptions = array();
+			$aliasOptions = [];
 			for ($j=0; $j < count($attributes[0]); $j++) {
 				$aliasOptions[$attributes[1][$j]] = $attributes[2][$j];
 			}
 			if ($options['convertOptionsToArray']) {
 				foreach ($aliasOptions AS $optionKey => $optionValue) {
-					if (!is_array($optionValue) && strpos($optionValue, ':') !== false) {
+					if (!is_array($optionValue) && str_contains($optionValue, ':')) {
 						$aliasOptions[$optionKey] = $this->stringToArray($optionValue);
 					}
 				}
@@ -687,9 +687,9 @@ class CroogoComponent extends CakeObject {
  * @return array
  */
 	public function getThemes() {
-		$themes = array(
+		$themes = [
 			'default' => 'default',
-		);
+		];
 		$this->folder = new Folder;
 		$viewPaths = App::path('views');
 		foreach ($viewPaths AS $viewPath) {
@@ -723,9 +723,7 @@ class CroogoComponent extends CakeObject {
 					continue;
 				}
 			}
-			if (!isset($ymlLocation)) {
-				$ymlLocation = WWW_ROOT . 'theme.yml';
-			}
+			$ymlLocation ??= WWW_ROOT . 'theme.yml';
 		}
 		$themeData = Spyc::YAMLLoad(file_get_contents($ymlLocation));
 		return $themeData;
@@ -737,14 +735,14 @@ class CroogoComponent extends CakeObject {
  * @return array
  */
 	public function getPlugins() {
-		$plugins = array();
+		$plugins = [];
 		$this->folder = new Folder;
 		$pluginPaths = App::path('plugins');
 		foreach ($pluginPaths AS $pluginPath) {
 			$this->folder->path = $pluginPath;
 			$pluginFolders = $this->folder->read();
 			foreach ($pluginFolders[0] AS $pluginFolder) {
-				if (substr($pluginFolder, 0, 1) != '.') {
+				if (!str_starts_with($pluginFolder, '.')) {
 					$this->folder->path = $pluginPath . $pluginFolder . DS . 'config';
 					$pluginFolderContent = $this->folder->read();
 					if (in_array('plugin.yml', $pluginFolderContent[1])) {
@@ -808,9 +806,9 @@ class CroogoComponent extends CakeObject {
  * @return boolean
  */
 	public function pluginIsActive($plugin) {
-		$configureKeys = array(
+		$configureKeys = [
 			'Hook.bootstraps',
-		);
+		];
 
 		foreach ($configureKeys AS $configureKey) {
 			$hooks = explode(',', Configure::read($configureKey));

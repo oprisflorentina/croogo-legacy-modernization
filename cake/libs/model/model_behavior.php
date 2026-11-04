@@ -40,7 +40,7 @@ class ModelBehavior extends CakeObject {
  * @access public
  * @see Model::$alias
  */
-	var $settings = array();
+	public $settings = [];
 
 /**
  * Allows the mapping of preg-compatible regular expressions to public or
@@ -51,7 +51,7 @@ class ModelBehavior extends CakeObject {
  * @var array
  * @access public
  */
-	var $mapMethods = array();
+	public $mapMethods = [];
 
 /**
  * Setup this behavior with the specified configuration settings.
@@ -60,7 +60,7 @@ class ModelBehavior extends CakeObject {
  * @param array $config Configuration settings for $model
  * @access public
  */
-	function setup(&$model, $config = array()) { }
+	public function setup(&$model, $config = []) { }
 
 /**
  * Clean up any initialization this behavior has done on a model.  Called when a behavior is dynamically
@@ -70,7 +70,7 @@ class ModelBehavior extends CakeObject {
  * @access public
  * @see BehaviorCollection::detach()
  */
-	function cleanup(&$model) {
+	public function cleanup(&$model) {
 		if (isset($this->settings[$model->alias])) {
 			unset($this->settings[$model->alias]);
 		}
@@ -84,7 +84,7 @@ class ModelBehavior extends CakeObject {
  * @return mixed False if the operation should abort. An array will replace the value of $query.
  * @access public
  */
-	function beforeFind(&$model, $query) { }
+	public function beforeFind(&$model, $query) { }
 
 /**
  * After find callback. Can be used to modify any results returned by find and findAll.
@@ -95,7 +95,7 @@ class ModelBehavior extends CakeObject {
  * @return mixed An array value will replace the value of $results - any other value will be ignored.
  * @access public
  */
-	function afterFind(&$model, $results, $primary) { }
+	public function afterFind(&$model, $results, $primary) { }
 
 /**
  * Before validate callback
@@ -104,7 +104,7 @@ class ModelBehavior extends CakeObject {
  * @return mixed False if the operation should abort. Any other result will continue.
  * @access public
  */
-	function beforeValidate(&$model) { }
+	public function beforeValidate(&$model) { }
 
 /**
  * Before save callback
@@ -113,7 +113,7 @@ class ModelBehavior extends CakeObject {
  * @return mixed False if the operation should abort. Any other result will continue.
  * @access public
  */
-	function beforeSave(&$model) { }
+	public function beforeSave(&$model) { }
 
 /**
  * After save callback
@@ -122,7 +122,7 @@ class ModelBehavior extends CakeObject {
  * @param boolean $created True if this save created a new record
  * @access public
  */
-	function afterSave(&$model, $created) { }
+	public function afterSave(&$model, $created) { }
 
 /**
  * Before delete callback
@@ -132,7 +132,7 @@ class ModelBehavior extends CakeObject {
  * @return mixed False if the operation should abort. Any other result will continue.
  * @access public
  */
-	function beforeDelete(&$model, $cascade = true) { }
+	public function beforeDelete(&$model, $cascade = true) { }
 
 /**
  * After delete callback
@@ -140,7 +140,7 @@ class ModelBehavior extends CakeObject {
  * @param object $model Model using this behavior
  * @access public
  */
-	function afterDelete(&$model) { }
+	public function afterDelete(&$model) { }
 
 /**
  * DataSource error callback
@@ -149,7 +149,7 @@ class ModelBehavior extends CakeObject {
  * @param string $error Error generated in DataSource
  * @access public
  */
-	function onError(&$model, $error) { }
+	public function onError(&$model, $error) { }
 
 /**
  * Overrides Object::dispatchMethod to account for PHP4's broken reference support
@@ -158,7 +158,7 @@ class ModelBehavior extends CakeObject {
  * @access public
  * @return mixed
  */
-	function dispatchModelMethod(&$model, $method, $params = array()) {
+	public function dispatchModelMethod(&$model, $method, $params = []) {
 		if (empty($params)) {
 			return $this->{$method}($model);
 		}
@@ -176,8 +176,8 @@ class ModelBehavior extends CakeObject {
 			case 5:
 				return $this->{$method}($model, $params[0], $params[1], $params[2], $params[3], $params[4]);
 			default:
-				$params = array_merge(array(&$model), $params);
-				return call_user_func_array(array(&$this, $method), $params);
+				$params = array_merge([&$model], $params);
+				return call_user_func_array([&$this, $method], $params);
 			break;
 		}
 	}
@@ -193,7 +193,7 @@ class ModelBehavior extends CakeObject {
  * @access protected
  * @return void
  */
-	function _addToWhitelist(&$model, $field) {
+	public function _addToWhitelist(&$model, $field) {
 		if (is_array($field)) {
 			foreach ($field as $f) {
 				$this->_addToWhitelist($model, $f);
@@ -222,7 +222,7 @@ class BehaviorCollection extends CakeObject {
  * @var string
  * @access public
  */
-	var $modelName = null;
+	public $modelName = null;
 
 /**
  * Lists the currently-attached behavior objects
@@ -230,7 +230,7 @@ class BehaviorCollection extends CakeObject {
  * @var array
  * @access private
  */
-	var $_attached = array();
+	public $_attached = [];
 
 /**
  * Lists the currently-attached behavior objects which are disabled
@@ -238,21 +238,21 @@ class BehaviorCollection extends CakeObject {
  * @var array
  * @access private
  */
-	var $_disabled = array();
+	public $_disabled = [];
 
 /**
  * Keeps a list of all methods of attached behaviors
  *
  * @var array
  */
-	var $__methods = array();
+	public $__methods = [];
 
 /**
  * Keeps a list of all methods which have been mapped with regular expressions
  *
  * @var array
  */
-	var $__mappedMethods = array();
+	public $__mappedMethods = [];
 
 /**
  * Attaches a model object and loads a list of behaviors
@@ -260,7 +260,7 @@ class BehaviorCollection extends CakeObject {
  * @access public
  * @return void
  */
-	function init($modelName, $behaviors = array()) {
+	public function init($modelName, $behaviors = []) {
 		$this->modelName = $modelName;
 
 		if (!empty($behaviors)) {
@@ -278,26 +278,26 @@ class BehaviorCollection extends CakeObject {
  * @return boolean True on success, false on failure
  * @access public
  */
-	function attach($behavior, $config = array()) {
-		list($plugin, $name) = pluginSplit($behavior);
+	public function attach($behavior, $config = []) {
+		[$plugin, $name] = pluginSplit($behavior);
 		$class = $name . 'Behavior';
 
 		if (!App::import('Behavior', $behavior)) {
-			$this->cakeError('missingBehaviorFile', array(array(
+			$this->cakeError('missingBehaviorFile', [[
 				'behavior' => $behavior,
 				'file' => Inflector::underscore($behavior) . '.php',
 				'code' => 500,
 				'base' => '/'
-			)));
+			]]);
 			return false;
 		}
 		if (!class_exists($class)) {
-			$this->cakeError('missingBehaviorClass', array(array(
+			$this->cakeError('missingBehaviorClass', [[
 				'behavior' => $class,
 				'file' => Inflector::underscore($class) . '.php',
 				'code' => 500,
 				'base' => '/'
-			)));
+			]]);
 			return false;
 		}
 
@@ -323,23 +323,23 @@ class BehaviorCollection extends CakeObject {
 			if ($config !== null && $config !== false) {
 				$config = array_merge($this->{$name}->settings[$this->modelName], $config);
 			} else {
-				$config = array();
+				$config = [];
 			}
 		}
 		if (empty($config)) {
-			$config = array();
+			$config = [];
 		}
 		$this->{$name}->setup(ClassRegistry::getObject($this->modelName), $config);
 
 		foreach ($this->{$name}->mapMethods as $method => $alias) {
-			$this->__mappedMethods[$method] = array($alias, $name);
+			$this->__mappedMethods[$method] = [$alias, $name];
 		}
 		$methods = get_class_methods($this->{$name});
 		$parentMethods = array_flip(get_class_methods('ModelBehavior'));
-		$callbacks = array(
+		$callbacks = [
 			'setup', 'cleanup', 'beforeFind', 'afterFind', 'beforeSave', 'afterSave',
 			'beforeDelete', 'afterDelete', 'afterError'
-		);
+		];
 
 		foreach ($methods as $m) {
 			if (!isset($parentMethods[$m])) {
@@ -348,7 +348,7 @@ class BehaviorCollection extends CakeObject {
 					!in_array($m, $callbacks)
 				);
 				if ($methodAllowed) {
-					$this->__methods[$m] = array($m, $name);
+					$this->__methods[$m] = [$m, $name];
 				}
 			}
 		}
@@ -371,8 +371,8 @@ class BehaviorCollection extends CakeObject {
  * @return void
  * @access public
  */
-	function detach($name) {
-		list($plugin, $name) = pluginSplit($name);
+	public function detach($name) {
+		[$plugin, $name] = pluginSplit($name);
 		if (isset($this->{$name})) {
 			$this->{$name}->cleanup(ClassRegistry::getObject($this->modelName));
 			unset($this->{$name});
@@ -392,7 +392,7 @@ class BehaviorCollection extends CakeObject {
  * @return void
  * @access public
  */
-	function enable($name) {
+	public function enable($name) {
 		$this->_disabled = array_diff($this->_disabled, (array)$name);
 	}
 
@@ -404,7 +404,7 @@ class BehaviorCollection extends CakeObject {
  * @return void
  * @access public
  */
-	function disable($name) {
+	public function disable($name) {
 		foreach ((array)$name as $behavior) {
 			if (in_array($behavior, $this->_attached) && !in_array($behavior, $this->_disabled)) {
 				$this->_disabled[] = $behavior;
@@ -421,7 +421,7 @@ class BehaviorCollection extends CakeObject {
  *   Otherwise, returns an array of all enabled behaviors.
  * @access public
  */
-	function enabled($name = null) {
+	public function enabled($name = null) {
 		if (!empty($name)) {
 			return (in_array($name, $this->_attached) && !in_array($name, $this->_disabled));
 		}
@@ -434,7 +434,7 @@ class BehaviorCollection extends CakeObject {
  * @return array All methods for all behaviors attached to this object
  * @access public
  */
-	function dispatchModelMethod(&$model, $method, $params = array(), $strict = false) {
+	public function dispatchModelMethod(&$model, $method, $params = [], $strict = false) {
 		$methods = array_keys($this->__methods);
 		foreach ($methods as $key => $value) {
 			$methods[$key] = strtolower($value);
@@ -466,7 +466,7 @@ class BehaviorCollection extends CakeObject {
 		if (!empty($call)) {
 			return $this->{$call[1]}->dispatchModelMethod($model, $call[0], $params);
 		}
-		return array('unhandled');
+		return ['unhandled'];
 	}
 
 /**
@@ -479,11 +479,11 @@ class BehaviorCollection extends CakeObject {
  * @return mixed
  * @access public
  */
-	function trigger(&$model, $callback, $params = array(), $options = array()) {
+	public function trigger(&$model, $callback, $params = [], $options = []) {
 		if (empty($this->_attached)) {
 			return true;
 		}
-		$options = array_merge(array('break' => false, 'breakOn' => array(null, false), 'modParams' => false), $options);
+		$options = array_merge(['break' => false, 'breakOn' => [null, false], 'modParams' => false], $options);
 		$count = count($this->_attached);
 
 		for ($i = 0; $i < $count; $i++) {
@@ -511,7 +511,7 @@ class BehaviorCollection extends CakeObject {
  * @return array All public methods for all behaviors attached to this collection
  * @access public
  */
-	function methods() {
+	public function methods() {
 		return $this->__methods;
 	}
 
@@ -524,7 +524,7 @@ class BehaviorCollection extends CakeObject {
  *    Otherwise, returns an array of all attached behaviors.
  * @access public
  */
-	function attached($name = null) {
+	public function attached($name = null) {
 		if (!empty($name)) {
 			return (in_array($name, $this->_attached));
 		}

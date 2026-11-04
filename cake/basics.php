@@ -146,7 +146,7 @@ if (!function_exists('getMicrotime')) {
  * @return float Microtime
  */
 	function getMicrotime() {
-		list($usec, $sec) = explode(' ', microtime());
+		[$usec, $sec] = explode(' ', microtime());
 		return ((float)$usec + (float)$sec);
 	}
 }
@@ -205,7 +205,7 @@ if (!function_exists('array_combine')) {
 		if ($c1 <= 0) {
 			return false;
 		}
-		$output = array();
+		$output = [];
 
 		for ($i = 0; $i < $c1; $i++) {
 			$output[$a1[$i]] = $a2[$i];
@@ -230,9 +230,7 @@ if (!function_exists('array_combine')) {
 		static $defaultCharset = false;
 		if ($defaultCharset === false) {
 			$defaultCharset = Configure::read('App.encoding');
-			if ($defaultCharset === null) {
-				$defaultCharset = 'UTF-8';
-			}
+			$defaultCharset ??= 'UTF-8';
 		}
 		if ($charset) {
 			return htmlspecialchars($text, ENT_QUOTES, $charset);
@@ -253,14 +251,14 @@ if (!function_exists('array_combine')) {
  * @return array Array with 2 indexes.  0 => plugin name, 1 => classname
  */
 	function pluginSplit($name, $dotAppend = false, $plugin = null) {
-		if (strpos($name, '.') !== false) {
+		if (str_contains($name, '.')) {
 			$parts = explode('.', $name, 2);
 			if ($dotAppend) {
 				$parts[0] .= '.';
 			}
 			return $parts;
 		}
-		return array($plugin, $name);
+		return [$plugin, $name];
 	}
 
 /**
@@ -405,11 +403,11 @@ if (!function_exists('array_combine')) {
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-with-CakePHP/Global-Constants-and-Functions.html#am
  */
 	function am() {
-		$r = array();
+		$r = [];
 		$args = func_get_args();
 		foreach ($args as $a) {
 			if (!is_array($a)) {
-				$a = array($a);
+				$a = [$a];
 			}
 			$r = array_merge($r, $a);
 		}
@@ -431,7 +429,7 @@ if (!function_exists('array_combine')) {
 			if (isset($_SERVER['HTTPS'])) {
 				return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 			}
-			return (strpos(env('SCRIPT_URI'), 'https://') === 0);
+			return (str_starts_with(env('SCRIPT_URI'), 'https://'));
 		}
 
 		if ($key == 'SCRIPT_NAME') {
@@ -491,7 +489,7 @@ if (!function_exists('array_combine')) {
 				} elseif ($count === 2) {
 					return '.' . $host;
 				} elseif ($count === 3) {
-					$gTLD = array('aero', 'asia', 'biz', 'cat', 'com', 'coop', 'edu', 'gov', 'info', 'int', 'jobs', 'mil', 'mobi', 'museum', 'name', 'net', 'org', 'pro', 'tel', 'travel', 'xxx');
+					$gTLD = ['aero', 'asia', 'biz', 'cat', 'com', 'coop', 'edu', 'gov', 'info', 'int', 'jobs', 'mil', 'mobi', 'museum', 'name', 'net', 'org', 'pro', 'tel', 'travel', 'xxx'];
 					if (in_array($parts[1], $gTLD)) {
 						return '.' . $host;
 					}
@@ -617,11 +615,11 @@ if (!function_exists('file_put_contents')) {
 				}
 				return true;
 			} else {
-				$cache = array(
+				$cache = [
 					CACHE . $type . DS . '*' . $params . $ext,
 					CACHE . $type . DS . '*' . $params . '_*' . $ext
-				);
-				$files = array();
+				];
+				$files = [];
 				while ($search = array_shift($cache)) {
 					$results = glob($search);
 					if ($results !== false) {
@@ -887,7 +885,7 @@ if (!function_exists('file_put_contents')) {
  */
 	if (!function_exists('array_diff_key')) {
 		function array_diff_key() {
-			$valuesDiff = array();
+			$valuesDiff = [];
 
 			$argc = func_num_args();
 			if ($argc < 2) {
@@ -923,7 +921,7 @@ if (!function_exists('file_put_contents')) {
  */
 	if (!function_exists('array_intersect_key')) {
 		function array_intersect_key($arr1, $arr2) {
-			$res = array();
+			$res = [];
 			foreach ($arr1 as $key => $value) {
 				if (array_key_exists($key, $arr2)) {
 					$res[$key] = $arr1[$key];
@@ -942,7 +940,7 @@ if (!function_exists('file_put_contents')) {
 		if (!class_exists('CakeLog')) {
 			App::import('Core', 'CakeLog');
 		}
-		$bad = array("\n", "\r", "\t");
+		$bad = ["\n", "\r", "\t"];
 		$good = ' ';
 		CakeLog::write('error', str_replace($bad, $good, $message));
 	}
@@ -1001,7 +999,7 @@ if (!function_exists('file_put_contents')) {
 			if (is_object($data)) {
 				$data = get_object_vars($data);
 			}
-			$out = array();
+			$out = [];
 
 			foreach ((array)$data as $key => $v) {
 				if (is_numeric($key) && !empty($prefix)) {

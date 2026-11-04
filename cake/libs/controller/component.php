@@ -32,7 +32,7 @@ class Component extends CakeObject {
  * @var object
  * @access private
  */
-	var $__controllerVars = array('plugin' => null, 'name' => null, 'base' => null);
+	public $__controllerVars = ['plugin' => null, 'name' => null, 'base' => null];
 
 /**
  * List of loaded components.
@@ -40,7 +40,7 @@ class Component extends CakeObject {
  * @var object
  * @access protected
  */
-	var $_loaded = array();
+	public $_loaded = [];
 
 /**
  * List of components attached directly to the controller, which callbacks
@@ -49,7 +49,7 @@ class Component extends CakeObject {
  * @var object
  * @access protected
  */
-	var $_primary = array();
+	public $_primary = [];
 
 /**
  * Settings for loaded components.
@@ -57,7 +57,7 @@ class Component extends CakeObject {
  * @var array
  * @access private
  */
-	var $__settings = array();
+	public $__settings = [];
 
 /**
  * Used to initialize the components for current controller.
@@ -66,14 +66,14 @@ class Component extends CakeObject {
  * @return void
  * @access public
  */
-	function init(&$controller) {
+	public function init(&$controller) {
 		if (!is_array($controller->components)) {
 			return;
 		}
-		$this->__controllerVars = array(
+		$this->__controllerVars = [
 			'plugin' => $controller->plugin, 'name' => $controller->name,
 			'base' => $controller->base
-		);
+		];
 
 		$this->_loadComponents($controller);
 	}
@@ -86,12 +86,12 @@ class Component extends CakeObject {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-with-CakePHP/Components.html#mvc-class-access-within-components
  */
-	function initialize(&$controller) {
+	public function initialize(&$controller) {
 		foreach (array_keys($this->_loaded) as $name) {
 			$component =& $this->_loaded[$name];
 
 			if (method_exists($component,'initialize') && $component->enabled === true) {
-				$settings = array();
+				$settings = [];
 				if (isset($this->__settings[$name])) {
 					$settings = $this->__settings[$name];
 				}
@@ -109,7 +109,7 @@ class Component extends CakeObject {
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-with-CakePHP/Components.html#mvc-class-access-within-components
  * @deprecated See Component::triggerCallback()
  */
-	function startup(&$controller) {
+	public function startup(&$controller) {
 		$this->triggerCallback('startup', $controller);
 	}
 
@@ -122,7 +122,7 @@ class Component extends CakeObject {
  * @access public
  * @deprecated See Component::triggerCallback()
  */
-	function beforeRender(&$controller) {
+	public function beforeRender(&$controller) {
 		$this->triggerCallback('beforeRender', $controller);
 	}
 
@@ -133,8 +133,8 @@ class Component extends CakeObject {
  * @return void
  * @access public
  */
-	function beforeRedirect(&$controller, $url, $status = null, $exit = true) {
-		$response = array();
+	public function beforeRedirect(&$controller, $url, $status = null, $exit = true) {
+		$response = [];
 
 		foreach ($this->_primary as $name) {
 			$component =& $this->_loaded[$name];
@@ -158,7 +158,7 @@ class Component extends CakeObject {
  * @access public
  * @deprecated See Component::triggerCallback()
  */
-	function shutdown(&$controller) {
+	public function shutdown(&$controller) {
 		$this->triggerCallback('shutdown', $controller);
 	}
 
@@ -179,7 +179,7 @@ class Component extends CakeObject {
  * @return void
  * @access public
  */
-	function triggerCallback($callback, &$controller) {
+	public function triggerCallback($callback, &$controller) {
 		foreach ($this->_primary as $name) {
 			$component =& $this->_loaded[$name];
 			if (method_exists($component, $callback) && $component->enabled === true) {
@@ -196,36 +196,36 @@ class Component extends CakeObject {
  * @return void
  * @access protected
  */
-	function _loadComponents(&$object, $parent = null) {
+	public function _loadComponents(&$object, $parent = null) {
 		$base = $this->__controllerVars['base'];
 		$normal = Set::normalize($object->components);
 		foreach ((array)$normal as $component => $config) {
 			$plugin = isset($this->__controllerVars['plugin']) ? $this->__controllerVars['plugin'] . '.' : null;
-			list($plugin, $component) = pluginSplit($component, true, $plugin);
+			[$plugin, $component] = pluginSplit($component, true, $plugin);
 			$componentCn = $component . 'Component';
 
 			if (!class_exists($componentCn)) {
 				if (is_null($plugin) || !App::import('Component', $plugin . $component)) {
 					if (!App::import('Component', $component)) {
-						$this->cakeError('missingComponentFile', array(array(
+						$this->cakeError('missingComponentFile', [[
 							'className' => $this->__controllerVars['name'],
 							'component' => $component,
 							'file' => Inflector::underscore($component) . '.php',
 							'base' => $base,
 							'code' => 500
-						)));
+						]]);
 						return false;
 					}
 				}
 
 				if (!class_exists($componentCn)) {
-					$this->cakeError('missingComponentClass', array(array(
+					$this->cakeError('missingComponentClass', [[
 						'className' => $this->__controllerVars['name'],
 						'component' => $component,
 						'file' => Inflector::underscore($component) . '.php',
 						'base' => $base,
 						'code' => 500
-					)));
+					]]);
 					return false;
 				}
 			}

@@ -26,18 +26,18 @@ class Term extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
-		'Cached' => array(
-			'prefix' => array(
+	public $actsAs = [
+		'Cached' => [
+			'prefix' => [
 				'term_',
 				'node_',
 				'nodes_',
 				'croogo_nodes_',
 				'croogo_vocabularies_',
 				'croogo_vocabulary_',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Validation
@@ -45,18 +45,18 @@ class Term extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'slug' => array(
-			'isUnique' => array(
+	public $validate = [
+		'slug' => [
+			'isUnique' => [
 				'rule' => 'isUnique',
 				'message' => 'This slug has already been taken.',
-			),
-			'minLength' => array(
-				'rule' => array('minLength', 1),
+			],
+			'minLength' => [
+				'rule' => ['minLength', 1],
 				'message' => 'Slug cannot be empty.',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Model associations: hasAndBelongsToMany
@@ -64,8 +64,8 @@ class Term extends AppModel {
  * @var array
  * @access public
  */
-	public $hasAndBelongsToMany = array(
-		'Vocabulary' => array(
+	public $hasAndBelongsToMany = [
+		'Vocabulary' => [
 			'className' => 'Vocabulary',
 			'with' => 'Taxonomy',
 			'joinTable' => 'taxonomy',
@@ -80,8 +80,8 @@ class Term extends AppModel {
 			'finderQuery' => '',
 			'deleteQuery' => '',
 			'insertQuery' => '',
-		),
-	);
+		],
+	];
 
 /**
  * Save Term and return ID.
@@ -91,11 +91,11 @@ class Term extends AppModel {
  * @return integer
  */
 	public function saveAndGetId($data) {
-		$term = $this->find('first', array(
-			'conditions' => array(
+		$term = $this->find('first', [
+			'conditions' => [
 				'Term.slug' => $data['slug'],
-			),
-		));
+			],
+		]);
 		if (isset($term['Term']['id'])) {
 			return $term['Term']['id'];
 		}

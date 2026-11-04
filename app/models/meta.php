@@ -34,14 +34,14 @@ class Meta extends AppModel {
  * @var array
  * @access public
  */
-	public $belongsTo = array(
-		'Node' => array(
+	public $belongsTo = [
+		'Node' => [
 			'className' => 'Node',
 			'foreignKey' => 'foreign_key',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
-		),
-	);
+		],
+	];
 
 }

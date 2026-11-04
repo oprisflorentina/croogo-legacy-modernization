@@ -267,7 +267,7 @@ class Multibyte extends CakeObject {
  * @var array
  * @access private
  */
-	var $__caseFold = array();
+	public $__caseFold = [];
 
 /**
  * Holds an array of Unicode code point ranges
@@ -275,7 +275,7 @@ class Multibyte extends CakeObject {
  * @var array
  * @access private
  */
-	var $__codeRange = array();
+	public $__codeRange = [];
 
 /**
  * Holds the current code point range
@@ -283,7 +283,7 @@ class Multibyte extends CakeObject {
  * @var string
  * @access private
  */
-	var $__table = null;
+	public $__table = null;
 
 /**
  * Gets a reference to the Multibyte object instance
@@ -292,8 +292,8 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function &getInstance() {
-		static $instance = array();
+	public static function &getInstance() {
+		static $instance = [];
 
 		if (!$instance) {
 			$instance[0] = new Multibyte();
@@ -310,10 +310,10 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function utf8($string) {
-		$map = array();
+	public static function utf8($string) {
+		$map = [];
 
-		$values = array();
+		$values = [];
 		$find = 1;
 		$length = strlen($string);
 
@@ -334,7 +334,7 @@ class Multibyte extends CakeObject {
 					} else {
 						$map[] = (($values[0] % 32) * 64) + ($values[1] % 64);
 					}
-					$values = array();
+					$values = [];
 					$find = 1;
 				}
 			}
@@ -351,7 +351,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function ascii($array) {
+	public static function ascii($array) {
 		$ascii = '';
 
 		foreach ($array as $utf8) {
@@ -380,13 +380,13 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function stripos($haystack, $needle, $offset = 0) {
+	public static function stripos($haystack, $needle, $offset = 0) {
 		if (!PHP5 || Multibyte::checkMultibyte($haystack)) {
 			$haystack = Multibyte::strtoupper($haystack);
 			$needle = Multibyte::strtoupper($needle);
 			return Multibyte::strpos($haystack, $needle, $offset);
 		}
-		return stripos($haystack, $needle, $offset);
+		return stripos($haystack, (string) $needle, $offset);
 	}
 
 /**
@@ -402,7 +402,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function stristr($haystack, $needle, $part = false) {
+	public static function stristr($haystack, $needle, $part = false) {
 		$php = (PHP_VERSION < 5.3);
 
 		if (($php && $part) || Multibyte::checkMultibyte($haystack)) {
@@ -417,7 +417,7 @@ class Multibyte extends CakeObject {
 			$needle = Multibyte::utf8($needle);
 			$needleCount = count($needle);
 
-			$parts = array();
+			$parts = [];
 			$position = 0;
 
 			while (($found === false) && ($position < $haystackCount)) {
@@ -460,7 +460,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strlen($string) {
+	public static function strlen($string) {
 		if (Multibyte::checkMultibyte($string)) {
 			$string = Multibyte::utf8($string);
 			return count($string);
@@ -479,7 +479,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strpos($haystack, $needle, $offset = 0) {
+	public static function strpos($haystack, $needle, $offset = 0) {
 		if (Multibyte::checkMultibyte($haystack)) {
 			$found = false;
 
@@ -526,7 +526,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strrchr($haystack, $needle, $part = false) {
+	public static function strrchr($haystack, $needle, $part = false) {
 		$check = Multibyte::utf8($haystack);
 		$found = false;
 
@@ -538,7 +538,7 @@ class Multibyte extends CakeObject {
 		$needle = Multibyte::utf8($needle);
 		$needleCount = count($needle);
 
-		$parts = array();
+		$parts = [];
 		$position = 0;
 
 		while (($found === false) && ($position < $haystackCount)) {
@@ -549,7 +549,7 @@ class Multibyte extends CakeObject {
 							$found = true;
 						}
 						unset($parts[$position - 1]);
-						$haystack = array_merge(array($haystack[$position]), $haystack);
+						$haystack = array_merge([$haystack[$position]], $haystack);
 						break;
 					}
 				}
@@ -588,7 +588,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strrichr($haystack, $needle, $part = false) {
+	public static function strrichr($haystack, $needle, $part = false) {
 		$check = Multibyte::strtoupper($haystack);
 		$check = Multibyte::utf8($check);
 		$found = false;
@@ -602,7 +602,7 @@ class Multibyte extends CakeObject {
 		$needle = Multibyte::utf8($needle);
 		$needleCount = count($needle);
 
-		$parts = array();
+		$parts = [];
 		$position = 0;
 
 		while (($found === false) && ($position < $haystackCount)) {
@@ -613,7 +613,7 @@ class Multibyte extends CakeObject {
 							$found = true;
 						}
 						unset($parts[$position - 1]);
-						$haystack = array_merge(array($haystack[$position]), $haystack);
+						$haystack = array_merge([$haystack[$position]], $haystack);
 						break;
 					}
 				}
@@ -650,7 +650,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strripos($haystack, $needle, $offset = 0) {
+	public static function strripos($haystack, $needle, $offset = 0) {
 		if (!PHP5 || Multibyte::checkMultibyte($haystack)) {
 			$found = false;
 			$haystack = Multibyte::strtoupper($haystack);
@@ -703,7 +703,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strrpos($haystack, $needle, $offset = 0) {
+	public static function strrpos($haystack, $needle, $offset = 0) {
 		if (!PHP5 || Multibyte::checkMultibyte($haystack)) {
 			$found = false;
 
@@ -756,7 +756,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strstr($haystack, $needle, $part = false) {
+	public static function strstr($haystack, $needle, $part = false) {
 		$php = (PHP_VERSION < 5.3);
 
 		if (($php && $part) || Multibyte::checkMultibyte($haystack)) {
@@ -769,7 +769,7 @@ class Multibyte extends CakeObject {
 			$needle = Multibyte::utf8($needle);
 			$needleCount = count($needle);
 
-			$parts = array();
+			$parts = [];
 			$position = 0;
 
 			while (($found === false) && ($position < $haystackCount)) {
@@ -812,12 +812,12 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strtolower($string) {
+	public static function strtolower($string) {
 		$_this =& Multibyte::getInstance();
 		$utf8Map = Multibyte::utf8($string);
 
 		$length = count($utf8Map);
-		$lowerCase = array();
+		$lowerCase = [];
 		$matched = false;
 
 		for ($i = 0 ; $i < $length; $i++) {
@@ -861,14 +861,14 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function strtoupper($string) {
+	public static function strtoupper($string) {
 		$_this =& Multibyte::getInstance();
 		$utf8Map = Multibyte::utf8($string);
 
 		$length = count($utf8Map);
 		$matched = false;
-		$replaced = array();
-		$upperCase = array();
+		$replaced = [];
+		$upperCase = [];
 
 		for ($i = 0 ; $i < $length; $i++) {
 			$char = $utf8Map[$i];
@@ -954,7 +954,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function substrCount($haystack, $needle) {
+	public static function substrCount($haystack, $needle) {
 		$count = 0;
 		$haystack = Multibyte::utf8($haystack);
 		$haystackCount = count($haystack);
@@ -992,7 +992,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function substr($string, $start, $length = null) {
+	public static function substr($string, $start, $length = null) {
 		if ($start === 0 && $length === null) {
 			return $string;
 		}
@@ -1009,7 +1009,7 @@ class Multibyte extends CakeObject {
 		}
 		$string = array_values($string);
 
-		$value = array();
+		$value = [];
 		for ($i = 0; $i < $length; $i++) {
 			$value[] = $string[$i];
 		}
@@ -1027,7 +1027,7 @@ class Multibyte extends CakeObject {
  * @static
  * @TODO: add support for 'Q'('Quoted Printable') encoding
  */
-	static function mimeEncode($string, $charset = null, $newline = "\r\n") {
+	public static function mimeEncode($string, $charset = null, $newline = "\r\n") {
 		if (!Multibyte::checkMultibyte($string) && strlen($string) < 75) {
 			return $string;
 		}
@@ -1044,7 +1044,7 @@ class Multibyte extends CakeObject {
 		$length = 75 - strlen($start) - strlen($end);
 		$length = $length - ($length % 4);
 		if ($charset == 'UTF-8') {
-			$parts = array();
+			$parts = [];
 			$maxchars = floor(($length * 3) / 4);
 			while (strlen($string) > $maxchars) {
 				$i = (int)$maxchars;
@@ -1072,7 +1072,7 @@ class Multibyte extends CakeObject {
  * @return string
  * @access private
  */
-	function __codepoint($decimal) {
+	public function __codepoint($decimal) {
 		if ($decimal > 128 && $decimal < 256)  {
 			$return = '0080_00ff'; // Latin-1 Supplement
 		} elseif ($decimal < 384) {
@@ -1122,9 +1122,9 @@ class Multibyte extends CakeObject {
  * @return array
  * @access private
  */
-	function __find($char, $type = 'lower') {
+	public function __find($char, $type = 'lower') {
 		$value = false;
-		$found = array();
+		$found = [];
 		if (!isset($this->__codeRange[$char])) {
 			$range = $this->__codepoint($char);
 			if ($range === false) {
@@ -1158,7 +1158,7 @@ class Multibyte extends CakeObject {
  * @access public
  * @static
  */
-	static function checkMultibyte($string) {
+	public static function checkMultibyte($string) {
 		$length = strlen($string);
 
 		for ($i = 0; $i < $length; $i++ ) {

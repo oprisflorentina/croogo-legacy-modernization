@@ -40,7 +40,7 @@ class AclNode extends AppModel {
  * @var boolean
  * @access public
  */
-	var $cacheQueries = false;
+	public $cacheQueries = false;
 
 /**
  * ACL models use the Tree behavior
@@ -48,13 +48,13 @@ class AclNode extends AppModel {
  * @var array
  * @access public
  */
-	var $actsAs = array('Tree' => 'nested');
+	public $actsAs = ['Tree' => 'nested'];
 
 /**
  * Constructor
  *
  */
-	function __construct() {
+	public function __construct() {
 		$config = Configure::read('Acl.database');
 		if (isset($config)) {
 			$this->useDbConfig = $config;
@@ -69,7 +69,7 @@ class AclNode extends AppModel {
  * @return array Node found in database
  * @access public
  */
-	function node($ref = null) {
+	public function node($ref = null) {
 		$db =& ConnectionManager::getDataSource($this->useDbConfig);
 		$type = $this->alias;
 		$result = null;
@@ -87,39 +87,39 @@ class AclNode extends AppModel {
 			$start = $path[0];
 			unset($path[0]);
 
-			$queryData = array(
-				'conditions' => array(
+			$queryData = [
+				'conditions' => [
 					$db->name("{$type}.lft") . ' <= ' . $db->name("{$type}0.lft"),
-					$db->name("{$type}.rght") . ' >= ' . $db->name("{$type}0.rght")),
-				'fields' => array('id', 'parent_id', 'model', 'foreign_key', 'alias'),
-				'joins' => array(array(
+					$db->name("{$type}.rght") . ' >= ' . $db->name("{$type}0.rght")],
+				'fields' => ['id', 'parent_id', 'model', 'foreign_key', 'alias'],
+				'joins' => [[
 					'table' => $table,
 					'alias' => "{$type}0",
 					'type' => 'LEFT',
-					'conditions' => array("{$type}0.alias" => $start)
-				)),
+					'conditions' => ["{$type}0.alias" => $start]
+				]],
 				'order' => $db->name("{$type}.lft") . ' DESC'
-			);
+			];
 
 			foreach ($path as $i => $alias) {
 				$j = $i - 1;
 
-				$queryData['joins'][] = array(
+				$queryData['joins'][] = [
 					'table' => $table,
 					'alias' => "{$type}{$i}",
 					'type'  => 'LEFT',
-					'conditions' => array(
+					'conditions' => [
 						$db->name("{$type}{$i}.lft") . ' > ' . $db->name("{$type}{$j}.lft"),
 						$db->name("{$type}{$i}.rght") . ' < ' . $db->name("{$type}{$j}.rght"),
 						$db->name("{$type}{$i}.alias") . ' = ' . $db->value($alias, 'string'),
 						$db->name("{$type}{$j}.id") . ' = ' . $db->name("{$type}{$i}.parent_id")
-					)
-				);
+					]
+				];
 
-				$queryData['conditions'] = array('or' => array(
+				$queryData['conditions'] = ['or' => [
 					$db->name("{$type}.lft") . ' <= ' . $db->name("{$type}0.lft") . ' AND ' . $db->name("{$type}.rght") . ' >= ' . $db->name("{$type}0.rght"),
-					$db->name("{$type}.lft") . ' <= ' . $db->name("{$type}{$i}.lft") . ' AND ' . $db->name("{$type}.rght") . ' >= ' . $db->name("{$type}{$i}.rght"))
-				);
+					$db->name("{$type}.lft") . ' <= ' . $db->name("{$type}{$i}.lft") . ' AND ' . $db->name("{$type}.rght") . ' >= ' . $db->name("{$type}{$i}.rght")]
+				];
 			}
 			$result = $db->read($this, $queryData, -1);
 			$path = array_values($path);
@@ -132,14 +132,14 @@ class AclNode extends AppModel {
 				return false;
 			}
 		} elseif (is_object($ref) && is_a($ref, 'Model')) {
-			$ref = array('model' => $ref->alias, 'foreign_key' => $ref->id);
+			$ref = ['model' => $ref->alias, 'foreign_key' => $ref->id];
 		} elseif (is_array($ref) && !(isset($ref['model']) && isset($ref['foreign_key']))) {
 			$name = key($ref);
 
 			if (PHP5) {
-				$model = ClassRegistry::init(array('class' => $name, 'alias' => $name));
+				$model = ClassRegistry::init(['class' => $name, 'alias' => $name]);
 			} else {
-				$model =& ClassRegistry::init(array('class' => $name, 'alias' => $name));
+				$model =& ClassRegistry::init(['class' => $name, 'alias' => $name]);
 			}
 
 			if (empty($model)) {
@@ -152,7 +152,7 @@ class AclNode extends AppModel {
 				$tmpRef = $model->bindNode($ref);
 			}
 			if (empty($tmpRef)) {
-				$ref = array('model' => $name, 'foreign_key' => $ref[$name][$model->primaryKey]);
+				$ref = ['model' => $name, 'foreign_key' => $ref[$name][$model->primaryKey]];
 			} else {
 				if (is_string($tmpRef)) {
 					return $this->node($tmpRef);
@@ -166,25 +166,25 @@ class AclNode extends AppModel {
 				$ref = current($ref);
 			}
 			foreach ($ref as $key => $val) {
-				if (strpos($key, $type) !== 0 && strpos($key, '.') === false) {
+				if (!str_starts_with($key, $type) && !str_contains($key, '.')) {
 					unset($ref[$key]);
 					$ref["{$type}0.{$key}"] = $val;
 				}
 			}
-			$queryData = array(
+			$queryData = [
 				'conditions' => $ref,
-				'fields' => array('id', 'parent_id', 'model', 'foreign_key', 'alias'),
-				'joins' => array(array(
+				'fields' => ['id', 'parent_id', 'model', 'foreign_key', 'alias'],
+				'joins' => [[
 					'table' => $table,
 					'alias' => "{$type}0",
 					'type' => 'LEFT',
-					'conditions' => array(
+					'conditions' => [
 						$db->name("{$type}.lft") . ' <= ' . $db->name("{$type}0.lft"),
 						$db->name("{$type}.rght") . ' >= ' . $db->name("{$type}0.rght")
-					)
-				)),
+					]
+				]],
 				'order' => $db->name("{$type}.lft") . ' DESC'
-			);
+			];
 			$result = $db->read($this, $queryData, -1);
 
 			if (!$result) {
@@ -209,7 +209,7 @@ class Aco extends AclNode {
  * @var string
  * @access public
  */
-	var $name = 'Aco';
+	public $name = 'Aco';
 
 /**
  * Binds to ARO nodes through permissions settings
@@ -217,7 +217,7 @@ class Aco extends AclNode {
  * @var array
  * @access public
  */
-	var $hasAndBelongsToMany = array('Aro' => array('with' => 'Permission'));
+	public $hasAndBelongsToMany = ['Aro' => ['with' => 'Permission']];
 }
 
 /**
@@ -234,7 +234,7 @@ class AcoAction extends AppModel {
  * @var string
  * @access public
  */
-	var $name = 'AcoAction';
+	public $name = 'AcoAction';
 
 /**
  * ACO Actions belong to ACOs
@@ -242,7 +242,7 @@ class AcoAction extends AppModel {
  * @var array
  * @access public
  */
-	var $belongsTo = array('Aco');
+	public $belongsTo = ['Aco'];
 }
 
 /**
@@ -259,7 +259,7 @@ class Aro extends AclNode {
  * @var string
  * @access public
  */
-	var $name = 'Aro';
+	public $name = 'Aro';
 
 /**
  * AROs are linked to ACOs by means of Permission
@@ -267,7 +267,7 @@ class Aro extends AclNode {
  * @var array
  * @access public
  */
-	var $hasAndBelongsToMany = array('Aco' => array('with' => 'Permission'));
+	public $hasAndBelongsToMany = ['Aco' => ['with' => 'Permission']];
 }
 
 /**
@@ -284,7 +284,7 @@ class Permission extends AppModel {
  * @var string
  * @access public
  */
-	var $name = 'Permission';
+	public $name = 'Permission';
 
 /**
  * Explicitly disable in-memory query caching
@@ -292,7 +292,7 @@ class Permission extends AppModel {
  * @var boolean
  * @access public
  */
-	var $cacheQueries = false;
+	public $cacheQueries = false;
 
 /**
  * Override default table name
@@ -300,7 +300,7 @@ class Permission extends AppModel {
  * @var string
  * @access public
  */
-	var $useTable = 'aros_acos';
+	public $useTable = 'aros_acos';
 
 /**
  * Permissions link AROs with ACOs
@@ -308,7 +308,7 @@ class Permission extends AppModel {
  * @var array
  * @access public
  */
-	var $belongsTo = array('Aro', 'Aco');
+	public $belongsTo = ['Aro', 'Aco'];
 
 /**
  * No behaviors for this model
@@ -316,13 +316,13 @@ class Permission extends AppModel {
  * @var array
  * @access public
  */
-	var $actsAs = null;
+	public $actsAs = null;
 
 /**
  * Constructor, used to tell this model to use the
  * database configured for ACL
  */
-	function __construct() {
+	public function __construct() {
 		$config = Configure::read('Acl.database');
 		if (!empty($config)) {
 			$this->useDbConfig = $config;

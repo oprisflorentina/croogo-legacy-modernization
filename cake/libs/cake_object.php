@@ -41,7 +41,7 @@ class CakeObject {
 /**
  * Class constructor, overridden in descendant classes.
  */
-	function __construct() {
+	public function __construct() {
 	}
 
 /**
@@ -51,8 +51,8 @@ class CakeObject {
  * @return string The name of this class
  * @access public
  */
-	function toString() {
-		$class = get_class($this);
+	public function toString() {
+		$class = static::class;
 		return $class;
 	}
 
@@ -67,7 +67,7 @@ class CakeObject {
  *    of rendered action if 'return' is set in $extra.
  * @access public
  */
-	function requestAction($url, $extra = array()) {
+	public function requestAction($url, $extra = []) {
 		if (empty($url)) {
 			return false;
 		}
@@ -75,12 +75,12 @@ class CakeObject {
 			require CAKE . 'dispatcher.php';
 		}
 		if (in_array('return', $extra, true)) {
-			$extra = array_merge($extra, array('return' => 0, 'autoRender' => 1));
+			$extra = array_merge($extra, ['return' => 0, 'autoRender' => 1]);
 		}
 		if (is_array($url) && !isset($extra['url'])) {
-			$extra['url'] = array();
+			$extra['url'] = [];
 		}
-		$params = array_merge(array('autoRender' => 0, 'return' => 1, 'bare' => 1, 'requested' => 1), $extra);
+		$params = array_merge(['autoRender' => 0, 'return' => 1, 'bare' => 1, 'requested' => 1], $extra);
 		$dispatcher = new Dispatcher;
 		$router =& Router::getInstance();
 		$router->requestDepth++;
@@ -100,7 +100,7 @@ class CakeObject {
  * @return mixed  Returns the result of the method call
  * @access public
  */
-	function dispatchMethod($method, $params = array()) {
+	public function dispatchMethod($method, $params = []) {
 		switch (count($params)) {
 			case 0:
 				return $this->{$method}();
@@ -115,7 +115,7 @@ class CakeObject {
 			case 5:
 				return $this->{$method}($params[0], $params[1], $params[2], $params[3], $params[4]);
 			default:
-				return call_user_func_array(array(&$this, $method), $params);
+				return call_user_func_array([&$this, $method], $params);
 			break;
 		}
 	}
@@ -128,7 +128,7 @@ class CakeObject {
  * @return void
  * @access public
  */
-	function _stop($status = 0) {
+	public function _stop($status = 0) {
 		exit($status);
 	}
 
@@ -141,7 +141,7 @@ class CakeObject {
  * @return boolean Success of log write
  * @access public
  */
-	function log($msg, $type = LOG_ERROR) {
+	public function log($msg, $type = LOG_ERROR) {
 		if (!class_exists('CakeLog')) {
 			require LIBS . 'cake_log.php';
 		}
@@ -159,7 +159,7 @@ class CakeObject {
  * @return void
  * @access protected
  */
-	function _set($properties = array()) {
+	public function _set($properties = []) {
 		if (is_array($properties) && !empty($properties)) {
 			$vars = get_object_vars($this);
 			foreach ($properties as $key => $val) {
@@ -180,7 +180,7 @@ class CakeObject {
  * @return error message
  * @access public
  */
-	function cakeError($method, $messages = array()) {
+	public function cakeError($method, $messages = []) {
 		if (!class_exists('ErrorHandler')) {
 			// Not App::import('Core', 'Error'): PHP 7 added a built-in Error
 			// class, so App sees "Error" as loaded and skips the file.
@@ -213,7 +213,7 @@ class CakeObject {
  * @access protected
  * @todo add examples to manual
  */
-	function _persist($name, $return = null, &$object, $type = null) {
+	public function _persist($name, $return = null, &$object = null, $type = null) {
 		$file = CACHE . 'persistent' . DS . strtolower($name) . '.php';
 		if ($return === null) {
 			if (!file_exists($file)) {
@@ -242,9 +242,9 @@ class CakeObject {
  * @return boolean true on save, throws error if file can not be created
  * @access protected
  */
-	function _savePersistent($name, &$object) {
+	public function _savePersistent($name, &$object) {
 		$file = 'persistent' . DS . strtolower($name) . '.php';
-		$objectArray = array(&$object);
+		$objectArray = [&$object];
 		$data = str_replace('\\', '\\\\', serialize($objectArray));
 		$data = '<?php $' . $name . ' = \'' . str_replace('\'', '\\\'', $data) . '\' ?>';
 		$duration = '+999 days';
@@ -263,7 +263,7 @@ class CakeObject {
  * @return void
  * @access private
  */
-	function __openPersistent($name, $type = null) {
+	public function __openPersistent($name, $type = null) {
 		$file = CACHE . 'persistent' . DS . strtolower($name) . '.php';
 		include($file);
 
@@ -271,7 +271,7 @@ class CakeObject {
 			case 'registry':
 				$vars = unserialize(${$name});
 				foreach ($vars['0'] as $key => $value) {
-					if (strpos($key, '_behavior') !== false) {
+					if (str_contains($key, '_behavior')) {
 						App::import('Behavior', Inflector::classify(substr($key, 0, -9)));
 					} else {
 						App::import('Model', Inflector::camelize($key));

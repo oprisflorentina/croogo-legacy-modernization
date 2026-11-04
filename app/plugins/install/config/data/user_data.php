@@ -3,8 +3,8 @@ class UserData {
 
 	public $table = 'users';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '1',
 			'role_id' => '1',
 			'username' => 'admin',
@@ -19,7 +19,7 @@ class UserData {
 			'status' => '1',
 			'updated' => '2010-06-06 07:00:10',
 			'created' => '2009-04-05 00:20:34'
-		),
-	);
+		],
+	];
 
 }

@@ -28,20 +28,20 @@
  */
 class SessionsSchema extends CakeSchema {
 
-	var $name = 'Sessions';
+	public $name = 'Sessions';
 
-	function before($event = array()) {
+	public function before($event = []) {
 		return true;
 	}
 
-	function after($event = array()) {
+	public function after($event = []) {
 	}
 
-	var $cake_sessions = array(
-			'id' => array('type'=>'string', 'null' => false, 'key' => 'primary'),
-			'data' => array('type'=>'text', 'null' => true, 'default' => NULL),
-			'expires' => array('type'=>'integer', 'null' => true, 'default' => NULL),
-			'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1))
-		);
+	public $cake_sessions = [
+			'id' => ['type'=>'string', 'null' => false, 'key' => 'primary'],
+			'data' => ['type'=>'text', 'null' => true, 'default' => NULL],
+			'expires' => ['type'=>'integer', 'null' => true, 'default' => NULL],
+			'indexes' => ['PRIMARY' => ['column' => 'id', 'unique' => 1]]
+		];
 
 }

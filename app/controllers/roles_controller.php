@@ -26,7 +26,7 @@ class RolesController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Role');
+	public $uses = ['Role'];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Roles', true));
@@ -42,10 +42,10 @@ class RolesController extends AppController {
 		if (!empty($this->data)) {
 			$this->Role->create();
 			if ($this->Role->save($this->data)) {
-				$this->Session->setFlash(__('The Role has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Role has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Role could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Role could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 	}
@@ -54,15 +54,15 @@ class RolesController extends AppController {
 		$this->set('title_for_layout', __('Edit Role', true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Role', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Role', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Role->save($this->data)) {
-				$this->Session->setFlash(__('The Role has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Role has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Role could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Role could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -72,16 +72,16 @@ class RolesController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Role', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Role', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Role->delete($id)) {
-			$this->Session->setFlash(__('Role deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Role deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 

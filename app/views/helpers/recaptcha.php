@@ -3,7 +3,7 @@
  * @link http://bakery.cakephp.org/articles/view/recaptcha-component-helper-for-cakephp
  */
 class RecaptchaHelper extends AppHelper {
-	public $helpers = array('form');
+	public $helpers = ['form'];
 
 	public function display_form($output_method = 'return', $error = null, $use_ssl = false){
 		$data = $this->__form(Configure::read("Recaptcha.pubKey"),$error,$use_ssl);

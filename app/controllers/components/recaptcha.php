@@ -48,7 +48,7 @@
 	  * @param array $extra_params an array of extra variables to post to the server
 	  * @return ReCaptchaResponse
 	  */
-	public function recaptcha_check_answer ($privkey, $remoteip, $challenge, $response, $extra_params = array()){
+	public function recaptcha_check_answer ($privkey, $remoteip, $challenge, $response, $extra_params = []){
 		if ($privkey == null || $privkey == ''){
 			die ("To use reCAPTCHA you must get an API key from <a href='http://recaptcha.net/api/getkey'>http://recaptcha.net/api/getkey</a>");
 		}
@@ -65,12 +65,12 @@
 			}
 
 			$response = $this->_recaptcha_http_post(Configure::read('Recaptcha.verifyServer'), "/verify",
-											  array (
+											   [
 													 'privatekey' => $privkey,
 													 'remoteip' => $remoteip,
 													 'challenge' => $challenge,
 													 'response' => $response
-													 ) + $extra_params
+													 ] + $extra_params
 											  );
 
 			$answers = explode ("\n", $response [1]);

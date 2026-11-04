@@ -38,8 +38,8 @@ class ApcEngine extends CacheEngine {
  * @see CacheEngine::__defaults
  * @access public
  */
-	function init($settings = array()) {
-		parent::init(array_merge(array('engine' => 'Apc', 'prefix' => Inflector::slug(APP_DIR) . '_'), $settings));
+	public function init($settings = []) {
+		parent::init(array_merge(['engine' => 'Apc', 'prefix' => Inflector::slug(APP_DIR) . '_'], $settings));
 		return function_exists('apc_cache_info');
 	}
 
@@ -52,7 +52,7 @@ class ApcEngine extends CacheEngine {
  * @return boolean True if the data was succesfully cached, false on failure
  * @access public
  */
-	function write($key, &$value, $duration) {
+	public function write($key, &$value, $duration) {
 		if ($duration == 0) {
 			$expires = 0;
 		} else {
@@ -69,7 +69,7 @@ class ApcEngine extends CacheEngine {
  * @return mixed The cached data, or false if the data doesn't exist, has expired, or if there was an error fetching it
  * @access public
  */
-	function read($key) {
+	public function read($key) {
 		$time = time();
 		$cachetime = intval(apc_fetch($key.'_expires'));
 		if ($cachetime !== 0 && ($cachetime < $time || ($time + $this->settings['duration']) < $cachetime)) {
@@ -87,7 +87,7 @@ class ApcEngine extends CacheEngine {
  * @return New incremented value, false otherwise
  * @access public
  */
-	function increment($key, $offset = 1) {
+	public function increment($key, $offset = 1) {
 		return apc_inc($key, $offset);
 	}
 
@@ -100,7 +100,7 @@ class ApcEngine extends CacheEngine {
  * @return New decremented value, false otherwise
  * @access public
  */
-	function decrement($key, $offset = 1) {
+	public function decrement($key, $offset = 1) {
 		return apc_dec($key, $offset);
 	}
 
@@ -111,7 +111,7 @@ class ApcEngine extends CacheEngine {
  * @return boolean True if the value was succesfully deleted, false if it didn't exist or couldn't be removed
  * @access public
  */
-	function delete($key) {
+	public function delete($key) {
 		return apc_delete($key);
 	}
 
@@ -121,7 +121,7 @@ class ApcEngine extends CacheEngine {
  * @return boolean True if the cache was succesfully cleared, false otherwise
  * @access public
  */
-	function clear($check = false) {
+	public function clear($check = false) {
 		return apc_clear_cache('user');
 	}
 }

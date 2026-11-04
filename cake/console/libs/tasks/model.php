@@ -18,7 +18,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-include_once dirname(__FILE__) . DS . 'bake.php';
+include_once __DIR__ . DS . 'bake.php';
 
 /**
  * Task class for creating and updating model files.
@@ -34,7 +34,7 @@ class ModelTask extends BakeTask {
  * @var string
  * @access public
  */
-	var $path = MODELS;
+	public $path = MODELS;
 
 /**
  * tasks
@@ -42,7 +42,7 @@ class ModelTask extends BakeTask {
  * @var array
  * @access public
  */
-	var $tasks = array('DbConfig', 'Fixture', 'Test', 'Template');
+	public $tasks = ['DbConfig', 'Fixture', 'Test', 'Template'];
 
 /**
  * Tables to skip when running all()
@@ -50,7 +50,7 @@ class ModelTask extends BakeTask {
  * @var array
  * @access protected
  */
-	var $skipTables = array('i18n');
+	public $skipTables = ['i18n'];
 
 /**
  * Holds tables found on connection.
@@ -58,7 +58,7 @@ class ModelTask extends BakeTask {
  * @var array
  * @access protected
  */
-	var $_tables = array();
+	public $_tables = [];
 
 /**
  * Holds validation method map.
@@ -66,14 +66,14 @@ class ModelTask extends BakeTask {
  * @var array
  * @access protected
  */
-	var $_validations = array();
+	public $_validations = [];
 
 /**
  * Execution method always used for tasks
  *
  * @access public
  */
-	function execute() {
+	public function execute() {
 		App::import('Model', 'Model', false);
 
 		if (empty($this->args)) {
@@ -104,7 +104,7 @@ class ModelTask extends BakeTask {
  *
  * @return void
  */
-	function all() {
+	public function all() {
 		$this->listAll($this->connection, false);
 		$unitTestExists = $this->_checkUnitTest();
 		foreach ($this->_tables as $table) {
@@ -127,11 +127,11 @@ class ModelTask extends BakeTask {
  * @param string $className Name of class you want model to be.
  * @return object Model instance
  */
-	function &_getModelObject($className, $table = null) {
+	public function &_getModelObject($className, $table = null) {
 		if (!$table) {
 			$table = Inflector::tableize($className);
 		}
-		$object = new Model(array('name' => $className, 'table' => $table, 'ds' => $this->connection));
+		$object = new Model(['name' => $className, 'table' => $table, 'ds' => $this->connection]);
 		return $object;
 	}
 
@@ -143,7 +143,7 @@ class ModelTask extends BakeTask {
  * @param integer $default The default option for the given prompt.
  * @return result of user choice.
  */
-	function inOptions($options, $prompt = null, $default = null) {
+	public function inOptions($options, $prompt = null, $default = null) {
 		$valid = false;
 		$max = count($options);
 		while (!$valid) {
@@ -166,14 +166,14 @@ class ModelTask extends BakeTask {
  *
  * @access private
  */
-	function __interactive() {
+	public function __interactive() {
 		$this->hr();
 		$this->out(sprintf("Bake Model\nPath: %s", $this->path));
 		$this->hr();
 		$this->interactive = true;
 
 		$primaryKey = 'id';
-		$validate = $associations = array();
+		$validate = $associations = [];
 
 		if (empty($this->connection)) {
 			$this->connection = $this->DbConfig->getConfig();
@@ -184,7 +184,7 @@ class ModelTask extends BakeTask {
 		$fullTableName = $db->fullTableName($useTable);
 
 		if (in_array($useTable, $this->_tables)) {
-			$tempModel = new Model(array('name' => $currentModelName, 'table' => $useTable, 'ds' => $this->connection));
+			$tempModel = new Model(['name' => $currentModelName, 'table' => $useTable, 'ds' => $this->connection]);
 			$fields = $tempModel->schema(true);
 			if (!array_key_exists('id', $fields)) {
 				$primaryKey = $this->findPrimaryKey($fields);
@@ -194,19 +194,19 @@ class ModelTask extends BakeTask {
 			$this->_stop();
 			return false;
 		}
-		$displayField = $tempModel->hasField(array('name', 'title'));
+		$displayField = $tempModel->hasField(['name', 'title']);
 		if (!$displayField) {
 			$displayField = $this->findDisplayField($tempModel->schema());
 		}
 
 		$prompt = __("Would you like to supply validation criteria \nfor the fields in your model?", true);
-		$wannaDoValidation = $this->in($prompt, array('y','n'), 'y');
+		$wannaDoValidation = $this->in($prompt, ['y','n'], 'y');
 		if (array_search($useTable, $this->_tables) !== false && strtolower($wannaDoValidation) == 'y') {
 			$validate = $this->doValidation($tempModel);
 		}
 
 		$prompt = __("Would you like to define model associations\n(hasMany, hasOne, belongsTo, etc.)?", true);
-		$wannaDoAssoc = $this->in($prompt, array('y','n'), 'y');
+		$wannaDoAssoc = $this->in($prompt, ['y','n'], 'y');
 		if (strtolower($wannaDoAssoc) == 'y') {
 			$associations = $this->doAssociations($tempModel);
 		}
@@ -231,14 +231,14 @@ class ModelTask extends BakeTask {
 		}
 		if (!empty($associations)) {
 			$this->out(__("Associations:", true));
-			$assocKeys = array('belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany');
+			$assocKeys = ['belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany'];
 			foreach ($assocKeys as $assocKey) {
 				$this->_printAssociation($currentModelName, $assocKey, $associations);
 			}
 		}
 
 		$this->hr();
-		$looksGood = $this->in(__('Look okay?', true), array('y','n'), 'y');
+		$looksGood = $this->in(__('Look okay?', true), ['y','n'], 'y');
 
 		if (strtolower($looksGood) == 'y') {
 			$vars = compact('associations', 'validate', 'primaryKey', 'useTable', 'displayField');
@@ -263,7 +263,7 @@ class ModelTask extends BakeTask {
  * @access protected
  * @return void
  */
-	function _printAssociation($modelName, $type, $associations) {
+	public function _printAssociation($modelName, $type, $associations) {
 		if (!empty($associations[$type])) {
 			for ($i = 0; $i < count($associations[$type]); $i++) {
 				$out = "\t" . $modelName . ' ' . $type . ' ' . $associations[$type][$i]['alias'];
@@ -279,7 +279,7 @@ class ModelTask extends BakeTask {
  * @return string Name of field that is a primary key.
  * @access public
  */
-	function findPrimaryKey($fields) {
+	public function findPrimaryKey($fields) {
 		foreach ($fields as $name => $field) {
 			if (isset($field['key']) && $field['key'] == 'primary') {
 				break;
@@ -294,10 +294,10 @@ class ModelTask extends BakeTask {
  * @param array $fields Array of fields to look for and choose as a displayField
  * @return mixed Name of field to use for displayField or false if the user declines to choose
  */
-	function findDisplayField($fields) {
+	public function findDisplayField($fields) {
 		$fieldNames = array_keys($fields);
 		$prompt = __("A displayField could not be automatically detected\nwould you like to choose one?", true);
-		$continue = $this->in($prompt, array('y', 'n'));
+		$continue = $this->in($prompt, ['y', 'n']);
 		if (strtolower($continue) == 'n') {
 			return false;
 		}
@@ -313,7 +313,7 @@ class ModelTask extends BakeTask {
  * @return array $validate Array of user selected validations.
  * @access public
  */
-	function doValidation(&$model) {
+	public function doValidation(&$model) {
 		if (!is_object($model)) {
 			return false;
 		}
@@ -322,7 +322,7 @@ class ModelTask extends BakeTask {
 		if (empty($fields)) {
 			return false;
 		}
-		$validate = array();
+		$validate = [];
 		$this->initValidations();
 		foreach ($fields as $fieldName => $field) {
 			$validation = $this->fieldValidation($fieldName, $field, $model->primaryKey);
@@ -338,8 +338,8 @@ class ModelTask extends BakeTask {
  *
  * @return void
  */
-	function initValidations() {
-		$options = $choices = array();
+	public function initValidations() {
+		$options = $choices = [];
 		if (class_exists('Validation')) {
 			$parent = get_class_methods(get_parent_class('Validation'));
 			$options = get_class_methods('Validation');
@@ -365,9 +365,9 @@ class ModelTask extends BakeTask {
  * @param array $metaData metadata for field
  * @return array Array of validation for the field.
  */
-	function fieldValidation($fieldName, $metaData, $primaryKey = 'id') {
+	public function fieldValidation($fieldName, $metaData, $primaryKey = 'id') {
 		$defaultChoice = count($this->_validations);
-		$validate = $alreadyChosen = array();
+		$validate = $alreadyChosen = [];
 
 		$anotherValidator = 'y';
 		while ($anotherValidator == 'y') {
@@ -389,7 +389,7 @@ class ModelTask extends BakeTask {
 
 			$methods = array_flip($this->_validations);
 			$guess = $defaultChoice;
-			if ($metaData['null'] != 1 && !in_array($fieldName, array($primaryKey, 'created', 'modified', 'updated'))) {
+			if ($metaData['null'] != 1 && !in_array($fieldName, [$primaryKey, 'created', 'modified', 'updated'])) {
 				if ($fieldName == 'email') {
 					$guess = $methods['email'];
 				} elseif ($metaData['type'] == 'string' && $metaData['length'] == 36) {
@@ -436,7 +436,7 @@ class ModelTask extends BakeTask {
 				}
 			}
 			if ($this->interactive == true && $choice != $defaultChoice) {
-				$anotherValidator = $this->in(__('Would you like to add another validation rule?', true), array('y', 'n'), 'n');
+				$anotherValidator = $this->in(__('Would you like to add another validation rule?', true), ['y', 'n'], 'n');
 			} else {
 				$anotherValidator = 'n';
 			}
@@ -451,7 +451,7 @@ class ModelTask extends BakeTask {
  * @return array $assocaitons
  * @access public
  */
-	function doAssociations(&$model) {
+	public function doAssociations(&$model) {
 		if (!is_object($model)) {
 			return false;
 		}
@@ -468,10 +468,10 @@ class ModelTask extends BakeTask {
 			$this->_tables = $this->getAllTables();
 		}
 
-		$associations = array(
-			'belongsTo' => array(), 'hasMany' => array(), 'hasOne'=> array(), 'hasAndBelongsToMany' => array()
-		);
-		$possibleKeys = array();
+		$associations = [
+			'belongsTo' => [], 'hasMany' => [], 'hasOne'=> [], 'hasAndBelongsToMany' => []
+		];
+		$possibleKeys = [];
 
 		$associations = $this->findBelongsTo($model, $associations);
 		$associations = $this->findHasOneAndMany($model, $associations);
@@ -502,23 +502,23 @@ class ModelTask extends BakeTask {
  * @param array $associations Array of inprogress associations
  * @return array $associations with belongsTo added in.
  */
-	function findBelongsTo(&$model, $associations) {
+	public function findBelongsTo(&$model, $associations) {
 		$fields = $model->schema(true);
 		foreach ($fields as $fieldName => $field) {
 			$offset = strpos($fieldName, '_id');
 			if ($fieldName != $model->primaryKey && $fieldName != 'parent_id' && $offset !== false) {
 				$tmpModelName = $this->_modelNameFromKey($fieldName);
-				$associations['belongsTo'][] = array(
+				$associations['belongsTo'][] = [
 					'alias' => $tmpModelName,
 					'className' => $tmpModelName,
 					'foreignKey' => $fieldName,
-				);
+				];
 			} elseif ($fieldName == 'parent_id') {
-				$associations['belongsTo'][] = array(
+				$associations['belongsTo'][] = [
 					'alias' => 'Parent' . $model->name,
 					'className' => $model->name,
 					'foreignKey' => $fieldName,
-				);
+				];
 			}
 		}
 		return $associations;
@@ -531,7 +531,7 @@ class ModelTask extends BakeTask {
  * @param array $associations Array of inprogress associations
  * @return array $associations with hasOne and hasMany added in.
  */
-	function findHasOneAndMany(&$model, $associations) {
+	public function findHasOneAndMany(&$model, $associations) {
 		$foreignKey = $this->_modelKey($model->name);
 		foreach ($this->_tables as $otherTable) {
 			$tempOtherModel = $this->_getModelObject($this->_modelName($otherTable), $otherTable);
@@ -545,17 +545,17 @@ class ModelTask extends BakeTask {
 			foreach ($modelFieldsTemp as $fieldName => $field) {
 				$assoc = false;
 				if ($fieldName != $model->primaryKey && $fieldName == $foreignKey) {
-					$assoc = array(
+					$assoc = [
 						'alias' => $tempOtherModel->name,
 						'className' => $tempOtherModel->name,
 						'foreignKey' => $fieldName
-					);
+					];
 				} elseif ($otherTable == $model->table && $fieldName == 'parent_id') {
-					$assoc = array(
+					$assoc = [
 						'alias' => 'Child' . $model->name,
 						'className' => $model->name,
 						'foreignKey' => $fieldName
-					);
+					];
 				}
 				if ($assoc) {
 					$associations['hasOne'][] = $assoc;
@@ -574,7 +574,7 @@ class ModelTask extends BakeTask {
  * @param array $associations Array of inprogress associations
  * @return array $associations with hasAndBelongsToMany added in.
  */
-	function findHasAndBelongsToMany(&$model, $associations) {
+	public function findHasAndBelongsToMany(&$model, $associations) {
 		$foreignKey = $this->_modelKey($model->name);
 		foreach ($this->_tables as $otherTable) {
 			$tempOtherModel = $this->_getModelObject($this->_modelName($otherTable), $otherTable);
@@ -586,22 +586,22 @@ class ModelTask extends BakeTask {
 			if ($offset !== false) {
 				$offset = strlen($model->table . '_');
 				$habtmName = $this->_modelName(substr($otherTable, $offset));
-				$associations['hasAndBelongsToMany'][] = array(
+				$associations['hasAndBelongsToMany'][] = [
 					'alias' => $habtmName,
 					'className' => $habtmName,
 					'foreignKey' => $foreignKey,
 					'associationForeignKey' => $this->_modelKey($habtmName),
 					'joinTable' => $otherTable
-				);
+				];
 			} elseif ($otherOffset !== false) {
 				$habtmName = $this->_modelName(substr($otherTable, 0, $otherOffset));
-				$associations['hasAndBelongsToMany'][] = array(
+				$associations['hasAndBelongsToMany'][] = [
 					'alias' => $habtmName,
 					'className' => $habtmName,
 					'foreignKey' => $foreignKey,
 					'associationForeignKey' => $this->_modelKey($habtmName),
 					'joinTable' => $otherTable
-				);
+				];
 			}
 		}
 		return $associations;
@@ -614,14 +614,14 @@ class ModelTask extends BakeTask {
  * @param array $associations Array of associations to be confirmed.
  * @return array Array of confirmed associations
  */
-	function confirmAssociations(&$model, $associations) {
+	public function confirmAssociations(&$model, $associations) {
 		foreach ($associations as $type => $settings) {
 			if (!empty($associations[$type])) {
 				$count = count($associations[$type]);
 				$response = 'y';
 				foreach ($associations[$type] as $i => $assoc) {
 					$prompt = "{$model->name} {$type} {$assoc['alias']}?";
-					$response = $this->in($prompt, array('y','n'), 'y');
+					$response = $this->in($prompt, ['y','n'], 'y');
 
 					if ('n' == strtolower($response)) {
 						unset($associations[$type][$i]);
@@ -642,12 +642,12 @@ class ModelTask extends BakeTask {
  * @param array $associations Array of associations.
  * @return array Array of associations.
  */
-	function doMoreAssociations($model, $associations) {
+	public function doMoreAssociations($model, $associations) {
 		$prompt = __('Would you like to define some additional model associations?', true);
-		$wannaDoMoreAssoc = $this->in($prompt, array('y','n'), 'n');
+		$wannaDoMoreAssoc = $this->in($prompt, ['y','n'], 'n');
 		$possibleKeys = $this->_generatePossibleKeys();
 		while (strtolower($wannaDoMoreAssoc) == 'y') {
-			$assocs = array('belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany');
+			$assocs = ['belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany'];
 			$this->out(__('What is the association type?', true));
 			$assocType = intval($this->inOptions($assocs, __('Enter a number',true)));
 
@@ -680,9 +680,7 @@ class ModelTask extends BakeTask {
 				$foreignKey = $this->inOptions($showKeys, __('What is the foreignKey?', true));
 				$foreignKey = $showKeys[intval($foreignKey)];
 			}
-			if (!isset($foreignKey)) {
-				$foreignKey = $this->in(__('What is the foreignKey? Specify your own.', true), null, $suggestedForeignKey);
-			}
+			$foreignKey ??= $this->in(__('What is the foreignKey? Specify your own.', true), null, $suggestedForeignKey);
 			if ($assocType == 3) {
 				$associationForeignKey = $this->in(__('What is the associationForeignKey?', true), null, $this->_modelKey($model->name));
 				$joinTable = $this->in(__('What is the joinTable?', true));
@@ -697,7 +695,7 @@ class ModelTask extends BakeTask {
 				$associations[$assocs[$assocType]][$i]['associationForeignKey'] = $associationForeignKey;
 				$associations[$assocs[$assocType]][$i]['joinTable'] = $joinTable;
 			}
-			$wannaDoMoreAssoc = $this->in(__('Define another association?', true), array('y','n'), 'y');
+			$wannaDoMoreAssoc = $this->in(__('Define another association?', true), ['y','n'], 'y');
 		}
 		return $associations;
 	}
@@ -707,10 +705,10 @@ class ModelTask extends BakeTask {
  *
  * @return array array of tables and possible keys
  */
-	function _generatePossibleKeys() {
-		$possible = array();
+	public function _generatePossibleKeys() {
+		$possible = [];
 		foreach ($this->_tables as $otherTable) {
-			$tempOtherModel = new Model(array('table' => $otherTable, 'ds' => $this->connection));
+			$tempOtherModel = new Model(['table' => $otherTable, 'ds' => $this->connection]);
 			$modelFieldsTemp = $tempOtherModel->schema(true);
 			foreach ($modelFieldsTemp as $fieldName => $field) {
 				if ($field['type'] == 'integer' || $field['type'] == 'string') {
@@ -728,10 +726,10 @@ class ModelTask extends BakeTask {
  * @param mixed $data if array and $name is not an object assume bake data, otherwise boolean.
  * @access private
  */
-	function bake($name, $data = array()) {
+	public function bake($name, $data = []) {
 		if (is_object($name)) {
 			if ($data == false) {
-				$data = $associations = array();
+				$data = $associations = [];
 				$data['associations'] = $this->doAssociations($name, $associations);
 				$data['validate'] = $this->doValidation($name);
 			}
@@ -742,8 +740,8 @@ class ModelTask extends BakeTask {
 		} else {
 			$data['name'] = $name;
 		}
-		$defaults = array('associations' => array(), 'validate' => array(), 'primaryKey' => 'id',
-			'useTable' => null, 'useDbConfig' => 'default', 'displayField' => null);
+		$defaults = ['associations' => [], 'validate' => [], 'primaryKey' => 'id',
+			'useTable' => null, 'useDbConfig' => 'default', 'displayField' => null];
 		$data = array_merge($defaults, $data);
 
 		$this->Template->set($data);
@@ -764,7 +762,7 @@ class ModelTask extends BakeTask {
  * @param string $className Model class name
  * @access private
  */
-	function bakeTest($className) {
+	public function bakeTest($className) {
 		$this->Test->interactive = $this->interactive;
 		$this->Test->plugin = $this->plugin;
 		$this->Test->connection = $this->connection;
@@ -777,12 +775,12 @@ class ModelTask extends BakeTask {
  * @param string $useDbConfig Database configuration name
  * @access public
  */
-	function listAll($useDbConfig = null) {
+	public function listAll($useDbConfig = null) {
 		$this->_tables = $this->getAllTables($useDbConfig);
 
 		if ($this->interactive === true) {
 			$this->out(__('Possible Models based on your current database:', true));
-			$this->_modelNames = array();
+			$this->_modelNames = [];
 			$count = count($this->_tables);
 			for ($i = 0; $i < $count; $i++) {
 				$this->_modelNames[] = $this->_modelName($this->_tables[$i]);
@@ -799,10 +797,8 @@ class ModelTask extends BakeTask {
  * @param string $useDbConfig Name of the database config you want to get tables from.
  * @return void
  */
-	function getTable($modelName, $useDbConfig = null) {
-		if (!isset($useDbConfig)) {
-			$useDbConfig = $this->connection;
-		}
+	public function getTable($modelName, $useDbConfig = null) {
+		$useDbConfig ??= $this->connection;
 		App::import('Model', 'ConnectionManager', false);
 
 		$db =& ConnectionManager::getDataSource($useDbConfig);
@@ -813,7 +809,7 @@ class ModelTask extends BakeTask {
 		if (array_search($useTable, $this->_tables) === false) {
 			$this->out();
 			$this->out(sprintf(__("Given your model named '%s',\nCake would expect a database table named '%s'", true), $modelName, $fullTableName));
-			$tableIsGood = $this->in(__('Do you want to use this table?', true), array('y','n'), 'y');
+			$tableIsGood = $this->in(__('Do you want to use this table?', true), ['y','n'], 'y');
 		}
 		if (strtolower($tableIsGood) == 'n') {
 			$useTable = $this->in(__('What is the name of the table?', true));
@@ -828,13 +824,11 @@ class ModelTask extends BakeTask {
  * @param string $useDbConfig Connection name to scan.
  * @return array Array of tables in the database.
  */
-	function getAllTables($useDbConfig = null) {
-		if (!isset($useDbConfig)) {
-			$useDbConfig = $this->connection;
-		}
+	public function getAllTables($useDbConfig = null) {
+		$useDbConfig ??= $this->connection;
 		App::import('Model', 'ConnectionManager', false);
 
-		$tables = array();
+		$tables = [];
 		$db =& ConnectionManager::getDataSource($useDbConfig);
 		$db->cacheSources = false;
 		$usePrefix = empty($db->config['prefix']) ? '' : $db->config['prefix'];
@@ -860,7 +854,7 @@ class ModelTask extends BakeTask {
  * @return string the model name
  * @access public
  */
-	function getName($useDbConfig = null) {
+	public function getName($useDbConfig = null) {
 		$this->listAll($useDbConfig);
 
 		$enteredModel = '';
@@ -891,7 +885,7 @@ class ModelTask extends BakeTask {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->hr();
 		$this->out("Usage: cake bake model <arg1>");
 		$this->hr();
@@ -929,7 +923,7 @@ class ModelTask extends BakeTask {
  * @return void
  * @see FixtureTask::bake
  */
-	function bakeFixture($className, $useTable = null) {
+	public function bakeFixture($className, $useTable = null) {
 		$this->Fixture->interactive = $this->interactive;
 		$this->Fixture->connection = $this->connection;
 		$this->Fixture->plugin = $this->plugin;

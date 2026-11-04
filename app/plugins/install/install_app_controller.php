@@ -1,7 +1,7 @@
 <?php
 class InstallAppController extends AppController {
 
-	function beforeFilter() {
+	public function beforeFilter() {
 		
 	}
 

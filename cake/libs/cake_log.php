@@ -54,7 +54,7 @@ class CakeLog {
  * @var array
  * @access protected
  */
-	var $_streams = array();
+	public $_streams = [];
 
 /**
  * Get an instance
@@ -62,11 +62,9 @@ class CakeLog {
  * @return void
  * @static
  */
-	static function &getInstance() {
-		static $instance = array();
-		if (!isset($instance[0])) {
-			$instance[0] = new CakeLog();
-		}
+	public static function &getInstance() {
+		static $instance = [];
+		$instance[0] ??= new CakeLog();
 		return $instance[0];
 	}
 
@@ -96,7 +94,7 @@ class CakeLog {
  * @return boolean success of configuration.
  * @static
  */
-	function config($key, $config) {
+	public function config($key, $config) {
 		if (empty($config['engine'])) {
 			trigger_error(__('Missing logger classname', true), E_USER_WARNING);
 			return false;
@@ -119,8 +117,8 @@ class CakeLog {
  * @return mixed boolean false on any failures, string of classname to use if search was successful.
  * @access protected
  */
-	function _getLogger($loggerName) {
-		list($plugin, $loggerName) = pluginSplit($loggerName);
+	public function _getLogger($loggerName) {
+		[$plugin, $loggerName] = pluginSplit($loggerName);
 
 		if ($plugin) {
 			App::import('Lib', $plugin . '.log/' . $loggerName);
@@ -133,7 +131,7 @@ class CakeLog {
 			trigger_error(sprintf(__('Could not load logger class %s', true), $loggerName), E_USER_WARNING);
 			return false;
 		}
-		if (!is_callable(array($loggerName, 'write'))) {
+		if (!is_callable([$loggerName, 'write'])) {
 			trigger_error(
 				sprintf(__('logger class %s does not implement a write method.', true), $loggerName),
 				E_USER_WARNING
@@ -150,7 +148,7 @@ class CakeLog {
  * @access public
  * @static
  */
-	function configured() {
+	public function configured() {
 		$self =& CakeLog::getInstance();
 		return array_keys($self->_streams);
 	}
@@ -164,7 +162,7 @@ class CakeLog {
  * @access public
  * @static
  */
-	function drop($streamName) {
+	public function drop($streamName) {
 		$self =& CakeLog::getInstance();
 		unset($self->_streams[$streamName]);
 	}
@@ -175,11 +173,11 @@ class CakeLog {
  * @return void
  * @access protected
  */
-	function _autoConfig() {
+	public function _autoConfig() {
 		if (!class_exists('FileLog')) {
 			App::import('Core', 'log/FileLog');
 		}
-		$this->_streams['default'] = new FileLog(array('path' => LOGS));
+		$this->_streams['default'] = new FileLog(['path' => LOGS]);
 	}
 
 /**
@@ -208,21 +206,21 @@ class CakeLog {
  * @access public
  * @static
  */
-	static function write($type, $message) {
+	public static function write($type, $message) {
 		if (!defined('LOG_ERROR')) {
 			define('LOG_ERROR', 2);
 		}
 		if (!defined('LOG_ERR')) {
 			define('LOG_ERR', LOG_ERROR);
 		}
-		$levels = array(
+		$levels = [
 			LOG_WARNING => 'warning',
 			LOG_NOTICE => 'notice',
 			LOG_INFO => 'info',
 			LOG_DEBUG => 'debug',
 			LOG_ERR => 'error',
 			LOG_ERROR => 'error'
-		);
+		];
 
 		if (is_int($type) && isset($levels[$type])) {
 			$type = $levels[$type];
@@ -252,7 +250,7 @@ class CakeLog {
  * @param array $context Context
  * @return void
  */
-	function handleError($code, $description, $file = null, $line = null, $context = null) {
+	public function handleError($code, $description, $file = null, $line = null, $context = null) {
 		if ($code === 2048 || $code === 8192 || error_reporting() === 0) {
 			return;
 		}
@@ -289,8 +287,8 @@ class CakeLog {
 if (!defined('DISABLE_DEFAULT_ERROR_HANDLING')) {
 	$cakeLog =& CakeLog::getInstance();
 	if (PHP5) {
-		set_error_handler(array($cakeLog, 'handleError'), error_reporting());
+		set_error_handler([$cakeLog, 'handleError'], error_reporting());
 	} else {
-		set_error_handler(array($cakeLog, 'handleError'));
+		set_error_handler([$cakeLog, 'handleError']);
 	}
 }

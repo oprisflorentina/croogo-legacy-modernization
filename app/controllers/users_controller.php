@@ -26,9 +26,9 @@ class UsersController extends AppController {
  * @var array
  * @access public
  */
-	public $components = array(
+	public $components = [
 		'Email',
-	);
+	];
 
 /**
  * Models used by the Controller
@@ -36,21 +36,21 @@ class UsersController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('User');
+	public $uses = ['User'];
 
 	public function beforeFilter() {
 		parent::beforeFilter();
 
-		if (in_array($this->params['action'], array('admin_login', 'login'))) {
+		if (in_array($this->params['action'], ['admin_login', 'login'])) {
 			$field = $this->Auth->fields['username'];
 			if (!empty($this->data) && empty($this->data['User'][$field])) {
-				$this->redirect(array('action' => $this->params['action']));
+				$this->redirect(['action' => $this->params['action']]);
 			}
-			$username = isset($this->data['User'][$field]) ? $this->data['User'][$field] : '';
+			$username = $this->data['User'][$field] ?? '';
 			$cacheName = 'auth_failed_' . $username;
 			if (Cache::read($cacheName, 'users_login') >= Configure::read('User.failed_login_limit')) {
-				$this->Session->setFlash(__('You have reached maximum limit for failed login attempts. Please try again after a few minutes.', true), 'default', array('class' => 'error'));
-				$this->redirect(array('action' => $this->params['action']));
+				$this->Session->setFlash(__('You have reached maximum limit for failed login attempts. Please try again after a few minutes.', true), 'default', ['class' => 'error']);
+				$this->redirect(['action' => $this->params['action']]);
 			}
 		}
 	}
@@ -58,7 +58,7 @@ class UsersController extends AppController {
 	public function beforeRender() {
 		parent::beforeRender();
 
-		if (in_array($this->params['action'], array('admin_login', 'login'))) {
+		if (in_array($this->params['action'], ['admin_login', 'login'])) {
 			if (!empty($this->data)) {
 				$field = $this->Auth->fields['username'];
 				$cacheName = 'auth_failed_' . $this->data['User'][$field];
@@ -80,10 +80,10 @@ class UsersController extends AppController {
 			$this->User->create();
 			$this->data['User']['activation_key'] = md5(uniqid());
 			if ($this->User->save($this->data)) {
-				$this->Session->setFlash(__('The User has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('The User has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action' => 'index']);
 			} else {
-				$this->Session->setFlash(__('The User could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The User could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 				unset($this->data['User']['password']);
 			}
 		} else {
@@ -95,15 +95,15 @@ class UsersController extends AppController {
 
 	public function admin_edit($id = null) {
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid User', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('Invalid User', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->User->save($this->data)) {
-				$this->Session->setFlash(__('The User has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('The User has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action' => 'index']);
 			} else {
-				$this->Session->setFlash(__('The User could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The User could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -115,20 +115,20 @@ class UsersController extends AppController {
 
 	public function admin_reset_password($id = null) {
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid User', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('Invalid User', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		}
 		if (!empty($this->data)) {
 			$user = $this->User->findById($id);
 			if ($user['User']['password'] == Security::hash($this->data['User']['current_password'], null, true)) {
 				if ($this->User->save($this->data)) {
-					$this->Session->setFlash(__('Password has been reset.', true), 'default', array('class' => 'success'));
-					$this->redirect(array('action' => 'index'));
+					$this->Session->setFlash(__('Password has been reset.', true), 'default', ['class' => 'success']);
+					$this->redirect(['action' => 'index']);
 				} else {
-					$this->Session->setFlash(__('Password could not be reset. Please, try again.', true), 'default', array('class' => 'error'));
+					$this->Session->setFlash(__('Password could not be reset. Please, try again.', true), 'default', ['class' => 'error']);
 				}
 			} else {
-				$this->Session->setFlash(__('Current password did not match. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('Current password did not match. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -138,16 +138,16 @@ class UsersController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for User', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('Invalid id for User', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->User->delete($id)) {
-			$this->Session->setFlash(__('User deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('User deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action' => 'index']);
 		}
 	}
 
@@ -157,7 +157,7 @@ class UsersController extends AppController {
 	}
 
 	public function admin_logout() {
-		$this->Session->setFlash(__('Log out successful.', true), 'default', array('class' => 'success'));
+		$this->Session->setFlash(__('Log out successful.', true), 'default', ['class' => 'success']);
 		$this->redirect($this->Auth->logout());
 	}
 
@@ -185,34 +185,34 @@ class UsersController extends AppController {
 				$this->set('user', $this->data);
 				$this->Email->send();
 
-				$this->Session->setFlash(__('You have successfully registered an account. An email has been sent with further instructions.', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action' => 'login'));
+				$this->Session->setFlash(__('You have successfully registered an account. An email has been sent with further instructions.', true), 'default', ['class' => 'success']);
+				$this->redirect(['action' => 'login']);
 			} else {
-				$this->Session->setFlash(__('The User could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The User could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 	}
 
 	public function activate($username = null, $key = null) {
 		if ($username == null || $key == null) {
-			$this->redirect(array('action' => 'login'));
+			$this->redirect(['action' => 'login']);
 		}
 
-		if ($this->User->hasAny(array(
+		if ($this->User->hasAny([
 				'User.username' => $username,
 				'User.activation_key' => $key,
 				'User.status' => 0,
-			))) {
+			])) {
 			$user = $this->User->findByUsername($username);
 			$this->User->id = $user['User']['id'];
 			$this->User->saveField('status', 1);
 			$this->User->saveField('activation_key', md5(uniqid()));
-			$this->Session->setFlash(__('Account activated successfully.', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Account activated successfully.', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('An error occurred.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('An error occurred.', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array('action' => 'login'));
+		$this->redirect(['action' => 'login']);
 	}
 
 	public function edit() {}
@@ -223,8 +223,8 @@ class UsersController extends AppController {
 		if (!empty($this->data) && isset($this->data['User']['username'])) {
 			$user = $this->User->findByUsername($this->data['User']['username']);
 			if (!isset($user['User']['id'])) {
-				$this->Session->setFlash(__('Invalid username.', true), 'default', array('class' => 'error'));
-				$this->redirect(array('action' => 'login'));
+				$this->Session->setFlash(__('Invalid username.', true), 'default', ['class' => 'error']);
+				$this->redirect(['action' => 'login']);
 			}
 
 			$this->User->id = $user['User']['id'];
@@ -238,10 +238,10 @@ class UsersController extends AppController {
 			$this->Email->subject = sprintf(__('[%s] Reset Password', true), Configure::read('Site.title'));
 			$this->Email->template = 'forgot_password';
 			if ($this->Email->send()) {
-				$this->Session->setFlash(__('An email has been sent with instructions for resetting your password.', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action' => 'login'));
+				$this->Session->setFlash(__('An email has been sent with instructions for resetting your password.', true), 'default', ['class' => 'success']);
+				$this->redirect(['action' => 'login']);
 			} else {
-				$this->Session->setFlash(__('An error occurred. Please try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('An error occurred. Please try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 	}
@@ -250,31 +250,31 @@ class UsersController extends AppController {
 		$this->set('title_for_layout', __('Reset Password', true));
 
 		if ($username == null || $key == null) {
-			$this->Session->setFlash(__('An error occurred.', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'login'));
+			$this->Session->setFlash(__('An error occurred.', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'login']);
 		}
 
-		$user = $this->User->find('first', array(
-			'conditions' => array(
+		$user = $this->User->find('first', [
+			'conditions' => [
 				'User.username' => $username,
 				'User.activation_key' => $key,
-			),
-		));
+			],
+		]);
 		if (!isset($user['User']['id'])) {
-			$this->Session->setFlash(__('An error occurred.', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'login'));
+			$this->Session->setFlash(__('An error occurred.', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'login']);
 		}
 
 		if (!empty($this->data) && isset($this->data['User']['password'])) {
 			$this->User->id = $user['User']['id'];
 			$user['User']['password'] = Security::hash($this->data['User']['password'], null, true);
 			$user['User']['activation_key'] = md5(uniqid());
-			$options = array('fieldList' => array('password', 'activation_key'));
+			$options = ['fieldList' => ['password', 'activation_key']];
 			if ($this->User->save($user['User'], $options)) {
-				$this->Session->setFlash(__('Your password has been reset successfully.', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action' => 'login'));
+				$this->Session->setFlash(__('Your password has been reset successfully.', true), 'default', ['class' => 'success']);
+				$this->redirect(['action' => 'login']);
 			} else {
-				$this->Session->setFlash(__('An error occurred. Please try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('An error occurred. Please try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 
@@ -286,14 +286,14 @@ class UsersController extends AppController {
 	}
 
 	public function logout() {
-		$this->Session->setFlash(__('Log out successful.', true), 'default', array('class' => 'success'));
+		$this->Session->setFlash(__('Log out successful.', true), 'default', ['class' => 'success']);
 		$this->redirect($this->Auth->logout());
 	}
 
 	public function view($username) {
 		$user = $this->User->findByUsername($username);
 		if (!isset($user['User']['id'])) {
-			$this->Session->setFlash(__('Invalid User.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Invalid User.', true), 'default', ['class' => 'error']);
 			$this->redirect('/');
 		}
 

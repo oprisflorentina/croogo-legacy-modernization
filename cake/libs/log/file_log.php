@@ -34,7 +34,7 @@ class FileLog {
  *
  * @var string
  */
-	var $_path = null;
+	public $_path = null;
 
 /**
  * Constructs a new File Logger.
@@ -46,8 +46,8 @@ class FileLog {
  * @param array $options Options for the FileLog, see above.
  * @return void
  */
-	function __construct($options = array()) {
-		$options += array('path' => LOGS);
+	public function __construct($options = []) {
+		$options += ['path' => LOGS];
 		$this->_path = $options['path'];
 	}
 
@@ -58,8 +58,8 @@ class FileLog {
  * @param string $message The message you want to log.
  * @return boolean success of write.
  */
-	function write($type, $message) {
-		$debugTypes = array('notice', 'info', 'debug');
+	public function write($type, $message) {
+		$debugTypes = ['notice', 'info', 'debug'];
 
 		if ($type == 'error' || $type == 'warning') {
 			$filename = $this->_path  . 'error.log';

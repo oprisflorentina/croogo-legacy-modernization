@@ -32,7 +32,7 @@ class Security extends CakeObject {
  * @var string
  * @access public
  */
-	var $hashType = null;
+	public $hashType = null;
 
 /**
  * Singleton implementation to get object instance.
@@ -41,8 +41,8 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	static function &getInstance() {
-		static $instance = array();
+	public static function &getInstance() {
+		static $instance = [];
 		if (!$instance) {
 			$instance[0] = new Security;
 		}
@@ -56,7 +56,7 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	static function inactiveMins() {
+	public static function inactiveMins() {
 		switch (Configure::read('Security.level')) {
 			case 'high':
 				return 10;
@@ -78,7 +78,7 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	static function generateAuthKey() {
+	public static function generateAuthKey() {
 		if (!class_exists('CakeText')) {
 			App::import('Core', 'CakeText');
 		}
@@ -94,7 +94,7 @@ class Security extends CakeObject {
  * @static
  * @todo Complete implementation
  */
-	function validateAuthKey($authKey) {
+	public function validateAuthKey($authKey) {
 		return true;
 	}
 
@@ -110,7 +110,7 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	static function hash($string, $type = null, $salt = false) {
+	public static function hash($string, $type = null, $salt = false) {
 		$_this =& Security::getInstance();
 
 		if ($salt) {
@@ -154,7 +154,7 @@ class Security extends CakeObject {
  * @static
  * @see Security::hash()
  */
-	function setHash($hash) {
+	public function setHash($hash) {
 		$_this =& Security::getInstance();
 		$_this->hashType = $hash;
 	}
@@ -168,7 +168,7 @@ class Security extends CakeObject {
  * @access public
  * @static
  */
-	function cipher($text, $key) {
+	public function cipher($text, $key) {
 		if (empty($key)) {
 			trigger_error(__('You cannot use an empty key for Security::cipher()', true), E_USER_WARNING);
 			return '';

@@ -36,7 +36,7 @@ class XcacheEngine extends CacheEngine {
  * @var array
  * @access public
  */
-	var $settings = array();
+	public $settings = [];
 
 /**
  * Initialize the Cache Engine
@@ -48,10 +48,10 @@ class XcacheEngine extends CacheEngine {
  * @return boolean True if the engine has been successfully initialized, false if not
  * @access public
  */
-	function init($settings = array()) {
-		parent::init(array_merge(array(
+	public function init($settings = []) {
+		parent::init(array_merge([
 			'engine' => 'Xcache', 'prefix' => Inflector::slug(APP_DIR) . '_', 'PHP_AUTH_USER' => 'user', 'PHP_AUTH_PW' => 'password'
-			), $settings)
+			], $settings)
 		);
 		return function_exists('xcache_info');
 	}
@@ -65,7 +65,7 @@ class XcacheEngine extends CacheEngine {
  * @return boolean True if the data was succesfully cached, false on failure
  * @access public
  */
-	function write($key, &$value, $duration) {
+	public function write($key, &$value, $duration) {
 		$expires = time() + $duration;
 		xcache_set($key . '_expires', $expires, $duration);
 		return xcache_set($key, $value, $duration);
@@ -78,7 +78,7 @@ class XcacheEngine extends CacheEngine {
  * @return mixed The cached data, or false if the data doesn't exist, has expired, or if there was an error fetching it
  * @access public
  */
-	function read($key) {
+	public function read($key) {
 		if (xcache_isset($key)) {
 			$time = time();
 			$cachetime = intval(xcache_get($key . '_expires'));
@@ -100,7 +100,7 @@ class XcacheEngine extends CacheEngine {
  * @return New incremented value, false otherwise
  * @access public
  */
-	function increment($key, $offset = 1) {
+	public function increment($key, $offset = 1) {
 		return xcache_inc($key, $offset);
 	}
 
@@ -114,7 +114,7 @@ class XcacheEngine extends CacheEngine {
  * @return New decremented value, false otherwise
  * @access public
  */
-	function decrement($key, $offset = 1) {
+	public function decrement($key, $offset = 1) {
 		return xcache_dec($key, $offset);
 	}
 /**
@@ -124,7 +124,7 @@ class XcacheEngine extends CacheEngine {
  * @return boolean True if the value was succesfully deleted, false if it didn't exist or couldn't be removed
  * @access public
  */
-	function delete($key) {
+	public function delete($key) {
 		return xcache_unset($key);
 	}
 
@@ -134,7 +134,7 @@ class XcacheEngine extends CacheEngine {
  * @return boolean True if the cache was succesfully cleared, false otherwise
  * @access public
  */
-	function clear($check = false) {
+	public function clear($check = false) {
 		$this->__auth();
 		$max = xcache_count(XC_TYPE_VAR);
 		for ($i = 0; $i < $max; $i++) {
@@ -154,9 +154,9 @@ class XcacheEngine extends CacheEngine {
  * @param boolean Revert changes
  * @access private
  */
-	function __auth($reverse = false) {
-		static $backup = array();
-		$keys = array('PHP_AUTH_USER' => 'user', 'PHP_AUTH_PW' => 'password');
+	public function __auth($reverse = false) {
+		static $backup = [];
+		$keys = ['PHP_AUTH_USER' => 'user', 'PHP_AUTH_PW' => 'password'];
 		foreach ($keys as $key => $setting) {
 			if ($reverse) {
 				if (isset($backup[$key])) {

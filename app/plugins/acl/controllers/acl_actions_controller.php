@@ -13,18 +13,18 @@
  */
 class AclActionsController extends AclAppController {
 	public $name = 'AclActions';
-	public $uses = array('Acl.AclAco');
-	public $components = array('Acl.AclGenerate');
+	public $uses = ['Acl.AclAco'];
+	public $components = ['Acl.AclGenerate'];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Actions', true));
 
-		$conditions = array(
+		$conditions = [
 			'parent_id !=' => null,
 			//'model' => null,
 			'foreign_key' => null,
 			'alias !=' => null,
-		);
+		];
 		$this->set('acos', $this->Acl->Aco->generatetreelist($conditions, '{n}.Aco.id', '{n}.Aco.alias'));
 	}
 
@@ -43,24 +43,24 @@ class AclActionsController extends AclAppController {
 			}
 
 			if ($this->Acl->Aco->save($this->data['Aco'])) {
-				$this->Session->setFlash(sprintf(__('The %s has been saved', true), $acoType), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(sprintf(__('The %s has been saved', true), $acoType), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(sprintf(__('The %s could not be saved. Please, try again.', true), $acoType), 'default', array('class' => 'error'));
+				$this->Session->setFlash(sprintf(__('The %s could not be saved. Please, try again.', true), $acoType), 'default', ['class' => 'error']);
 			}
 		}
 
-		$conditions = array(
+		$conditions = [
 			//'model' => null,
-		);
-		$controllersAco = $this->Acl->Aco->find('first', array(
-			'conditions' => array(
+		];
+		$controllersAco = $this->Acl->Aco->find('first', [
+			'conditions' => [
 				'alias' => 'controllers',
 				'parent_id' => null,
 				//'model' => null,
 				'foreign_key' => null,
-			),
-		));
+			],
+		]);
 		if (isset($controllersAco['Aco']['id'])) {
 			$conditions['parent_id'] = $controllersAco['Aco']['id'];
 		}
@@ -72,32 +72,32 @@ class AclActionsController extends AclAppController {
 		$this->set('title_for_layout', __('Edit Action', true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Action', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Action', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Acl->Aco->save($this->data['Aco'])) {
-				$this->Session->setFlash(__('The Action has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Action has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Action could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Action could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
 			$this->data = $this->Acl->Aco->read(null, $id);
 		}
 
-		$conditions = array(
+		$conditions = [
 			//'model' => null,
-		);
-		$controllersAco = $this->Acl->Aco->find('first', array(
-			'conditions' => array(
+		];
+		$controllersAco = $this->Acl->Aco->find('first', [
+			'conditions' => [
 				'alias' => 'controllers',
 				'parent_id' => null,
 				//'model' => null,
 				'foreign_key' => null,
-			),
-		));
+			],
+		]);
 		if (isset($controllersAco['Aco']['id'])) {
 			$conditions['parent_id'] = $controllersAco['Aco']['id'];
 		}
@@ -107,33 +107,33 @@ class AclActionsController extends AclAppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Action', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Action', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Acl->Aco->delete($id)) {
-			$this->Session->setFlash(__('Action deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Action deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 
 	public function admin_move($id, $direction = 'up', $step = '1') {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Action', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Action', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if ($direction == 'up') {
 			if ($this->Acl->Aco->moveUp($id)) {
-				$this->Session->setFlash(__('Action moved up', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('Action moved up', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			}
 		} else {
 			if ($this->Acl->Aco->moveDown($id)) {
-				$this->Session->setFlash(__('Action moved down', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('Action moved down', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			}
 		}
 	}
@@ -142,11 +142,11 @@ class AclActionsController extends AclAppController {
 		$aco =& $this->Acl->Aco;
 		$root = $aco->node('controllers');
 		if (!$root) {
-			$aco->create(array(
+			$aco->create([
 				'parent_id' => null,
 				'model' => null,
 				'alias' => 'controllers',
-			));
+			]);
 			$root = $aco->save();
 			$root['Aco']['id'] = $aco->id;
 		} else {
@@ -157,11 +157,11 @@ class AclActionsController extends AclAppController {
 		foreach ($controllerPaths AS $controllerName => $controllerPath) {
 			$controllerNode = $aco->node('controllers/'.$controllerName);
 			if (!$controllerNode) {
-				$aco->create(array(
+				$aco->create([
 					'parent_id' => $root['Aco']['id'],
 					'model' => null,
 					'alias' => $controllerName,
-				));
+				]);
 				$controllerNode = $aco->save();
 				$controllerNode['Aco']['id'] = $aco->id;
 				$log[] = 'Created Aco node for '.$controllerName;
@@ -173,20 +173,20 @@ class AclActionsController extends AclAppController {
 			foreach ($methods AS $method) {
 				$methodNode = $aco->node('controllers/'.$controllerName.'/'.$method);
 				if (!$methodNode) {
-					$aco->create(array(
+					$aco->create([
 						'parent_id' => $controllerNode['Aco']['id'],
 						'model' => null,
 						'alias' => $method,
-					));
+					]);
 					$methodNode = $aco->save();
 				}
 			}
 		}
 
 		if (isset($this->params['named']['permissions'])) {
-			$this->redirect(array('plugin' => 'acl', 'controller' => 'acl_permissions', 'action' => 'index'));
+			$this->redirect(['plugin' => 'acl', 'controller' => 'acl_permissions', 'action' => 'index']);
 		} else {
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 	}
 

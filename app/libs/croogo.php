@@ -20,7 +20,7 @@ class Croogo {
 		$pluginName = Inflector::underscore($pluginName);
 		$hooks = Configure::read('Hook.routes');
 		if (!$hooks || !is_array($hooks)) {
-			$hooks = array();
+			$hooks = [];
 		}
 		$hooks[] = $pluginName;
 		Configure::write('Hook.routes', $hooks);
@@ -33,7 +33,7 @@ class Croogo {
  * @param string $componentName  Component name
  */
 	public static function hookComponent($controllerName, $componentName) {
-		self::hookControllerProperty($controllerName, 'components', array($componentName));
+		self::hookControllerProperty($controllerName, 'components', [$componentName]);
 	}
 
 /**
@@ -43,8 +43,8 @@ class Croogo {
  * @param string $behaviorName
  * @param array  $config
  */
-	public static function hookBehavior($modelName, $behaviorName, $config = array()) {
-		self::hookModelProperty($modelName, 'actsAs', array($behaviorName => $config));
+	public static function hookBehavior($modelName, $behaviorName, $config = []) {
+		self::hookModelProperty($modelName, 'actsAs', [$behaviorName => $config]);
 	}
 
 /**
@@ -54,7 +54,7 @@ class Croogo {
  * @param string $helperName
  */
 	public static function hookHelper($controllerName, $helperName) {
-		self::hookControllerProperty($controllerName, 'helpers', array($helperName));
+		self::hookControllerProperty($controllerName, 'helpers', [$helperName]);
 	}
 
 /**
@@ -77,11 +77,9 @@ class Croogo {
 	public static function hookAdminRowAction($action, $title, $url) {
 		$rowActions = Configure::read('Admin.rowActions');
 		if (!is_array($rowActions)) {
-			$rowActions = array();
+			$rowActions = [];
 		}
-		if (!isset($rowActions[$action])) {
-			$rowActions[$action] = array();
-		}
+		$rowActions[$action] ??= [];
 		$rowActions[$action][$title] = $url;
 		Configure::write('Admin.rowActions', $rowActions);
 	}
@@ -94,14 +92,12 @@ class Croogo {
  * @param string $element element name, like plugin_name.element_name
  * @param array  $options array with options for the hook to take effect
  */
-	public static function hookAdminTab($action, $title, $element, $options = array()) {
+	public static function hookAdminTab($action, $title, $element, $options = []) {
 		$tabs = Configure::read('Admin.tabs');
 		if (!is_array($tabs)) {
-			$tabs = array();
+			$tabs = [];
 		}
-		if (!isset($tabs[$action])) {
-			$tabs[$action] = array();
-		}
+		$tabs[$action] ??= [];
 		$tabs[$action][$title]['element'] = $element;
 		$tabs[$action][$title]['options'] = $options;
 		Configure::write('Admin.tabs', $tabs);

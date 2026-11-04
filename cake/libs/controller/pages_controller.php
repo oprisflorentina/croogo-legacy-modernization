@@ -37,7 +37,7 @@ class PagesController extends AppController {
  * @var string
  * @access public
  */
-	var $name = 'Pages';
+	public $name = 'Pages';
 
 /**
  * Default helper
@@ -45,7 +45,7 @@ class PagesController extends AppController {
  * @var array
  * @access public
  */
-	var $helpers = array('Html', 'Session');
+	public $helpers = ['Html', 'Session'];
 
 /**
  * This controller does not use a model
@@ -53,7 +53,7 @@ class PagesController extends AppController {
  * @var array
  * @access public
  */
-	var $uses = array();
+	public $uses = [];
 
 /**
  * Displays a view
@@ -61,7 +61,7 @@ class PagesController extends AppController {
  * @param mixed What page to display
  * @access public
  */
-	function display() {
+	public function display() {
 		$path = func_get_args();
 
 		$count = count($path);

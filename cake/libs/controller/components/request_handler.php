@@ -37,7 +37,7 @@ class RequestHandlerComponent extends CakeObject {
  * @access public
  * @see RequestHandler::setAjax()
  */
-	var $ajaxLayout = 'ajax';
+	public $ajaxLayout = 'ajax';
 
 /**
  * Determines whether or not callbacks will be fired on this component
@@ -45,7 +45,7 @@ class RequestHandlerComponent extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $enabled = true;
+	public $enabled = true;
 
 /**
  * Holds the content-type of the response that is set when using
@@ -54,7 +54,7 @@ class RequestHandlerComponent extends CakeObject {
  * @var string
  * @access private
  */
-	var $__responseTypeSet = null;
+	public $__responseTypeSet = null;
 
 /**
  * Holds the copy of Controller::$params
@@ -62,7 +62,7 @@ class RequestHandlerComponent extends CakeObject {
  * @var array
  * @access public
  */
-	var $params = array();
+	public $params = [];
 
 /**
  * Friendly content-type mappings used to set response types and determine
@@ -72,35 +72,35 @@ class RequestHandlerComponent extends CakeObject {
  * @access private
  * @see RequestHandlerComponent::setContent
  */
-	var $__requestContent = array(
+	public $__requestContent = [
 		'javascript'	=> 'text/javascript',
 		'js'			=> 'text/javascript',
 		'json'			=> 'application/json',
 		'css'			=> 'text/css',
-		'html'			=> array('text/html', '*/*'),
+		'html'			=> ['text/html', '*/*'],
 		'text'			=> 'text/plain',
 		'txt'			=> 'text/plain',
-		'csv'			=> array('text/csv', 'application/vnd.ms-excel', 'text/plain'),
+		'csv'			=> ['text/csv', 'application/vnd.ms-excel', 'text/plain'],
 		'form'			=> 'application/x-www-form-urlencoded',
 		'file'			=> 'multipart/form-data',
-		'xhtml'			=> array('application/xhtml+xml', 'application/xhtml', 'text/xhtml'),
+		'xhtml'			=> ['application/xhtml+xml', 'application/xhtml', 'text/xhtml'],
 		'xhtml-mobile'	=> 'application/vnd.wap.xhtml+xml',
-		'xml'			=> array('application/xml', 'text/xml'),
+		'xml'			=> ['application/xml', 'text/xml'],
 		'rss'			=> 'application/rss+xml',
 		'atom'			=> 'application/atom+xml',
 		'amf'			=> 'application/x-amf',
-		'wap'			=> array(
+		'wap'			=> [
 			'text/vnd.wap.wml',
 			'text/vnd.wap.wmlscript',
 			'image/vnd.wap.wbmp'
-		),
+		],
 		'wml'			=> 'text/vnd.wap.wml',
 		'wmlscript'		=> 'text/vnd.wap.wmlscript',
 		'wbmp'			=> 'image/vnd.wap.wbmp',
 		'pdf'			=> 'application/pdf',
 		'zip'			=> 'application/x-zip',
 		'tar'			=> 'application/x-tar'
-	);
+	];
 
 /**
  * List of regular expressions for matching mobile device's user agent string
@@ -108,7 +108,7 @@ class RequestHandlerComponent extends CakeObject {
  * @var array
  * @access public
  */
-	var $mobileUA = array(
+	public $mobileUA = [
 		'Android',
 		'AvantGo',
 		'BlackBerry',
@@ -134,7 +134,7 @@ class RequestHandlerComponent extends CakeObject {
 		'Windows CE',
 		'Windows Phone OS',
 		'Xiino'
-	);
+	];
 
 /**
  * Content-types accepted by the client.  If extension parsing is enabled in the
@@ -145,7 +145,7 @@ class RequestHandlerComponent extends CakeObject {
  * @access private
  * @see Router::parseExtensions()
  */
-	var $__acceptTypes = array();
+	public $__acceptTypes = [];
 
 /**
  * The template to use when rendering the given content type.
@@ -153,7 +153,7 @@ class RequestHandlerComponent extends CakeObject {
  * @var string
  * @access private
  */
-	var $__renderType = null;
+	public $__renderType = null;
 
 /**
  * Contains the file extension parsed out by the Router
@@ -162,7 +162,7 @@ class RequestHandlerComponent extends CakeObject {
  * @access public
  * @see Router::parseExtensions()
  */
-	var $ext = null;
+	public $ext = null;
 
 /**
  * Flag set when MIME types have been initialized
@@ -171,13 +171,13 @@ class RequestHandlerComponent extends CakeObject {
  * @access private
  * @see RequestHandler::__initializeTypes()
  */
-	var $__typesInitialized = false;
+	public $__typesInitialized = false;
 
 /**
  * Constructor. Parses the accepted content types accepted by the client using HTTP_ACCEPT
  *
  */
-	function __construct() {
+	public function __construct() {
 		$this->__acceptTypes = explode(',', env('HTTP_ACCEPT'));
 		$this->__acceptTypes = array_map('trim', $this->__acceptTypes);
 
@@ -202,7 +202,7 @@ class RequestHandlerComponent extends CakeObject {
  * @see Router::parseExtensions()
  * @access public
  */
-	function initialize(&$controller, $settings = array()) {
+	public function initialize(&$controller, $settings = []) {
 		if (isset($controller->params['url']['ext'])) {
 			$this->ext = $controller->params['url']['ext'];
 		}
@@ -228,7 +228,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return void
  * @access public
  */
-	function startup(&$controller) {
+	public function startup(&$controller) {
 		if (!$this->enabled) {
 			return;
 		}
@@ -236,7 +236,7 @@ class RequestHandlerComponent extends CakeObject {
 		$this->__initializeTypes();
 		$controller->params['isAjax'] = $this->isAjax();
 		$isRecognized = (
-			!in_array($this->ext, array('html', 'htm')) &&
+			!in_array($this->ext, ['html', 'htm']) &&
 			in_array($this->ext, array_keys($this->__requestContent))
 		);
 
@@ -244,8 +244,8 @@ class RequestHandlerComponent extends CakeObject {
 			$this->renderAs($controller, $this->ext);
 		} elseif ($this->isAjax()) {
 			$this->renderAs($controller, 'ajax');
-		} elseif (empty($this->ext) || in_array($this->ext, array('html', 'htm'))) {
-			$this->respondAs('html', array('charset' => Configure::read('App.encoding')));
+		} elseif (empty($this->ext) || in_array($this->ext, ['html', 'htm'])) {
+			$this->respondAs('html', ['charset' => Configure::read('App.encoding')]);
 		}
 
 		if ($this->requestedWith('xml')) {
@@ -270,7 +270,7 @@ class RequestHandlerComponent extends CakeObject {
  * @param mixed HTTP Status for redirect
  * @access public
  */
-	function beforeRedirect(&$controller, $url, $status = null) {
+	public function beforeRedirect(&$controller, $url, $status = null) {
 		if (!$this->isAjax()) {
 			return;
 		}
@@ -278,7 +278,7 @@ class RequestHandlerComponent extends CakeObject {
 			unset($_POST[$key]);
 		}
 		if (is_array($url)) {
-			$url = Router::url($url + array('base' => false));
+			$url = Router::url($url + ['base' => false]);
 		}
 		if (!empty($status)) {
 			$statusCode = $controller->httpCodes($status);
@@ -286,7 +286,7 @@ class RequestHandlerComponent extends CakeObject {
 			$msg = $statusCode[$code];
 			$controller->header("HTTP/1.1 {$code} {$msg}");
 		}
-		echo $this->requestAction($url, array('return', 'bare' => false));
+		echo $this->requestAction($url, ['return', 'bare' => false]);
 		$this->_stop();
 	}
 
@@ -296,7 +296,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if call is Ajax
  * @access public
  */
-	function isAjax() {
+	public function isAjax() {
 		return env('HTTP_X_REQUESTED_WITH') === "XMLHttpRequest";
 	}
 
@@ -306,7 +306,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if call is from Flash
  * @access public
  */
-	function isFlash() {
+	public function isFlash() {
 		return (preg_match('/^(Shockwave|Adobe) Flash/', env('HTTP_USER_AGENT')) == 1);
 	}
 
@@ -316,7 +316,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return bool True if call is over HTTPS
  * @access public
  */
-	function isSSL() {
+	public function isSSL() {
 		return env('HTTPS');
 	}
 
@@ -326,7 +326,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if client accepts an XML response
  * @access public
  */
-	function isXml() {
+	public function isXml() {
 		return $this->prefers('xml');
 	}
 
@@ -336,7 +336,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if client accepts an RSS response
  * @access public
  */
-	function isRss() {
+	public function isRss() {
 		return $this->prefers('rss');
 	}
 
@@ -346,7 +346,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if client accepts an RSS response
  * @access public
  */
-	function isAtom() {
+	public function isAtom() {
 		return $this->prefers('atom');
 	}
 
@@ -358,7 +358,7 @@ class RequestHandlerComponent extends CakeObject {
  * @access public
  * @deprecated Use of constant REQUEST_MOBILE_UA is deprecated and will be removed in future versions
  */
-	function isMobile() {
+	public function isMobile() {
 		if (defined('REQUEST_MOBILE_UA')) {
 			$regex = '/' . REQUEST_MOBILE_UA . '/i';
 		} else {
@@ -377,7 +377,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return bool
  * @access public
  */
-	function isWap() {
+	public function isWap() {
 		return $this->prefers('wap');
 	}
 
@@ -387,7 +387,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if call is a POST
  * @access public
  */
-	function isPost() {
+	public function isPost() {
 		return (strtolower(env('REQUEST_METHOD')) == 'post');
 	}
 
@@ -397,7 +397,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if call is a PUT
  * @access public
  */
-	function isPut() {
+	public function isPut() {
 		return (strtolower(env('REQUEST_METHOD')) == 'put');
 	}
 
@@ -407,7 +407,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if call is a GET
  * @access public
  */
-	function isGet() {
+	public function isGet() {
 		return (strtolower(env('REQUEST_METHOD')) == 'get');
 	}
 
@@ -417,7 +417,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return boolean True if call is a DELETE
  * @access public
  */
-	function isDelete() {
+	public function isDelete() {
 		return (strtolower(env('REQUEST_METHOD')) == 'delete');
 	}
 
@@ -428,7 +428,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return string Prototype version of component making Ajax call
  * @access public
  */
-	function getAjaxVersion() {
+	public function getAjaxVersion() {
 		if (env('HTTP_X_PROTOTYPE_VERSION') != null) {
 			return env('HTTP_X_PROTOTYPE_VERSION');
 		}
@@ -447,7 +447,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return void
  * @access public
  */
-	function setContent($name, $type = null) {
+	public function setContent($name, $type = null) {
 		if (is_array($name)) {
 			$this->__requestContent = array_merge($this->__requestContent, $name);
 			return;
@@ -461,7 +461,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return string Server address
  * @access public
  */
-	function getReferer() {
+	public function getReferer() {
 		if (env('HTTP_HOST') != null) {
 			$sessHost = env('HTTP_HOST');
 		}
@@ -478,7 +478,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return string Client IP address
  * @access public
  */
-	function getClientIP($safe = true) {
+	public function getClientIP($safe = true) {
 		if (!$safe && env('HTTP_X_FORWARDED_FOR') != null) {
 			$ipaddr = preg_replace('/(?:,.*)/', '', env('HTTP_X_FORWARDED_FOR'));
 		} else {
@@ -513,7 +513,7 @@ class RequestHandlerComponent extends CakeObject {
  * @access public
  * @see RequestHandlerComponent::setContent()
  */
-	function accepts($type = null) {
+	public function accepts($type = null) {
 		$this->__initializeTypes();
 
 		if ($type == null) {
@@ -555,12 +555,12 @@ class RequestHandlerComponent extends CakeObject {
  * @return mixed
  * @access public
  */
-	function requestedWith($type = null) {
+	public function requestedWith($type = null) {
 		if (!$this->isPost() && !$this->isPut()) {
 			return null;
 		}
 
-		list($contentType) = explode(';', env('CONTENT_TYPE'));
+		[$contentType] = explode(';', env('CONTENT_TYPE'));
 		if ($type == null) {
 			return $this->mapType($contentType);
 		} elseif (is_array($type)) {
@@ -590,7 +590,7 @@ class RequestHandlerComponent extends CakeObject {
  * @access public
  * @see RequestHandlerComponent::setContent()
  */
-	function prefers($type = null) {
+	public function prefers($type = null) {
 		$this->__initializeTypes();
 		$accept = $this->accepts();
 
@@ -606,7 +606,7 @@ class RequestHandlerComponent extends CakeObject {
 
 		$types = $type;
 		if (is_string($type)) {
-			$types = array($type);
+			$types = [$type];
 		}
 
 		if (count($types) === 1) {
@@ -615,7 +615,7 @@ class RequestHandlerComponent extends CakeObject {
 			}
 			return ($types[0] == $accept[0]);
 		}
-		$accepts = array();
+		$accepts = [];
 
 		foreach ($types as $type) {
 			if (in_array($type, $accept)) {
@@ -631,7 +631,7 @@ class RequestHandlerComponent extends CakeObject {
 			return $accepts[0];
 		}
 
-		$acceptedTypes = array();
+		$acceptedTypes = [];
 		foreach ($this->__acceptTypes as $type) {
 			$acceptedTypes[] = $this->mapType($type);
 		}
@@ -649,12 +649,12 @@ class RequestHandlerComponent extends CakeObject {
  * @see RequestHandlerComponent::setContent()
  * @see RequestHandlerComponent::respondAs()
  */
-	function renderAs(&$controller, $type) {
+	public function renderAs(&$controller, $type) {
 		$this->__initializeTypes();
-		$options = array('charset' => 'UTF-8');
+		$options = ['charset' => 'UTF-8'];
 
 		if (Configure::read('App.encoding') !== null) {
-			$options = array('charset' => Configure::read('App.encoding'));
+			$options = ['charset' => Configure::read('App.encoding')];
 		}
 
 		if ($type == 'ajax') {
@@ -703,15 +703,15 @@ class RequestHandlerComponent extends CakeObject {
  * @access public
  * @see RequestHandlerComponent::setContent()
  */
-	function respondAs($type, $options = array()) {
+	public function respondAs($type, $options = []) {
 		$this->__initializeTypes();
-		if (!array_key_exists($type, $this->__requestContent) && strpos($type, '/') === false) {
+		if (!array_key_exists($type, $this->__requestContent) && !str_contains($type, '/')) {
 			return false;
 		}
-		$defaults = array('index' => 0, 'charset' => null, 'attachment' => false);
+		$defaults = ['index' => 0, 'charset' => null, 'attachment' => false];
 		$options = array_merge($defaults, $options);
 
-		if (strpos($type, '/') === false && isset($this->__requestContent[$type])) {
+		if (!str_contains($type, '/') && isset($this->__requestContent[$type])) {
 			$cType = null;
 			if (is_array($this->__requestContent[$type]) && isset($this->__requestContent[$type][$options['index']])) {
 				$cType = $this->__requestContent[$type][$options['index']];
@@ -759,7 +759,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return void
  * @access protected
  */
-	function _header($header) {
+	public function _header($header) {
 		header($header);
 	}
 
@@ -770,7 +770,7 @@ class RequestHandlerComponent extends CakeObject {
  *    otherwise null
  * @access public
  */
-	function responseType() {
+	public function responseType() {
 		if ($this->__responseTypeSet == null) {
 			return null;
 		}
@@ -784,9 +784,9 @@ class RequestHandlerComponent extends CakeObject {
  * @return mixed Alias
  * @access public
  */
-	function mapType($ctype) {
+	public function mapType($ctype) {
 		if (is_array($ctype)) {
-			$out = array();
+			$out = [];
 			foreach ($ctype as $t) {
 				$out[] = $this->mapType($t);
 			}
@@ -815,7 +815,7 @@ class RequestHandlerComponent extends CakeObject {
  * @return void
  * @access private
  */
-	function __initializeTypes() {
+	public function __initializeTypes() {
 		if ($this->__typesInitialized) {
 			return;
 		}

@@ -26,13 +26,13 @@ class BlocksController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Block', 'Role');
+	public $uses = ['Block', 'Role'];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Blocks', true));
 
 		$this->Block->recursive = 0;
-		$this->paginate['Block']['order'] = array('Block.weight' => 'ASC');
+		$this->paginate['Block']['order'] = ['Block.weight' => 'ASC'];
 		$this->set('blocks', $this->paginate());
 	}
 
@@ -44,14 +44,14 @@ class BlocksController extends AppController {
 			$this->data['Block']['visibility_roles'] = $this->Block->encodeData($this->data['Role']['Role']);
 			$this->data['Block']['visibility_paths'] = $this->Block->encodeData(explode("\n", $this->data['Block']['visibility_paths']));
 			if ($this->Block->save($this->data)) {
-				$this->Session->setFlash(__('The Block has been saved', true), 'default', array('class' => 'success'));
+				$this->Session->setFlash(__('The Block has been saved', true), 'default', ['class' => 'success']);
 				if (isset($this->params['form']['apply'])) {
-					$this->redirect(array('action'=>'edit', $this->Block->id));
+					$this->redirect(['action'=>'edit', $this->Block->id]);
 				} else {
-					$this->redirect(array('action'=>'index'));
+					$this->redirect(['action'=>'index']);
 				}
 			} else {
-				$this->Session->setFlash(__('The Block could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Block could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		$regions = $this->Block->Region->find('list');
@@ -63,19 +63,19 @@ class BlocksController extends AppController {
 		$this->set('title_for_layout', __('Edit Block', true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Block', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Block', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			$this->data['Block']['visibility_roles'] = $this->Block->encodeData($this->data['Role']['Role']);
 			$this->data['Block']['visibility_paths'] = $this->Block->encodeData(explode("\n", $this->data['Block']['visibility_paths']));
 			if ($this->Block->save($this->data)) {
-				$this->Session->setFlash(__('The Block has been saved', true), 'default', array('class' => 'success'));
+				$this->Session->setFlash(__('The Block has been saved', true), 'default', ['class' => 'success']);
 				if (! isset($this->params['form']['apply'])) {
-					$this->redirect(array('action'=>'index'));
+					$this->redirect(['action'=>'index']);
 				}
 			} else {
-				$this->Session->setFlash(__('The Block could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Block could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -93,42 +93,42 @@ class BlocksController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Block', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Block', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Block->delete($id)) {
-			$this->Session->setFlash(__('Block deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Block deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 
 	public function admin_moveup($id, $step = 1) {
 		if( $this->Block->moveup($id, $step) ) {
-			$this->Session->setFlash(__('Moved up successfully', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Moved up successfully', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('Could not move up', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Could not move up', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	public function admin_movedown($id, $step = 1) {
 		if( $this->Block->movedown($id, $step) ) {
-			$this->Session->setFlash(__('Moved down successfully', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Moved down successfully', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('Could not move down', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Could not move down', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	public function admin_process() {
 		$action = $this->data['Block']['action'];
-		$ids = array();
+		$ids = [];
 		foreach ($this->data['Block'] AS $id => $value) {
 			if ($id != 'action' && $value['id'] == 1) {
 				$ids[] = $id;
@@ -136,24 +136,24 @@ class BlocksController extends AppController {
 		}
 
 		if (count($ids) == 0 || $action == null) {
-			$this->Session->setFlash(__('No items selected.', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('No items selected.', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		}
 
 		if ($action == 'delete' &&
-			$this->Block->deleteAll(array('Block.id' => $ids), true, true)) {
-			$this->Session->setFlash(__('Blocks deleted.', true), 'default', array('class' => 'success'));
+			$this->Block->deleteAll(['Block.id' => $ids], true, true)) {
+			$this->Session->setFlash(__('Blocks deleted.', true), 'default', ['class' => 'success']);
 		} elseif ($action == 'publish' &&
-			$this->Block->updateAll(array('Block.status' => 1), array('Block.id' => $ids))) {
-			$this->Session->setFlash(__('Blocks published', true), 'default', array('class' => 'success'));
+			$this->Block->updateAll(['Block.status' => 1], ['Block.id' => $ids])) {
+			$this->Session->setFlash(__('Blocks published', true), 'default', ['class' => 'success']);
 		} elseif ($action == 'unpublish' &&
-			$this->Block->updateAll(array('Block.status' => 0), array('Block.id' => $ids))) {
-			$this->Session->setFlash(__('Blocks unpublished', true), 'default', array('class' => 'success'));
+			$this->Block->updateAll(['Block.status' => 0], ['Block.id' => $ids])) {
+			$this->Session->setFlash(__('Blocks unpublished', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('An error occurred.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('An error occurred.', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 }

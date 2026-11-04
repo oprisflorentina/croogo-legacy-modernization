@@ -36,7 +36,7 @@ class RssHelper extends XmlHelper {
  * @var array
  * @access public
  */
-	var $helpers = array('Time');
+	public $helpers = ['Time'];
 
 /**
  * Base URL
@@ -44,7 +44,7 @@ class RssHelper extends XmlHelper {
  * @access public
  * @var string
  */
-	var $base = null;
+	public $base = null;
 
 /**
  * URL to current action.
@@ -52,7 +52,7 @@ class RssHelper extends XmlHelper {
  * @access public
  * @var string
  */
-	var $here = null;
+	public $here = null;
 
 /**
  * Parameter array.
@@ -60,7 +60,7 @@ class RssHelper extends XmlHelper {
  * @access public
  * @var array
  */
-	var $params = array();
+	public $params = [];
 
 /**
  * Current action.
@@ -68,7 +68,7 @@ class RssHelper extends XmlHelper {
  * @access public
  * @var string
  */
-	var $action = null;
+	public $action = null;
 
 /**
  * POSTed model data
@@ -76,7 +76,7 @@ class RssHelper extends XmlHelper {
  * @access public
  * @var array
  */
-	var $data = null;
+	public $data = null;
 
 /**
  * Name of the current model
@@ -84,7 +84,7 @@ class RssHelper extends XmlHelper {
  * @access public
  * @var string
  */
-	var $model = null;
+	public $model = null;
 
 /**
  * Name of the current field
@@ -92,7 +92,7 @@ class RssHelper extends XmlHelper {
  * @access public
  * @var string
  */
-	var $field = null;
+	public $field = null;
 
 /**
  * Default spec version of generated RSS
@@ -100,7 +100,7 @@ class RssHelper extends XmlHelper {
  * @access public
  * @var string
  */
-	var $version = '2.0';
+	public $version = '2.0';
 
 /**
  * Returns an RSS document wrapped in `<rss />` tags
@@ -109,10 +109,10 @@ class RssHelper extends XmlHelper {
  * @return string An RSS document
  * @access public
  */
-	function document($attrib = array(), $content = null) {
+	public function document($attrib = [], $content = null) {
 		if ($content === null) {
 			$content = $attrib;
-			$attrib = array();
+			$attrib = [];
 		}
 		if (!isset($attrib['version']) || empty($attrib['version'])) {
 			$attrib['version'] = $this->version;
@@ -130,34 +130,30 @@ class RssHelper extends XmlHelper {
  * @return string An RSS `<channel />`
  * @access public
  */
-	function channel($attrib = array(), $elements = array(), $content = null) {
+	public function channel($attrib = [], $elements = [], $content = null) {
 		$view =& ClassRegistry::getObject('view');
 
 		if (!isset($elements['title']) && !empty($view->pageTitle)) {
 			$elements['title'] = $view->pageTitle;
 		}
-		if (!isset($elements['link'])) {
-			$elements['link'] = '/';
-		}
-		if (!isset($elements['description'])) {
-			$elements['description'] = '';
-		}
+		$elements['link'] ??= '/';
+		$elements['description'] ??= '';
 		$elements['link'] = $this->url($elements['link'], true);
 
 		$elems = '';
 		foreach ($elements as $elem => $data) {
-			$attributes = array();
+			$attributes = [];
 			if (is_array($data)) {
 				if (strtolower($elem) == 'cloud') {
 					$attributes = $data;
-					$data = array();
+					$data = [];
 				} elseif (isset($data['attrib']) && is_array($data['attrib'])) {
 					$attributes = $data['attrib'];
 					unset($data['attrib']);
 				} else {
 					$innerElements = '';
 					foreach ($data as $subElement => $value) {
-						$innerElements .= $this->elem($subElement, array(), $value);
+						$innerElements .= $this->elem($subElement, [], $value);
 					}
 					$data = $innerElements;
 				}
@@ -177,7 +173,7 @@ class RssHelper extends XmlHelper {
  * @return string A set of RSS `<item />` elements
  * @access public
  */
-	function items($items, $callback = null) {
+	public function items($items, $callback = null) {
 		if ($callback != null) {
 			$items = array_map($callback, $items);
 		}
@@ -186,7 +182,7 @@ class RssHelper extends XmlHelper {
 		$c = count($items);
 
 		for ($i = 0; $i < $c; $i++) {
-			$out .= $this->item(array(), $items[$i]);
+			$out .= $this->item([], $items[$i]);
 		}
 		return $out;
 	}
@@ -199,7 +195,7 @@ class RssHelper extends XmlHelper {
  * @return string An RSS `<item />` element
  * @access public
  */
-	function item($att = array(), $elements = array()) {
+	public function item($att = [], $elements = []) {
 		$content = null;
 
 		if (isset($elements['link']) && !isset($elements['guid'])) {
@@ -207,7 +203,7 @@ class RssHelper extends XmlHelper {
 		}
 
 		foreach ($elements as $key => $val) {
-			$attrib = array();
+			$attrib = [];
 			
 			$escape = true;
 			if (is_array($val) && isset($val['convertEntities'])) {
@@ -222,7 +218,7 @@ class RssHelper extends XmlHelper {
 				case 'category' :
 					if (is_array($val) && !empty($val[0])) {
 						foreach ($val as $category) {
-							$attrib = array();
+							$attrib = [];
 							if (isset($category['domain'])) {
 								$attrib['domain'] = $category['domain'];
 								unset($category['domain']);
@@ -256,7 +252,7 @@ class RssHelper extends XmlHelper {
 				break;
 				case 'enclosure':
 					if (is_string($val['url']) && is_file(WWW_ROOT . $val['url']) && file_exists(WWW_ROOT . $val['url'])) {
-						if (!isset($val['length']) && strpos($val['url'], '://') === false) {
+						if (!isset($val['length']) && !str_contains($val['url'], '://')) {
 							$val['length'] = sprintf("%u", filesize(WWW_ROOT . $val['url']));
 						}
 						if (!isset($val['type']) && function_exists('mime_content_type')) {
@@ -286,7 +282,7 @@ class RssHelper extends XmlHelper {
  * @return string An RSS-formatted timestamp
  * @see TimeHelper::toRSS
  */
-	function time($time) {
+	public function time($time) {
 		return $this->Time->toRSS($time);
 	}
 }

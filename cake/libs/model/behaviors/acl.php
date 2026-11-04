@@ -35,7 +35,7 @@ class AclBehavior extends ModelBehavior {
  * @var array
  * @access protected
  */
-	var $__typeMaps = array('requester' => 'Aro', 'controlled' => 'Aco');
+	public $__typeMaps = ['requester' => 'Aro', 'controlled' => 'Aco'];
 
 /**
  * Sets up the configuation for the model, and loads ACL models if they haven't been already
@@ -44,11 +44,11 @@ class AclBehavior extends ModelBehavior {
  * @return void
  * @access public
  */
-	function setup(&$model, $config = array()) {
+	public function setup(&$model, $config = []) {
 		if (is_string($config)) {
-			$config = array('type' => $config);
+			$config = ['type' => $config];
 		}
-		$this->settings[$model->name] = array_merge(array('type' => 'requester'), (array)$config);
+		$this->settings[$model->name] = array_merge(['type' => 'requester'], (array)$config);
 		$this->settings[$model->name]['type'] = strtolower($this->settings[$model->name]['type']);
 
 		$type = $this->__typeMaps[$this->settings[$model->name]['type']];
@@ -73,10 +73,10 @@ class AclBehavior extends ModelBehavior {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Behaviors/ACL.html#node
  */
-	function node(&$model, $ref = null) {
+	public function node(&$model, $ref = null) {
 		$type = $this->__typeMaps[$this->settings[$model->name]['type']];
 		if (empty($ref)) {
-			$ref = array('model' => $model->name, 'foreign_key' => $model->id);
+			$ref = ['model' => $model->name, 'foreign_key' => $model->id];
 		}
 		return $model->{$type}->node($ref);
 	}
@@ -88,20 +88,20 @@ class AclBehavior extends ModelBehavior {
  * @return void
  * @access public
  */
-	function afterSave(&$model, $created) {
+	public function afterSave(&$model, $created) {
 		$type = $this->__typeMaps[$this->settings[$model->name]['type']];
 		$parent = $model->parentNode();
 		if (!empty($parent)) {
 			$parent = $this->node($model, $parent);
 		}
-		$data = array(
-			'parent_id' => isset($parent[0][$type]['id']) ? $parent[0][$type]['id'] : null,
+		$data = [
+			'parent_id' => $parent[0][$type]['id'] ?? null,
 			'model' => $model->name,
 			'foreign_key' => $model->id
-		);
+		];
 		if (!$created) {
 			$node = $this->node($model);
-			$data['id'] = isset($node[0][$type]['id']) ? $node[0][$type]['id'] : null;
+			$data['id'] = $node[0][$type]['id'] ?? null;
 		}
 		$model->{$type}->create();
 		$model->{$type}->save($data);
@@ -113,7 +113,7 @@ class AclBehavior extends ModelBehavior {
  * @return void
  * @access public
  */
-	function afterDelete(&$model) {
+	public function afterDelete(&$model) {
 		$type = $this->__typeMaps[$this->settings[$model->name]['type']];
 		$node = Set::extract($this->node($model), "0.{$type}.id");
 		if (!empty($node)) {

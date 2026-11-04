@@ -26,7 +26,7 @@ class TermsController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Term');
+	public $uses = ['Term'];
 
 	public function beforeFilter() {
 		parent::beforeFilter();
@@ -39,138 +39,138 @@ class TermsController extends AppController {
 
 	public function admin_index($vocabularyId = null) {
 		if (!$vocabularyId) {
-			$this->redirect(array(
+			$this->redirect([
 				'controller' => 'vocabularies',
 				'action' => 'index',
-			));
+			]);
 		}
 		$vocabulary = $this->Term->Vocabulary->findById($vocabularyId);
 		if (!isset($vocabulary['Vocabulary']['id'])) {
-			$this->Session->setFlash(__('Invalid Vocabulary ID.', true), 'default', array('class' => 'error'));
-			$this->redirect(array(
+			$this->Session->setFlash(__('Invalid Vocabulary ID.', true), 'default', ['class' => 'error']);
+			$this->redirect([
 				'controller' => 'vocabularies',
 				'action' => 'index',
-			));
+			]);
 		}
 		$this->set('title_for_layout', sprintf(__('Vocabulary: %s', true), $vocabulary['Vocabulary']['title']));
 
-		$termsTree = $this->Term->Taxonomy->getTree($vocabulary['Vocabulary']['alias'], array(
+		$termsTree = $this->Term->Taxonomy->getTree($vocabulary['Vocabulary']['alias'], [
 			'key' => 'id',
 			'value' => 'title',
-		));
-		$terms = $this->Term->find('all', array(
-			'conditions' => array(
+		]);
+		$terms = $this->Term->find('all', [
+			'conditions' => [
 				'Term.id' => array_keys($termsTree),
-			),
-		));
+			],
+		]);
 		$terms = Set::combine($terms, '{n}.Term.id', '{n}.Term');
 		$this->set(compact('termsTree', 'vocabulary', 'terms'));
 	}
 
 	public function admin_add($vocabularyId = null) {
 		if (!$vocabularyId) {
-			$this->redirect(array(
+			$this->redirect([
 				'controller' => 'vocabularies',
 				'action' => 'index',
-			));
+			]);
 		}
-		$vocabulary = $this->Term->Vocabulary->find('first', array(
-			'conditions' => array(
+		$vocabulary = $this->Term->Vocabulary->find('first', [
+			'conditions' => [
 				'Vocabulary.id' => $vocabularyId,
-			),
-		));
+			],
+		]);
 		if (!isset($vocabulary['Vocabulary']['id'])) {
-			$this->redirect(array(
+			$this->redirect([
 				'controller' => 'vocabularies',
 				'action' => 'index',
-			));
+			]);
 		}
 		$this->set('title_for_layout', sprintf(__('%s: Add Term', true), $vocabulary['Vocabulary']['title']));
 
 		if (!empty($this->data)) {
 			$termId = $this->Term->saveAndGetId($this->data['Term']);
 			if ($termId) {
-				$termInVocabulary = $this->Term->Taxonomy->hasAny(array(
+				$termInVocabulary = $this->Term->Taxonomy->hasAny([
 					'Taxonomy.vocabulary_id' => $vocabularyId,
 					'Taxonomy.term_id' => $termId,
-				));
+				]);
 				if ($termInVocabulary) {
-					$this->Session->setFlash(__('Term with same slug already exists in the vocabulary.', true), 'default', array('class' => 'error'));
+					$this->Session->setFlash(__('Term with same slug already exists in the vocabulary.', true), 'default', ['class' => 'error']);
 				} else {
-					$this->Term->Taxonomy->Behaviors->attach('Tree', array(
-						'scope' => array(
+					$this->Term->Taxonomy->Behaviors->attach('Tree', [
+						'scope' => [
 							'Taxonomy.vocabulary_id' => $vocabularyId,
-						),
-					));
-					$taxonomy = array(
+						],
+					]);
+					$taxonomy = [
 						'parent_id' => $this->data['Taxonomy']['parent_id'],
 						'term_id' => $termId,
 						'vocabulary_id' => $vocabularyId,
-					);
+					];
 					if ($this->Term->Taxonomy->save($taxonomy)) {
-						$this->Session->setFlash(__('Term saved successfuly.', true), 'default', array('class' => 'success'));
-						$this->redirect(array(
+						$this->Session->setFlash(__('Term saved successfuly.', true), 'default', ['class' => 'success']);
+						$this->redirect([
 							'action' => 'index',
 							$vocabularyId,
-						));
+						]);
 					} else {
-						$this->Session->setFlash(__('Term could not be added to the vocabulary. Please try again.', true), 'default', array('class' => 'error'));
+						$this->Session->setFlash(__('Term could not be added to the vocabulary. Please try again.', true), 'default', ['class' => 'error']);
 					}
 				}
 			} else {
-				$this->Session->setFlash(__('Term could not be saved. Please try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('Term could not be saved. Please try again.', true), 'default', ['class' => 'error']);
 			}
 		}
-		$parentTree = $this->Term->Taxonomy->getTree($vocabulary['Vocabulary']['alias'], array('taxonomyId' => true));
+		$parentTree = $this->Term->Taxonomy->getTree($vocabulary['Vocabulary']['alias'], ['taxonomyId' => true]);
 		$this->set(compact('vocabulary', 'parentTree', 'vocabularyId'));
 	}
 
 	public function admin_edit($id = null, $vocabularyId = null) {
 		if (!$vocabularyId) {
-			$this->redirect(array(
+			$this->redirect([
 				'controller' => 'vocabularies',
 				'action' => 'index',
-			));
+			]);
 		}
-		$vocabulary = $this->Term->Vocabulary->find('first', array(
-			'conditions' => array(
+		$vocabulary = $this->Term->Vocabulary->find('first', [
+			'conditions' => [
 				'Vocabulary.id' => $vocabularyId,
-			),
-		));
+			],
+		]);
 		if (!isset($vocabulary['Vocabulary']['id'])) {
-			$this->redirect(array(
+			$this->redirect([
 				'controller' => 'vocabularies',
 				'action' => 'index',
-			));
+			]);
 		}
-		$term = $this->Term->find('first', array(
-			'conditions' => array(
+		$term = $this->Term->find('first', [
+			'conditions' => [
 				'Term.id' => $id,
-			),
-		));
+			],
+		]);
 		if (!isset($term['Term']['id'])) {
-			$this->redirect(array(
+			$this->redirect([
 				'controller' => 'vocabularies',
 				'action' => 'index',
-			));
+			]);
 		}
-		$taxonomy = $this->Term->Taxonomy->find('first', array(
-			'conditions' => array(
+		$taxonomy = $this->Term->Taxonomy->find('first', [
+			'conditions' => [
 				'Taxonomy.term_id' => $id,
 				'Taxonomy.vocabulary_id' => $vocabularyId,
-			),
-		));
+			],
+		]);
 		if (!isset($taxonomy['Taxonomy']['id'])) {
-			$this->redirect(array(
+			$this->redirect([
 				'controller' => 'vocabularies',
 				'action' => 'index',
-			));
+			]);
 		}
 		$this->set('title_for_layout', sprintf(__('%s: Edit Term', true), $vocabulary['Vocabulary']['title']));
 
 		if (!empty($this->data)) {
 			if ($term['Term']['slug'] != $this->data['Term']['slug']) {
-				if ($this->Term->hasAny(array('Term.slug' => $this->data['Term']['slug']))) {
+				if ($this->Term->hasAny(['Term.slug' => $this->data['Term']['slug']])) {
 					$termId = false;
 				} else {
 					$termId = $this->Term->saveAndGetId($this->data['Term']);
@@ -185,53 +185,53 @@ class TermsController extends AppController {
 			}
 
 			if ($termId) {
-				$termInVocabulary = $this->Term->Taxonomy->hasAny(array(
+				$termInVocabulary = $this->Term->Taxonomy->hasAny([
 					'Taxonomy.id !=' => $taxonomy['Taxonomy']['id'],
 					'Taxonomy.vocabulary_id' => $vocabularyId,
 					'Taxonomy.term_id' => $termId,
-				));
+				]);
 				if ($termInVocabulary) {
-					$this->Session->setFlash(__('Term with same slug already exists in the vocabulary.', true), 'default', array('class' => 'error'));
+					$this->Session->setFlash(__('Term with same slug already exists in the vocabulary.', true), 'default', ['class' => 'error']);
 				} else {
-					$this->Term->Taxonomy->Behaviors->attach('Tree', array(
-						'scope' => array(
+					$this->Term->Taxonomy->Behaviors->attach('Tree', [
+						'scope' => [
 							'Taxonomy.vocabulary_id' => $vocabularyId,
-						),
-					));
-					$taxonomy = array(
+						],
+					]);
+					$taxonomy = [
 						'id' => $taxonomy['Taxonomy']['id'],
 						'parent_id' => $this->data['Taxonomy']['parent_id'],
 						'term_id' => $termId,
 						'vocabulary_id' => $vocabularyId,
-					);
+					];
 					if ($this->Term->Taxonomy->save($taxonomy)) {
-						$this->Session->setFlash(__('Term saved successfuly.', true), 'default', array('class' => 'success'));
-						$this->redirect(array(
+						$this->Session->setFlash(__('Term saved successfuly.', true), 'default', ['class' => 'success']);
+						$this->redirect([
 							'action' => 'index',
 							$vocabularyId,
-						));
+						]);
 					} else {
-						$this->Session->setFlash(__('Term could not be added to the vocabulary. Please try again.', true), 'default', array('class' => 'error'));
+						$this->Session->setFlash(__('Term could not be added to the vocabulary. Please try again.', true), 'default', ['class' => 'error']);
 					}
 				}
 			} else {
-				$this->Session->setFlash(__('Term could not be saved. Please try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('Term could not be saved. Please try again.', true), 'default', ['class' => 'error']);
 			}
 		} else {
 			$this->data['Taxonomy'] = $taxonomy['Taxonomy'];
 			$this->data['Term'] = $term['Term'];
 		}
-		$parentTree = $this->Term->Taxonomy->getTree($vocabulary['Vocabulary']['alias'], array('taxonomyId' => true));
+		$parentTree = $this->Term->Taxonomy->getTree($vocabulary['Vocabulary']['alias'], ['taxonomyId' => true]);
 		$this->set(compact('vocabulary', 'parentTree', 'term', 'taxonomy', 'vocabularyId'));
 	}
 
 	public function admin_delete($id = null, $vocabularyId = null) {
 		if (!$id || !$vocabularyId) {
-			$this->Session->setFlash(__('Invalid id for Term', true), 'default', array('class' => 'error'));
-			$this->redirect(array(
+			$this->Session->setFlash(__('Invalid id for Term', true), 'default', ['class' => 'error']);
+			$this->redirect([
 				'action'=>'index',
 				$vocabularyId,
-			));
+			]);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
@@ -239,90 +239,90 @@ class TermsController extends AppController {
 		}
 		$taxonomyId = $this->Term->Taxonomy->termInVocabulary($id, $vocabularyId);
 		if (!$taxonomyId) {
-			$this->redirect(array(
+			$this->redirect([
 				'action' => 'index',
 				$vocabularyId,
-			));
+			]);
 		}
-		$this->Term->Taxonomy->Behaviors->attach('Tree', array(
-			'scope' => array(
+		$this->Term->Taxonomy->Behaviors->attach('Tree', [
+			'scope' => [
 				'Taxonomy.vocabulary_id' => $vocabularyId,
-			),
-		));
+			],
+		]);
 		if ($this->Term->Taxonomy->delete($taxonomyId)) {
-			$this->Session->setFlash(__('Term deleted', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Term deleted', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('Term could not be deleted. Please, try again.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Term could not be deleted. Please, try again.', true), 'default', ['class' => 'error']);
 		}
-		$this->redirect(array(
+		$this->redirect([
 			'action' => 'index',
 			$vocabularyId,
-		));
+		]);
 	}
 
 	public function admin_moveup($id = null, $vocabularyId = null, $step = 1) {
 		if (!$id || !$vocabularyId) {
-			$this->Session->setFlash(__('Invalid id for Term', true), 'default', array('class' => 'error'));
-			$this->redirect(array(
+			$this->Session->setFlash(__('Invalid id for Term', true), 'default', ['class' => 'error']);
+			$this->redirect([
 				'action'=>'index',
 				$vocabularyId,
-			));
+			]);
 		}
 		$taxonomyId = $this->Term->Taxonomy->termInVocabulary($id, $vocabularyId);
 		if (!$taxonomyId) {
-			$this->redirect(array(
+			$this->redirect([
 				'action' => 'index',
 				$vocabularyId,
-			));
+			]);
 		}
-		$this->Term->Taxonomy->Behaviors->attach('Tree', array(
-			'scope' => array(
+		$this->Term->Taxonomy->Behaviors->attach('Tree', [
+			'scope' => [
 				'Taxonomy.vocabulary_id' => $vocabularyId,
-			),
-		));
+			],
+		]);
 		if( $this->Term->Taxonomy->moveup($taxonomyId, $step) ) {
-			$this->Session->setFlash(__('Moved up successfully', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Moved up successfully', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('Could not move up', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Could not move up', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array(
+		$this->redirect([
 			'action' => 'index',
 			$vocabularyId,
-		));
+		]);
 	}
 
 	public function admin_movedown($id = null, $vocabularyId = null, $step = 1) {
 		if (!$id || !$vocabularyId) {
-			$this->Session->setFlash(__('Invalid id for Term', true), 'default', array('class' => 'error'));
-			$this->redirect(array(
+			$this->Session->setFlash(__('Invalid id for Term', true), 'default', ['class' => 'error']);
+			$this->redirect([
 				'action'=>'index',
 				$vocabularyId,
-			));
+			]);
 		}
 		$taxonomyId = $this->Term->Taxonomy->termInVocabulary($id, $vocabularyId);
 		if (!$taxonomyId) {
-			$this->redirect(array(
+			$this->redirect([
 				'action' => 'index',
 				$vocabularyId,
-			));
+			]);
 		}
-		$this->Term->Taxonomy->Behaviors->attach('Tree', array(
-			'scope' => array(
+		$this->Term->Taxonomy->Behaviors->attach('Tree', [
+			'scope' => [
 				'Taxonomy.vocabulary_id' => $vocabularyId,
-			),
-		));
+			],
+		]);
 
 		if( $this->Term->Taxonomy->movedown($taxonomyId, $step) ) {
-			$this->Session->setFlash(__('Moved down successfully', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Moved down successfully', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('Could not move down', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Could not move down', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array(
+		$this->redirect([
 			'action' => 'index',
 			$vocabularyId,
-		));
+		]);
 	}
 
 }

@@ -34,11 +34,11 @@ class CakeText {
  * @return RFC 4122 UUID
  * @static
  */
-	static function uuid() {
+	public static function uuid() {
 		$node = env('SERVER_ADDR');
 		$pid = null;
 
-		if (strpos($node, ':') !== false) {
+		if (str_contains($node, ':')) {
 			if (substr_count($node, '::')) {
 				$node = str_replace(
 					'::', str_repeat(':0000', 8 - substr_count($node, ':')) . ':', $node
@@ -93,7 +93,7 @@ class CakeText {
 			$pid = mt_rand(0, 0xfff) | 0x4000;
 		}
 
-		list($timeMid, $timeLow) = explode(' ', microtime());
+		[$timeMid, $timeLow] = explode(' ', microtime());
 		$uuid = sprintf(
 			"%08x-%04x-%04x-%02x%02x-%04x%08x", (int)$timeLow, (int)substr($timeMid, 2) & 0xffff,
 			mt_rand(0, 0xfff) | 0x4000, mt_rand(0, 0x3f) | 0x80, mt_rand(0, 0xff), $pid, $node
@@ -114,7 +114,7 @@ class CakeText {
  * @access public
  * @static
  */
-	static function tokenize($data, $separator = ',', $leftBound = '(', $rightBound = ')') {
+	public static function tokenize($data, $separator = ',', $leftBound = '(', $rightBound = ')') {
 		if (empty($data) || is_array($data)) {
 			return $data;
 		}
@@ -122,17 +122,17 @@ class CakeText {
 		$depth = 0;
 		$offset = 0;
 		$buffer = '';
-		$results = array();
+		$results = [];
 		$length = strlen($data);
 		$open = false;
 
 		while ($offset <= $length) {
 			$tmpOffset = -1;
-			$offsets = array(
+			$offsets = [
 				strpos($data, $separator, $offset),
 				strpos($data, $leftBound, $offset),
 				strpos($data, $rightBound, $offset)
-			);
+			];
 			for ($i = 0; $i < 3; $i++) {
 				if ($offsets[$i] !== false && ($offsets[$i] < $tmpOffset || $tmpOffset == -1)) {
 					$tmpOffset = $offsets[$i];
@@ -177,7 +177,7 @@ class CakeText {
 		if (!empty($results)) {
 			$data = array_map('trim', $results);
 		} else {
-			$data = array();
+			$data = [];
 		}
 		return $data;
 	}
@@ -205,10 +205,10 @@ class CakeText {
  * @access public
  * @static
  */
-	static function insert($str, $data, $options = array()) {
-		$defaults = array(
+	public static function insert($str, $data, $options = []) {
+		$defaults = [
 			'before' => ':', 'after' => null, 'escape' => '\\', 'format' => null, 'clean' => false
-		);
+		];
 		$options += $defaults;
 		$format = $options['format'];
 		$data = (array)$data;
@@ -216,16 +216,14 @@ class CakeText {
 			return ($options['clean']) ? CakeText::cleanInsert($str, $options) : $str;
 		}
 
-		if (!isset($format)) {
-			$format = sprintf(
+		$format ??= sprintf(
 				'/(?<!%s)%s%%s%s/',
 				preg_quote($options['escape'], '/'),
 				str_replace('%', '%%', preg_quote($options['before'], '/')),
 				str_replace('%', '%%', preg_quote($options['after'], '/'))
 			);
-		}
 
-		if (strpos($str, '?') !== false && is_numeric(key($data))) {
+		if (str_contains($str, '?') && is_numeric(key($data))) {
 			$offset = 0;
 			while (($pos = strpos($str, '?', $offset)) !== false) {
 				$val = array_shift($data);
@@ -236,7 +234,7 @@ class CakeText {
 		} else {
 			asort($data);
 
-			$hashKeys = array();
+			$hashKeys = [];
 			foreach ($data as $key => $value) {
 				$hashKeys[] = crc32($key);
 			}
@@ -273,24 +271,24 @@ class CakeText {
  * @static
  * @see CakeText::insert()
  */
-	static function cleanInsert($str, $options) {
+	public static function cleanInsert($str, $options) {
 		$clean = $options['clean'];
 		if (!$clean) {
 			return $str;
 		}
 		if ($clean === true) {
-			$clean = array('method' => 'text');
+			$clean = ['method' => 'text'];
 		}
 		if (!is_array($clean)) {
-			$clean = array('method' => $options['clean']);
+			$clean = ['method' => $options['clean']];
 		}
 		switch ($clean['method']) {
 			case 'html':
-				$clean = array_merge(array(
+				$clean = array_merge([
 					'word' => '[\w,.]+',
 					'andText' => true,
 					'replacement' => '',
-				), $clean);
+				], $clean);
 				$kleenex = sprintf(
 					'/[\s]*[a-z]+=(")(%s%s%s[\s]*)+\\1/i',
 					preg_quote($options['before'], '/'),
@@ -299,16 +297,16 @@ class CakeText {
 				);
 				$str = preg_replace($kleenex, $clean['replacement'], $str);
 				if ($clean['andText']) {
-					$options['clean'] = array('method' => 'text');
+					$options['clean'] = ['method' => 'text'];
 					$str = CakeText::cleanInsert($str, $options);
 				}
 				break;
 			case 'text':
-				$clean = array_merge(array(
+				$clean = array_merge([
 					'word' => '[\w,.]+',
 					'gap' => '[\s]*(?:(?:and|or)[\s]*)?',
 					'replacement' => '',
-				), $clean);
+				], $clean);
 
 				$kleenex = sprintf(
 					'/(%s%s%s%s|%s%s%s%s)/',

@@ -26,7 +26,7 @@ class FilemanagerController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Setting', 'User');
+	public $uses = ['Setting', 'User'];
 
 /**
  * Helpers used by the Controller
@@ -34,17 +34,17 @@ class FilemanagerController extends AppController {
  * @var array
  * @access public
  */
-	public $helpers = array('Html', 'Form', 'Filemanager');
+	public $helpers = ['Html', 'Form', 'Filemanager'];
 
-	public $deletablePaths = array();
+	public $deletablePaths = [];
 
 	public function beforeFilter() {
 		parent::beforeFilter();
 
-		$this->deletablePaths = array(
+		$this->deletablePaths = [
 			APP.'views'.DS.'themed'.DS,
 			WWW_ROOT,
-		);
+		];
 		$this->set('deletablePaths', $this->deletablePaths);
 
 		//App::import('Core', 'Folder');
@@ -74,16 +74,16 @@ class FilemanagerController extends AppController {
  */
 	protected function _isDeletable($path) {
 		$path = realpath($path);
-		$regex = array();
+		$regex = [];
 		for ($i = 0, $ii = count($this->deletablePaths); $i < $ii; $i++) {
 			$regex[] = '(^' . preg_quote(realpath($this->deletablePaths[$i]), '/') . ')';
 		}
-		$regex = '/' . join($regex, '|') . '/';
+		$regex = '/' . join('|', $regex) . '/';
 		return preg_match($regex, $path) > 0;
 	}
 
 	public function admin_index() {
-		$this->redirect(array('action' => 'browse'));
+		$this->redirect(['action' => 'browse']);
 		die();
 	}
 
@@ -105,7 +105,7 @@ class FilemanagerController extends AppController {
 			$path = APP;
 		}
 
-		$blacklist = array('.git', '.svn', '.CVS');
+		$blacklist = ['.git', '.svn', '.CVS'];
 		$regex = '/(' . implode('|', $blacklist) . ')/';
 		if (in_array(basename($path), $blacklist) || preg_match($regex, $path)
 			) {
@@ -125,11 +125,11 @@ class FilemanagerController extends AppController {
 			$path = $this->params['url']['path'];
 			$absolutefilepath = $path;
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'browse'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'browse']);
 		}
 		if (!$this->_isEditable($path)) {
 			$this->Session->setFlash(__(sprintf('Path %s is restricted', $path), true));
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'browse'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'browse']);
 		}
 		$this->set('title_for_layout', sprintf(__('Edit file: %s', true), $path));
 
@@ -142,7 +142,7 @@ class FilemanagerController extends AppController {
 
 		if (!empty($this->data) ) {
 			if( $this->file->write($this->data['Filemanager']['content']) ) {
-				$this->Session->setFlash(__('File saved successfully', true), 'default', array('class' => 'success'));
+				$this->Session->setFlash(__('File saved successfully', true), 'default', ['class' => 'success']);
 			}
 		}
 
@@ -165,8 +165,8 @@ class FilemanagerController extends AppController {
 			is_uploaded_file($this->data['Filemanager']['file']['tmp_name'])) {
 			$destination = $path.$this->data['Filemanager']['file']['name'];
 			move_uploaded_file($this->data['Filemanager']['file']['tmp_name'], $destination);
-			$this->Session->setFlash(__('File uploaded successfully.', true), 'default', array('class' => 'success'));
-			$redirectUrl = Router::url(array('controller' => 'filemanager', 'action' => 'browse'), true) . '?path=' . urlencode($path);
+			$this->Session->setFlash(__('File uploaded successfully.', true), 'default', ['class' => 'success']);
+			$redirectUrl = Router::url(['controller' => 'filemanager', 'action' => 'browse'], true) . '?path=' . urlencode($path);
 
 			$this->redirect($redirectUrl);
 		}
@@ -176,12 +176,12 @@ class FilemanagerController extends AppController {
 		if (isset($this->params['url']['path'])) {
 			$path = $this->params['url']['path'];
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'browse'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'browse']);
 		}
 
 		if (!$this->_isDeletable($path)) {
 			$this->Session->setFlash(__(sprintf('Path %s is restricted', $path), true));
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'browse'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'browse']);
 		}
 
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
@@ -190,15 +190,15 @@ class FilemanagerController extends AppController {
 		}
 
 		if (file_exists($path) && unlink($path)) {
-			$this->Session->setFlash(__('File deleted', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('File deleted', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('An error occured', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('An error occured', true), 'default', ['class' => 'error']);
 		}
 
 		if (isset($_SERVER['HTTP_REFERER'])) {
 			$this->redirect($_SERVER['HTTP_REFERER']);
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'index'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'index']);
 		}
 
 		exit();
@@ -208,7 +208,7 @@ class FilemanagerController extends AppController {
 		if (isset($this->params['url']['path'])) {
 			$path = $this->params['url']['path'];
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'browse'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'browse']);
 		}
 
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
@@ -217,15 +217,15 @@ class FilemanagerController extends AppController {
 		}
 
 		if (is_dir($path) && rmdir($path)) {
-			$this->Session->setFlash(__('Directory deleted', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Directory deleted', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('An error occured', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('An error occured', true), 'default', ['class' => 'error']);
 		}
 
 		if (isset($_SERVER['HTTP_REFERER'])) {
 			$this->redirect($_SERVER['HTTP_REFERER']);
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'index'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'index']);
 		}
 
 		exit();
@@ -235,7 +235,7 @@ class FilemanagerController extends AppController {
 		if (isset($this->params['url']['path'])) {
 			$path = $this->params['url']['path'];
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'browse'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'browse']);
 		}
 
 		if (isset($this->params['url']['newpath'])) {
@@ -245,7 +245,7 @@ class FilemanagerController extends AppController {
 		if (isset($_SERVER['HTTP_REFERER'])) {
 			$this->redirect($_SERVER['HTTP_REFERER']);
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'index'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'index']);
 		}
 	}
 
@@ -255,17 +255,17 @@ class FilemanagerController extends AppController {
 		if (isset($this->params['url']['path'])) {
 			$path = $this->params['url']['path'];
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'browse'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'browse']);
 		}
 
 		if (!empty($this->data)) {
 			$this->folder = new Folder;
 			if ($this->folder->create($path . $this->data['Filemanager']['name'])) {
-				$this->Session->setFlash(__('Directory created successfully.', true), 'default', array('class' => 'success'));
-				$redirectUrl = Router::url(array('controller' => 'filemanager', 'action' => 'browse'), true) . '?path=' . urlencode($path);
+				$this->Session->setFlash(__('Directory created successfully.', true), 'default', ['class' => 'success']);
+				$redirectUrl = Router::url(['controller' => 'filemanager', 'action' => 'browse'], true) . '?path=' . urlencode($path);
 				$this->redirect($redirectUrl);
 			} else {
-				$this->Session->setFlash(__('An error occured', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('An error occured', true), 'default', ['class' => 'error']);
 			}
 		}
 
@@ -278,16 +278,16 @@ class FilemanagerController extends AppController {
 		if (isset($this->params['url']['path'])) {
 			$path = $this->params['url']['path'];
 		} else {
-			$this->redirect(array('controller' => 'filemanager', 'action' => 'browse'));
+			$this->redirect(['controller' => 'filemanager', 'action' => 'browse']);
 		}
 
 		if (!empty($this->data)) {
 			if (touch($path . $this->data['Filemanager']['name'])) {
-				$this->Session->setFlash(__('File created successfully.', true), 'default', array('class' => 'success'));
-				$redirectUrl = Router::url(array('controller' => 'filemanager', 'action' => 'browse'), true) . '?path=' . urlencode($path);
+				$this->Session->setFlash(__('File created successfully.', true), 'default', ['class' => 'success']);
+				$redirectUrl = Router::url(['controller' => 'filemanager', 'action' => 'browse'], true) . '?path=' . urlencode($path);
 				$this->redirect($redirectUrl);
 			} else {
-				$this->Session->setFlash(__('An error occured', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('An error occured', true), 'default', ['class' => 'error']);
 			}
 		}
 

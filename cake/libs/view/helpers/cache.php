@@ -37,7 +37,7 @@ class CacheHelper extends AppHelper {
  * @var array
  * @access private
  */
-	var $__replace = array();
+	public $__replace = [];
 
 /**
  * Array of string that are replace with there var replace above.
@@ -46,7 +46,7 @@ class CacheHelper extends AppHelper {
  * @var array
  * @access private
  */
-	var $__match = array();
+	public $__match = [];
 
 /**
  * cache action time
@@ -54,14 +54,14 @@ class CacheHelper extends AppHelper {
  * @var object
  * @access public
  */
-	var $cacheAction;
+	public $cacheAction;
 
 /**
  * Counter used for counting nocache section tags.
  *
  * @var integer
  */
-	var $_counter = 0;
+	public $_counter = 0;
 
 /**
  * Main method used to cache a view
@@ -71,7 +71,7 @@ class CacheHelper extends AppHelper {
  * @param boolean $cache Whether or not a cache file should be written.
  * @return string view ouput
  */
-	function cache($file, $out, $cache = false) {
+	public function cache($file, $out, $cache = false) {
 		$cacheTime = 0;
 		$useCallbacks = false;
 		if (is_array($this->cacheAction)) {
@@ -92,7 +92,7 @@ class CacheHelper extends AppHelper {
 			$options = $this->cacheAction;
 			if (isset($this->cacheAction[$index])) {
 				if (is_array($this->cacheAction[$index])) {
-					$options = array_merge(array('duration' => 0, 'callbacks' => false), $this->cacheAction[$index]);
+					$options = array_merge(['duration' => 0, 'callbacks' => false], $this->cacheAction[$index]);
 				} else {
 					$cacheTime = $this->cacheAction[$index];
 				}
@@ -108,7 +108,7 @@ class CacheHelper extends AppHelper {
 		}
 
 		if ($cacheTime != '' && $cacheTime > 0) {
-			$out = preg_replace_callback('/<cake\:nocache>/', array($this, '_replaceSection'), $out);
+			$out = preg_replace_callback('/<cake\:nocache>/', [$this, '_replaceSection'], $out);
 
 			$this->__parseFile($file, $out);
 			if ($cache === true) {
@@ -129,7 +129,7 @@ class CacheHelper extends AppHelper {
  * @param string $cache The cached content
  * @access private
  */
-	function __parseFile($file, $cache) {
+	public function __parseFile($file, $cache) {
 		if (is_file($file)) {
 			$file = file_get_contents($file);
 		} elseif ($file = fileExistsInPath($file)) {
@@ -170,7 +170,7 @@ class CacheHelper extends AppHelper {
  * @param string $content The content to munge.
  * @return string The content with cake:nocache tags replaced.
  */
-	function _replaceSection($matches) {
+	public function _replaceSection($matches) {
 		$this->_counter += 1;
 		return sprintf('<cake:nocache:%03d>', $this->_counter);
 	}
@@ -183,7 +183,7 @@ class CacheHelper extends AppHelper {
  * @param string $content String to remove tags from.
  * @return string String with tags removed.
  */
-	function _stripTags($content) {
+	public function _stripTags($content) {
 		return preg_replace('#<\/?cake\:nocache(\:\d{3})?>#', '', $content);
 	}
 
@@ -194,7 +194,7 @@ class CacheHelper extends AppHelper {
  * @return string with all replacements made to <cake:nocache><cake:nocache>
  * @access private
  */
-	function __parseOutput($cache) {
+	public function __parseOutput($cache) {
 		$count = 0;
 		if (!empty($this->__match)) {
 			foreach ($this->__match as $found) {
@@ -203,7 +203,7 @@ class CacheHelper extends AppHelper {
 				$position = 0;
 
 				for ($i = 1; $i <= 1; $i++) {
-					$position = strpos($cache, $found, $position);
+					$position = strpos($cache, (string) $found, $position);
 
 					if ($position !== false) {
 						$cache = substr($original, 0, $position);
@@ -228,7 +228,7 @@ class CacheHelper extends AppHelper {
  * @return boolean success of caching view.
  * @access private
  */
-	function __writeFile($content, $timestamp, $useCallbacks = false) {
+	public function __writeFile($content, $timestamp, $useCallbacks = false) {
 		$now = time();
 
 		if (is_numeric($timestamp)) {

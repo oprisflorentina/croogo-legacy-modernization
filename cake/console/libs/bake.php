@@ -37,23 +37,23 @@ class BakeShell extends Shell {
  * @var array
  * @access public
  */
-	var $tasks = array('Project', 'DbConfig', 'Model', 'Controller', 'View', 'Plugin', 'Fixture', 'Test');
+	public $tasks = ['Project', 'DbConfig', 'Model', 'Controller', 'View', 'Plugin', 'Fixture', 'Test'];
 
 /**
  * Override loadTasks() to handle paths
  *
  * @access public
  */
-	function loadTasks() {
+	public function loadTasks() {
 		parent::loadTasks();
 		$task = Inflector::classify($this->command);
-		if (isset($this->{$task}) && !in_array($task, array('Project', 'DbConfig'))) {
+		if (isset($this->{$task}) && !in_array($task, ['Project', 'DbConfig'])) {
 			if (isset($this->params['connection'])) {
 				$this->{$task}->connection = $this->params['connection'];
 			}
 			foreach($this->args as $i => $arg) {
 				if (strpos($arg, '.')) {
-					list($this->params['plugin'], $this->args[$i]) = pluginSplit($arg);
+					[$this->params['plugin'], $this->args[$i]] = pluginSplit($arg);
 					break;
 				}
 			}
@@ -68,7 +68,7 @@ class BakeShell extends Shell {
  *
  * @access public
  */
-	function main() {
+	public function main() {
 		Configure::write('Cache.disable', 1);
 
 		if (!is_dir($this->DbConfig->path)) {
@@ -95,7 +95,7 @@ class BakeShell extends Shell {
 		$this->out('[T]est case');
 		$this->out('[Q]uit');
 
-		$classToBake = strtoupper($this->in(__('What would you like to Bake?', true), array('D', 'M', 'V', 'C', 'P', 'F', 'T', 'Q')));
+		$classToBake = strtoupper($this->in(__('What would you like to Bake?', true), ['D', 'M', 'V', 'C', 'P', 'F', 'T', 'Q']));
 		switch ($classToBake) {
 			case 'D':
 				$this->DbConfig->execute();
@@ -133,7 +133,7 @@ class BakeShell extends Shell {
  *
  * @access public
  */
-	function all() {
+	public function all() {
 		$this->hr();
 		$this->out('Bake All');
 		$this->hr();
@@ -147,7 +147,7 @@ class BakeShell extends Shell {
 			$name = $this->Model->getName($this->connection);
 		}
 
-		foreach (array('Model', 'Controller', 'View') as $task) {
+		foreach (['Model', 'Controller', 'View'] as $task) {
 			$this->{$task}->connection = $this->connection;
 			$this->{$task}->interactive = false;
 		}
@@ -163,7 +163,7 @@ class BakeShell extends Shell {
 			$modelExists = true;
 		} else {
 			App::import('Model', 'Model', false);
-			$object = new Model(array('name' => $name, 'ds' => $this->connection));
+			$object = new Model(['name' => $name, 'ds' => $this->connection]);
 		}
 
 		$modelBaked = $this->Model->bake($object, false);
@@ -186,7 +186,7 @@ class BakeShell extends Shell {
 				}
 			}
 			if (App::import('Controller', $controller)) {
-				$this->View->args = array($controller);
+				$this->View->args = [$controller];
 				$this->View->execute();
 				$this->out(sprintf(__('%s Views were baked.', true), $name));
 			}
@@ -203,7 +203,7 @@ class BakeShell extends Shell {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->out('CakePHP Bake:');
 		$this->hr();
 		$this->out('The Bake script generates controllers, views and models for your application.');

@@ -44,7 +44,7 @@ class AppModel extends Model {
  * @return mixed
  * @access public
  */
-	public function find($type = null, $options = array(), $order = null, $recursive = null) {
+	public function find($type = null, $options = [], $order = null, $recursive = null) {
 		if ($this->useCache) {
 			$cachedResults = $this->_findCached($type, $options);
 			if ($cachedResults) {
@@ -77,7 +77,7 @@ class AppModel extends Model {
  * @return void
  * @access private
  */
-	function _findCached($type, $options) {
+	public function _findCached($type, $options) {
 		if (isset($options['cache']['name']) && isset($options['cache']['config'])) {
 			$cacheName = $options['cache']['name'];
 		} elseif (isset($options['cache']['prefix']) && isset($options['cache']['config'])) {
@@ -107,14 +107,14 @@ class AppModel extends Model {
  */
 	public function updateAll($fields, $conditions = true) {
 		$args = func_get_args();
-		$output = call_user_func_array(array('parent', 'updateAll'), $args);
+		$output = call_user_func_array(['parent', 'updateAll'], $args);
 		if ($output) {
 			$created = false;
-			$options = array();
-			$this->Behaviors->trigger($this, 'afterSave', array(
+			$options = [];
+			$this->Behaviors->trigger($this, 'afterSave', [
 				$created,
 				$options,
-			));
+			]);
 			$this->afterSave($created);
 			$this->_clearCache();
 			return true;

@@ -3,21 +3,21 @@
  * Configuration
  *
  */
-	Configure::write('Translate.models', array(
-		'Node' => array(
+	Configure::write('Translate.models', [
+		'Node' => [
 			'title' => 'titleTranslation',
 			'excerpt' => 'excerptTranslation',
 			'body' => 'bodyTranslation',
-		),
-		'Block' => array(
+		],
+		'Block' => [
 			'title' => 'titleTranslation',
 			'body' => 'bodyTranslation',
-		),
-		'Link' => array(
+		],
+		'Link' => [
 			'title' => 'titleTranslation',
 			'description' => 'descriptionTranslation',
-		),
-	));
+		],
+	]);
 
 /**
  * Do not edit below this line unless you know what you are doing.

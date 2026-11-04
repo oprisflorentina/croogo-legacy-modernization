@@ -43,7 +43,7 @@ class Dispatcher extends CakeObject {
  * @var string
  * @access public
  */
-	var $base = false;
+	public $base = false;
 
 /**
  * webroot path
@@ -51,7 +51,7 @@ class Dispatcher extends CakeObject {
  * @var string
  * @access public
  */
-	var $webroot = '/';
+	public $webroot = '/';
 
 /**
  * Current URL
@@ -59,7 +59,7 @@ class Dispatcher extends CakeObject {
  * @var string
  * @access public
  */
-	var $here = false;
+	public $here = false;
 
 /**
  * the params for this request
@@ -67,12 +67,12 @@ class Dispatcher extends CakeObject {
  * @var string
  * @access public
  */
-	var $params = null;
+	public $params = null;
 
 /**
  * Constructor.
  */
-	function __construct($url = null, $base = false) {
+	public function __construct($url = null, $base = false) {
 		if ($base !== false) {
 			Configure::write('App.base', $base);
 		}
@@ -94,7 +94,7 @@ class Dispatcher extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function dispatch($url = null, $additionalParams = array()) {
+	public function dispatch($url = null, $additionalParams = []) {
 		if ($this->base === false) {
 			$this->base = $this->baseUrl();
 		}
@@ -116,13 +116,13 @@ class Dispatcher extends CakeObject {
 		$controller =& $this->__getController();
 
 		if (!is_object($controller)) {
-			Router::setRequestInfo(array($this->params, array('base' => $this->base, 'webroot' => $this->webroot)));
-			return $this->cakeError('missingController', array(array(
+			Router::setRequestInfo([$this->params, ['base' => $this->base, 'webroot' => $this->webroot]]);
+			return $this->cakeError('missingController', [[
 				'className' => Inflector::camelize($this->params['controller']) . 'Controller',
 				'webroot' => $this->webroot,
 				'url' => $url,
 				'base' => $this->base
-			)));
+			]]);
 		}
 		$privateAction = $this->params['action'][0] === '_';
 		$prefixes = Router::prefixes();
@@ -131,28 +131,28 @@ class Dispatcher extends CakeObject {
 			if (isset($this->params['prefix'])) {
 				$this->params['action'] = $this->params['prefix'] . '_' . $this->params['action'];
 			} elseif (strpos($this->params['action'], '_') > 0) {
-				list($prefix, $action) = explode('_', $this->params['action']);
+				[$prefix, $action] = explode('_', $this->params['action']);
 				$privateAction = in_array($prefix, $prefixes);
 			}
 		}
 
-		Router::setRequestInfo(array(
-			$this->params, array('base' => $this->base, 'here' => $this->here, 'webroot' => $this->webroot)
-		));
+		Router::setRequestInfo([
+			$this->params, ['base' => $this->base, 'here' => $this->here, 'webroot' => $this->webroot]
+		]);
 
 		if ($privateAction) {
-			return $this->cakeError('privateAction', array(array(
+			return $this->cakeError('privateAction', [[
 				'className' => Inflector::camelize($this->params['controller'] . "Controller"),
 				'action' => $this->params['action'],
 				'webroot' => $this->webroot,
 				'url' => $url,
 				'base' => $this->base
-			)));
+			]]);
 		}
 		$controller->base = $this->base;
 		$controller->here = $this->here;
 		$controller->webroot = $this->webroot;
-		$controller->plugin = isset($this->params['plugin']) ? $this->params['plugin'] : null;
+		$controller->plugin = $this->params['plugin'] ?? null;
 		$controller->params =& $this->params;
 		$controller->action =& $this->params['action'];
 		$controller->passedArgs = array_merge($this->params['pass'], $this->params['named']);
@@ -182,7 +182,7 @@ class Dispatcher extends CakeObject {
  * @return string Output as sent by controller
  * @access protected
  */
-	function _invoke(&$controller, $params) {
+	public function _invoke(&$controller, $params) {
 		$controller->constructClasses();
 		$controller->startupProcess();
 
@@ -193,15 +193,15 @@ class Dispatcher extends CakeObject {
 				App::import('Controller', 'Scaffold', false);
 				return new Scaffold($controller, $params);
 			}
-			return $this->cakeError('missingAction', array(array(
+			return $this->cakeError('missingAction', [[
 				'className' => Inflector::camelize($params['controller']."Controller"),
 				'action' => $params['action'],
 				'webroot' => $this->webroot,
 				'url' => $this->here,
 				'base' => $this->base
-			)));
+			]]);
 		}
-		$output = call_user_func_array(array(&$controller, $params['action']), $params['pass']);
+		$output = call_user_func_array([&$controller, $params['action']], $params['pass']);
 
 		if ($controller->autoRender) {
 			$controller->output = $controller->render();
@@ -225,12 +225,12 @@ class Dispatcher extends CakeObject {
  * @return string $url The generated url string.
  * @access private
  */
-	function __extractParams($url, $additionalParams = array()) {
-		$defaults = array('pass' => array(), 'named' => array(), 'form' => array());
+	public function __extractParams($url, $additionalParams = []) {
+		$defaults = ['pass' => [], 'named' => [], 'form' => []];
 		$params = array_merge($defaults, $url, $additionalParams);
 		$this->params = $params;
 
-		$params += array('base' => false, 'url' => array());
+		$params += ['base' => false, 'url' => []];
 		return ltrim(Router::reverse($params), '/');
 	}
 
@@ -241,8 +241,8 @@ class Dispatcher extends CakeObject {
  * @return array Parameters found in POST and GET.
  * @access public
  */
-	function parseParams($fromUrl) {
-		$params = array();
+	public function parseParams($fromUrl) {
+		$params = [];
 
 		if (isset($_POST)) {
 			$params['form'] = $_POST;
@@ -264,7 +264,7 @@ class Dispatcher extends CakeObject {
 		$namedExpressions = Router::getNamedExpressions();
 		extract($namedExpressions);
 		include CONFIGS . 'routes.php';
-		$params = array_merge(array('controller' => '', 'action' => ''), Router::parse($fromUrl), $params);
+		$params = array_merge(['controller' => '', 'action' => ''], Router::parse($fromUrl), $params);
 
 		if (empty($params['action'])) {
 			$params['action'] = 'index';
@@ -326,7 +326,7 @@ class Dispatcher extends CakeObject {
  * @return string Base URL
  * @access public
  */
-	function baseUrl() {
+	public function baseUrl() {
 		$dir = $webroot = null;
 		$config = Configure::read('App');
 		extract($config);
@@ -339,7 +339,7 @@ class Dispatcher extends CakeObject {
 			return $this->base = $base;
 		}
 		if (!$baseUrl) {
-			$replace = array('<', '>', '*', '\'', '"');
+			$replace = ['<', '>', '*', '\'', '"'];
 			$base = str_replace($replace, '', dirname(env('PHP_SELF')));
 
 			if ($webroot === 'webroot' && $webroot === basename($base)) {
@@ -369,10 +369,10 @@ class Dispatcher extends CakeObject {
 		$docRootContainsWebroot = strpos($docRoot, $dir . '/' . $webroot);
 
 		if (!empty($base) || !$docRootContainsWebroot) {
-			if (strpos($this->webroot, '/' . $dir . '/') === false) {
+			if (!str_contains($this->webroot, '/' . $dir . '/')) {
 				$this->webroot .= $dir . '/' ;
 			}
-			if (strpos($this->webroot, '/' . $webroot . '/') === false) {
+			if (!str_contains($this->webroot, '/' . $webroot . '/')) {
 				$this->webroot .= $webroot . '/';
 			}
 		}
@@ -386,7 +386,7 @@ class Dispatcher extends CakeObject {
  * @return mixed name of controller if not loaded, or object if loaded
  * @access private
  */
-	function &__getController() {
+	public function &__getController() {
 		$controller = false;
 		$ctrlClass = $this->__loadController($this->params);
 		if (!$ctrlClass) {
@@ -406,7 +406,7 @@ class Dispatcher extends CakeObject {
  * @return string|bool Name of controller class name
  * @access private
  */
-	function __loadController($params) {
+	public function __loadController($params) {
 		$pluginName = $pluginPath = $controller = null;
 		if (!empty($params['plugin'])) {
 			$pluginName = $controller = Inflector::camelize($params['plugin']);
@@ -430,8 +430,8 @@ class Dispatcher extends CakeObject {
  * @return string URI
  * @access public
  */
-	function uri() {
-		foreach (array('HTTP_X_REWRITE_URL', 'REQUEST_URI', 'argv') as $var) {
+	public function uri() {
+		foreach (['HTTP_X_REWRITE_URL', 'REQUEST_URI', 'argv'] as $var) {
 			if ($uri = env($var)) {
 				if ($var == 'argv') {
 					$uri = $uri[0];
@@ -448,7 +448,7 @@ class Dispatcher extends CakeObject {
 			$uri = preg_replace('/^(?:\/)?(?:\/)?(?:\?)?(?:url=)?/', '', $uri);
 		}
 		if (!empty($uri)) {
-			if (key($_GET) && strpos(key($_GET), '?') !== false) {
+			if (key($_GET) && str_contains(key($_GET), '?')) {
 				unset($_GET[key($_GET)]);
 			}
 			$uri = explode('?', $uri, 2);
@@ -460,7 +460,7 @@ class Dispatcher extends CakeObject {
 		} else {
 			$uri = env('QUERY_STRING');
 		}
-		if (is_string($uri) && strpos($uri, 'index.php') !== false) {
+		if (is_string($uri) && str_contains($uri, 'index.php')) {
 			list(, $uri) = explode('index.php', $uri, 2);
 		}
 		if (empty($uri) || $uri == '/' || $uri == '//') {
@@ -477,7 +477,7 @@ class Dispatcher extends CakeObject {
  * @return string URL
  * @access public
  */
-	function getUrl($uri = null, $base = null) {
+	public function getUrl($uri = null, $base = null) {
 		if (empty($_GET['url'])) {
 			if ($uri == null) {
 				$uri = $this->uri();
@@ -492,12 +492,12 @@ class Dispatcher extends CakeObject {
 			if ($tmpUri === '/' || $tmpUri == $baseDir || $tmpUri == $base) {
 				$url = $_GET['url'] = '/';
 			} else {
-				if ($base && strpos($uri, $base) === 0) {
+				if ($base && str_starts_with($uri, $base)) {
 					$elements = explode($base, $uri, 2);
 				} elseif (preg_match('/^[\/\?\/|\/\?|\?\/]/', $uri)) {
-					$elements = array(1 => preg_replace('/^[\/\?\/|\/\?|\?\/]/', '', $uri));
+					$elements = [1 => preg_replace('/^[\/\?\/|\/\?|\?\/]/', '', $uri)];
 				} else {
-					$elements = array();
+					$elements = [];
 				}
 
 				if (!empty($elements[1])) {
@@ -507,7 +507,7 @@ class Dispatcher extends CakeObject {
 					$url = $_GET['url'] = '/';
 				}
 
-				if (strpos($url, '/') === 0 && $url != '/') {
+				if (str_starts_with($url, '/') && $url != '/') {
 					$url = $_GET['url'] = substr($url, 1);
 				}
 			}
@@ -526,7 +526,7 @@ class Dispatcher extends CakeObject {
  * @param string $url Requested URL
  * @access public
  */
-	function cached($url) {
+	public function cached($url) {
 		if (Configure::read('Cache.check') === true) {
 			$path = $this->here;
 			if ($this->here == '/') {
@@ -563,17 +563,17 @@ class Dispatcher extends CakeObject {
  * @return boolean True on success if the asset file was found and sent
  * @access public
  */
-	function asset($url) {
-		if (strpos($url, '..') !== false || strpos($url, '.') === false) {
+	public function asset($url) {
+		if (str_contains($url, '..') || !str_contains($url, '.')) {
 			return false;
 		}
 		$filters = Configure::read('Asset.filter');
 		$isCss = (
-			strpos($url, 'ccss/') === 0 ||
+			str_starts_with($url, 'ccss/') ||
 			preg_match('#^(theme/([^/]+)/ccss/)|(([^/]+)(?<!css)/ccss)/#i', $url)
 		);
 		$isJs = (
-			strpos($url, 'cjs/') === 0 ||
+			str_starts_with($url, 'cjs/') ||
 			preg_match('#^/((theme/[^/]+)/cjs/)|(([^/]+)(?<!js)/cjs)/#i', $url)
 		);
 
@@ -626,8 +626,8 @@ class Dispatcher extends CakeObject {
  * @return void
  * @access protected
  */
-	function _deliverAsset($assetFile, $ext) {
-		$ob = @ini_get("zlib.output_compression") !== '1' && extension_loaded("zlib") && (strpos(env('HTTP_ACCEPT_ENCODING'), 'gzip') !== false);
+	public function _deliverAsset($assetFile, $ext) {
+		$ob = @ini_get("zlib.output_compression") !== '1' && extension_loaded("zlib") && (str_contains(env('HTTP_ACCEPT_ENCODING'), 'gzip'));
 		$compressionEnabled = $ob && Configure::read('Asset.compress');
 		if ($compressionEnabled) {
 			ob_start();

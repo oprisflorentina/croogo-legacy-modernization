@@ -26,11 +26,11 @@ class CommentsController extends AppController {
  * @var array
  * @access public
  */
-	public $components = array(
+	public $components = [
 		'Akismet',
 		'Email',
 		'Recaptcha',
-	);
+	];
 
 /**
  * Models used by the Controller
@@ -38,12 +38,12 @@ class CommentsController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Comment');
+	public $uses = ['Comment'];
 
 	public function beforeFilter() {
 		parent::beforeFilter();
 		if ($this->action == 'admin_edit') {
-			$this->Security->disabledFields = array('ip');
+			$this->Security->disabledFields = ['ip'];
 		}
 	}
 
@@ -52,14 +52,14 @@ class CommentsController extends AppController {
 
 		$this->Comment->recursive = 0;
 		$this->paginate['Comment']['order'] = 'Comment.created DESC';
-		$this->paginate['Comment']['conditions'] = array();
+		$this->paginate['Comment']['conditions'] = [];
 		$this->paginate['Comment']['conditions']['Comment.status'] = 1;
 		$this->paginate['Comment']['comment_type'] = 'comment';
 
 		if (isset($this->params['named']['filter'])) {
 			$filters = $this->Croogo->extractFilter();
 			foreach ($filters AS $filterKey => $filterValue) {
-				if (strpos($filterKey, '.') === false) {
+				if (!str_contains($filterKey, '.')) {
 					$filterKey = 'Comment.' . $filterKey;
 				}
 				$this->paginate['Comment']['conditions'][$filterKey] = $filterValue;
@@ -80,15 +80,15 @@ class CommentsController extends AppController {
 		$this->set('title_for_layout', __('Edit Comment', true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Comment', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Comment', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Comment->save($this->data)) {
-				$this->Session->setFlash(__('The Comment has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Comment has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Comment could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Comment could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -98,22 +98,22 @@ class CommentsController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Comment', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Comment', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Comment->delete($id)) {
-			$this->Session->setFlash(__('Comment deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Comment deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 
 	public function admin_process() {
 		$action = $this->data['Comment']['action'];
-		$ids = array();
+		$ids = [];
 		foreach ($this->data['Comment'] AS $id => $value) {
 			if ($id != 'action' && $value['id'] == 1) {
 				$ids[] = $id;
@@ -121,24 +121,24 @@ class CommentsController extends AppController {
 		}
 
 		if (count($ids) == 0 || $action == null) {
-			$this->Session->setFlash(__('No items selected.', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('No items selected.', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		}
 
 		if ($action == 'delete' &&
-			$this->Comment->deleteAll(array('Comment.id' => $ids), true, true)) {
-			$this->Session->setFlash(__('Comments deleted.', true), 'default', array('class' => 'success'));
+			$this->Comment->deleteAll(['Comment.id' => $ids], true, true)) {
+			$this->Session->setFlash(__('Comments deleted.', true), 'default', ['class' => 'success']);
 		} elseif ($action == 'publish' &&
-			$this->Comment->updateAll(array('Comment.status' => 1), array('Comment.id' => $ids))) {
-			$this->Session->setFlash(__('Comments published', true), 'default', array('class' => 'success'));
+			$this->Comment->updateAll(['Comment.status' => 1], ['Comment.id' => $ids])) {
+			$this->Session->setFlash(__('Comments published', true), 'default', ['class' => 'success']);
 		} elseif ($action == 'unpublish' &&
-			$this->Comment->updateAll(array('Comment.status' => 0), array('Comment.id' => $ids))) {
-			$this->Session->setFlash(__('Comments unpublished', true), 'default', array('class' => 'success'));
+			$this->Comment->updateAll(['Comment.status' => 0], ['Comment.id' => $ids])) {
+			$this->Session->setFlash(__('Comments unpublished', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('An error occurred.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('An error occurred.', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	public function index() {
@@ -151,34 +151,34 @@ class CommentsController extends AppController {
 
 		$this->paginate['Comment']['order'] = 'Comment.created DESC';
 		$this->paginate['Comment']['limit'] = Configure::read('Comment.feed_limit');
-		$this->paginate['Comment']['conditions'] = array(
+		$this->paginate['Comment']['conditions'] = [
 			'Comment.status' => 1,
-		);
+		];
 		$comments = $this->paginate();
 		$this->set(compact('comments'));
 	}
 
 	public function add($nodeId = null, $parentId = null) {
 		if (!$nodeId) {
-			$this->Session->setFlash(__('Invalid Node', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Invalid Node', true), 'default', ['class' => 'error']);
 			$this->redirect('/');
 		}
 
-		$node = $this->Comment->Node->find('first', array(
-			'conditions' => array(
+		$node = $this->Comment->Node->find('first', [
+			'conditions' => [
 				'Node.id' => $nodeId,
 				'Node.status' => 1,
-			),
-		));
+			],
+		]);
 		if (!isset($node['Node']['id'])) {
-			$this->Session->setFlash(__('Invalid Node', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Invalid Node', true), 'default', ['class' => 'error']);
 			$this->redirect('/');
 		}
 		if ($parentId) {
-			$commentPath = $this->Comment->getpath($parentId, array('Comment.id'));
+			$commentPath = $this->Comment->getpath($parentId, ['Comment.id']);
 			$commentLevel = count($commentPath);
 			if ($commentLevel > Configure::read('Comment.level')) {
-				$this->Session->setFlash(__('Maximum level reached. You cannot reply to that comment.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('Maximum level reached. You cannot reply to that comment.', true), 'default', ['class' => 'error']);
 				$this->redirect($node['Node']['url']);
 			}
 		}
@@ -194,13 +194,13 @@ class CommentsController extends AppController {
 
 		$success = 0;
 		if (!empty($this->data) && $continue === true) {
-			$data = array();
+			$data = [];
 			if ($parentId &&
-				$this->Comment->hasAny(array(
+				$this->Comment->hasAny([
 					'Comment.id' => $parentId,
 					'Comment.node_id' => $nodeId,
 					'Comment.status' => 1,
-				))) {
+				])) {
 				$data['parent_id'] = $parentId;
 			}
 			$data['node_id'] = $nodeId;
@@ -226,9 +226,9 @@ class CommentsController extends AppController {
 			if ($this->Comment->save($data)) {
 				$success = 1;
 				if ($type['Type']['comment_approve']) {
-					$this->Session->setFlash(__('Your comment has been added successfully.', true), 'default', array('class' => 'success'));
+					$this->Session->setFlash(__('Your comment has been added successfully.', true), 'default', ['class' => 'success']);
 				} else {
-					$this->Session->setFlash(__('Your comment will appear after moderation.', true), 'default', array('class' => 'success'));
+					$this->Session->setFlash(__('Your comment will appear after moderation.', true), 'default', ['class' => 'success']);
 				}
 
 				// Email notification
@@ -261,7 +261,7 @@ class CommentsController extends AppController {
 			//$this->Akismet->setPermalink(Router::url($node['Node']['url'], true));
 			if ($this->Akismet->isCommentSpam()) {
 				$continue = false;
-				$this->Session->setFlash(__('Sorry, the comment appears to be spam.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('Sorry, the comment appears to be spam.', true), 'default', ['class' => 'error']);
 			}
 		}
 
@@ -274,7 +274,7 @@ class CommentsController extends AppController {
 			$continue === true &&
 			!$this->Recaptcha->valid($this->params['form'])) {
 			$continue = false;
-			$this->Session->setFlash(__('Invalid captcha entry', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Invalid captcha entry', true), 'default', ['class' => 'error']);
 		}
 
 		return $continue;
@@ -284,12 +284,12 @@ class CommentsController extends AppController {
 		$success = 0;
 		if ($this->Session->check('Auth.User.id')) {
 			$userId = $this->Session->read('Auth.User.id');
-			$comment = $this->Comment->find('first', array(
-				'conditions' => array(
+			$comment = $this->Comment->find('first', [
+				'conditions' => [
 					'Comment.id' => $id,
 					'Comment.user_id' => $userId,
-				),
-			));
+				],
+			]);
 
 			if (isset($comment['Comment']['id']) &&
 				$this->Comment->delete($id)) {

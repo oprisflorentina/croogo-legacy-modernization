@@ -26,17 +26,17 @@ class Link extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
+	public $actsAs = [
 		'Encoder',
 		'Tree',
-		'Cached' => array(
-			'prefix' => array(
+		'Cached' => [
+			'prefix' => [
 				'link_',
 				'menu_',
 				'croogo_menu_',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Validation
@@ -44,16 +44,16 @@ class Link extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'title' => array(
-			'rule' => array('minLength', 1),
+	public $validate = [
+		'title' => [
+			'rule' => ['minLength', 1],
 			'message' => 'Title cannot be empty.',
-		),
-		'link' => array(
-			'rule' => array('minLength', 1),
+		],
+		'link' => [
+			'rule' => ['minLength', 1],
 			'message' => 'Link cannot be empty.',
-		),
-	);
+		],
+	];
 
 /**
  * Model associations: belongsTo
@@ -61,8 +61,8 @@ class Link extends AppModel {
  * @var array
  * @access public
  */
-	public $belongsTo = array(
-		'Menu' => array('counterCache' => true)
-	);
+	public $belongsTo = [
+		'Menu' => ['counterCache' => true]
+	];
 
 }

@@ -34,14 +34,14 @@ class DboMysqli extends DboMysqlBase {
  *
  * @var string
  */
-	var $description = "Mysqli DBO Driver";
+	public $description = "Mysqli DBO Driver";
 
 /**
  * Base configuration settings for Mysqli driver
  *
  * @var array
  */
-	var $_baseConfig = array(
+	public $_baseConfig = [
 		'persistent' => true,
 		'host' => 'localhost',
 		'login' => 'root',
@@ -49,14 +49,14 @@ class DboMysqli extends DboMysqlBase {
 		'database' => 'cake',
 		'port' => '3306',
 		'socket' => null
-	);
+	];
 
 /**
  * Connects to the database using options in the given configuration array.
  *
  * @return boolean True if the database could be connected, else false
  */
-	function connect() {
+	public function connect() {
 		$config = $this->config;
 		$this->connected = false;
 
@@ -81,7 +81,7 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return boolean
  */
-	function enabled() {
+	public function enabled() {
 		return extension_loaded('mysqli');
 	}
 /**
@@ -89,7 +89,7 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return boolean True if the database could be disconnected, else false
  */
-	function disconnect() {
+	public function disconnect() {
 		if (isset($this->results) && is_resource($this->results)) {
 			mysqli_free_result($this->results);
 		}
@@ -104,7 +104,7 @@ class DboMysqli extends DboMysqlBase {
  * @return resource Result resource identifier
  * @access protected
  */
-	function _execute($sql) {
+	public function _execute($sql) {
 		if (preg_match('/^\s*call/i', $sql)) {
 			return $this->_executeProcedure($sql);
 		}
@@ -118,7 +118,7 @@ class DboMysqli extends DboMysqlBase {
  * @return resource Result resource identifier for first recordset
  * @access protected
  */
-	function _executeProcedure($sql) {
+	public function _executeProcedure($sql) {
 		$answer = mysqli_multi_query($this->connection, $sql);
 
 		$firstResult = mysqli_store_result($this->connection);
@@ -134,7 +134,7 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return array Array of tablenames in the database
  */
-	function listSources($data = null) {
+	public function listSources($data = null) {
 		$cache = parent::listSources();
 		if ($cache !== null) {
 			return $cache;
@@ -142,10 +142,10 @@ class DboMysqli extends DboMysqlBase {
 		$result = $this->_execute('SHOW TABLES FROM ' . $this->name($this->config['database']) . ';');
 
 		if (!$result) {
-			return array();
+			return [];
 		}
 
-		$tables = array();
+		$tables = [];
 
 		while ($line = mysqli_fetch_row($result)) {
 			$tables[] = $line[0];
@@ -162,7 +162,7 @@ class DboMysqli extends DboMysqlBase {
  * @param boolean $safe Whether or not numeric data should be handled automagically if no column data is provided
  * @return string Quoted and escaped data
  */
-	function value($data, $column = null, $safe = false) {
+	public function value($data, $column = null, $safe = false) {
 		$parent = parent::value($data, $column, $safe);
 
 		if ($parent != null) {
@@ -192,8 +192,8 @@ class DboMysqli extends DboMysqlBase {
 					return str_replace(',', '.', strval($data));
 				}
 				if ((is_int($data) || is_float($data) || $data === '0') || (
-					is_numeric($data) && strpos($data, ',') === false &&
-					$data[0] != '0' && strpos($data, 'e') === false)) {
+					is_numeric($data) && !str_contains($data, ',') &&
+					$data[0] != '0' && !str_contains($data, 'e'))) {
 						return $data;
 					}
 			default:
@@ -209,7 +209,7 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return string Error message with error number
  */
-	function lastError() {
+	public function lastError() {
 		if (mysqli_errno($this->connection)) {
 			return mysqli_errno($this->connection).': '.mysqli_error($this->connection);
 		}
@@ -222,7 +222,7 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return integer Number of affected rows
  */
-	function lastAffected($source = null) {
+	public function lastAffected($source = null) {
 		if ($this->_result) {
 			return mysqli_affected_rows($this->connection);
 		}
@@ -235,7 +235,7 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return integer Number of rows in resultset
  */
-	function lastNumRows($source = null) {
+	public function lastNumRows($source = null) {
 		if ($this->hasResult()) {
 			return mysqli_num_rows($this->_result);
 		}
@@ -248,7 +248,7 @@ class DboMysqli extends DboMysqlBase {
  * @param unknown_type $source
  * @return in
  */
-	function lastInsertId($source = null) {
+	public function lastInsertId($source = null) {
 		$id = $this->fetchRow('SELECT LAST_INSERT_ID() AS insertID', false);
 		if ($id !== false && !empty($id) && !empty($id[0]) && isset($id[0]['insertID'])) {
 			return $id[0]['insertID'];
@@ -261,21 +261,21 @@ class DboMysqli extends DboMysqlBase {
  *
  * @param unknown_type $results
  */
-	function resultSet(&$results) {
+	public function resultSet(&$results) {
 		if (isset($this->results) && is_resource($this->results) && $this->results != $results) {
 			mysqli_free_result($this->results);
 		}
 		$this->results =& $results;
-		$this->map = array();
+		$this->map = [];
 		$numFields = mysqli_num_fields($results);
 		$index = 0;
 		$j = 0;
 		while ($j < $numFields) {
 			$column = mysqli_fetch_field_direct($results, $j);
-			if (!empty($column->table) && strpos($column->name, $this->virtualFieldSeparator) === false) {
-				$this->map[$index++] = array($column->table, $column->name);
+			if (!empty($column->table) && !str_contains($column->name, $this->virtualFieldSeparator)) {
+				$this->map[$index++] = [$column->table, $column->name];
 			} else {
-				$this->map[$index++] = array(0, $column->name);
+				$this->map[$index++] = [0, $column->name];
 			}
 			$j++;
 		}
@@ -286,13 +286,13 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return unknown
  */
-	function fetchResult() {
+	public function fetchResult() {
 		if ($row = mysqli_fetch_row($this->results)) {
-			$resultRow = array();
+			$resultRow = [];
 			foreach ($row as $index => $field) {
 				$table = $column = null;
 				if (count($this->map[$index]) === 2) {
-					list($table, $column) = $this->map[$index];
+					[$table, $column] = $this->map[$index];
 				}
 				$resultRow[$table][$column] = $row[$index];
 			}
@@ -306,7 +306,7 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return string The database encoding
  */
-	function getEncoding() {
+	public function getEncoding() {
 		return mysqli_client_encoding($this->connection);
 	}
 
@@ -316,7 +316,7 @@ class DboMysqli extends DboMysqlBase {
  * @param string $name Collation name
  * @return string Character set name
  */
-	function getCharsetName($name) {
+	public function getCharsetName($name) {
 		if ((bool)version_compare(mysqli_get_server_info($this->connection), "5", ">=")) {
 			$cols = $this->query('SELECT CHARACTER_SET_NAME FROM INFORMATION_SCHEMA.COLLATIONS WHERE COLLATION_NAME= ' . $this->value($name) . ';');
 			if (isset($cols[0]['COLLATIONS']['CHARACTER_SET_NAME'])) {
@@ -331,7 +331,7 @@ class DboMysqli extends DboMysqlBase {
  *
  * @return boolean True if the result is valid, else false
  */
-	function hasResult() {
+	public function hasResult() {
 		return is_object($this->_result);
 	}
 }

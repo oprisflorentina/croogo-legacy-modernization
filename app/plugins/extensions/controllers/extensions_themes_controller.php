@@ -29,7 +29,7 @@ class ExtensionsThemesController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Setting', 'User');
+	public $uses = ['Setting', 'User'];
 
 	public function beforeFilter() {
 		parent::beforeFilter();
@@ -41,7 +41,7 @@ class ExtensionsThemesController extends AppController {
 		$this->set('title_for_layout', __('Themes', true));
 
 		$themes = $this->Croogo->getThemes();
-		$themesData = array();
+		$themesData = [];
 		$themesData[] = $this->Croogo->getThemeData();
 		foreach ($themes AS $theme) {
 			$themesData[$theme] = $this->Croogo->getThemeData($theme);
@@ -63,9 +63,9 @@ class ExtensionsThemesController extends AppController {
 		$siteTheme = $this->Setting->findByKey('Site.theme');
 		$siteTheme['Setting']['value'] = $alias;
 		$this->Setting->save($siteTheme);
-		$this->Session->setFlash(__('Theme activated.', true), 'default', array('class' => 'success'));
+		$this->Session->setFlash(__('Theme activated.', true), 'default', ['class' => 'success']);
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	public function admin_add() {
@@ -94,19 +94,19 @@ class ExtensionsThemesController extends AppController {
 				zip_close($zip);
 			}
 			if ($ymlContent == '') {
-				$this->Session->setFlash(__('Invalid YML file', true), 'default', array('class' => 'error'));
-				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('Invalid YML file', true), 'default', ['class' => 'error']);
+				$this->redirect(['action' => 'index']);
 			}
 
 			// check if alias already exists
 			if (!isset($themeAlias)) {
-				$this->Session->setFlash(__('Invalid zip archive', true), 'default', array('class' => 'error'));
-				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('Invalid zip archive', true), 'default', ['class' => 'error']);
+				$this->redirect(['action' => 'index']);
 			}
 			if (is_dir(APP.'views'.DS.'themed'.DS.$themeAlias) ||
 				is_dir(APP.'webroot'.DS.'themed'.DS.$themeAlias)) {
-				$this->Session->setFlash(__('Directory with theme alias already exists.', true), 'default', array('class' => 'error'));
-				$this->redirect(array('action' => 'add'));
+				$this->Session->setFlash(__('Directory with theme alias already exists.', true), 'default', ['class' => 'error']);
+				$this->redirect(['action' => 'add']);
 			}
 
 			// extract it
@@ -139,8 +139,8 @@ class ExtensionsThemesController extends AppController {
 					}
 				}
 				zip_close($zip);
-				$this->Session->setFlash(__('Theme uploaded successfully.', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action' => 'index'));
+				$this->Session->setFlash(__('Theme uploaded successfully.', true), 'default', ['class' => 'success']);
+				$this->redirect(['action' => 'index']);
 			}
 		}
 	}
@@ -155,8 +155,8 @@ class ExtensionsThemesController extends AppController {
 
 	public function admin_delete($alias = null) {
 		if ($alias == null) {
-			$this->Session->setFlash(__('Invalid Theme.', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('Invalid Theme.', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
@@ -164,17 +164,17 @@ class ExtensionsThemesController extends AppController {
 		}
 
 		if ($alias == 'default') {
-			$this->Session->setFlash(__('Default theme cannot be deleted.', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('Default theme cannot be deleted.', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		} elseif ($alias == Configure::read('Site.theme')) {
-			$this->Session->setFlash(__('You cannot delete a theme that is currently active.', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('You cannot delete a theme that is currently active.', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		}
 
-		$paths = array(
+		$paths = [
 			APP . 'webroot' . DS . 'theme' . DS . $alias . DS,
 			APP . 'views' . DS . 'themed' . DS . $alias . DS,
-		);
+		];
 
 		$error = 0;
 		$folder = new Folder;
@@ -187,12 +187,12 @@ class ExtensionsThemesController extends AppController {
 		}
 
 		if ($error == 1) {
-			$this->Session->setFlash(__('An error occurred.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('An error occurred.', true), 'default', ['class' => 'error']);
 		} else {
-			$this->Session->setFlash(__('Theme deleted successfully.', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Theme deleted successfully.', true), 'default', ['class' => 'success']);
 		}
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 }

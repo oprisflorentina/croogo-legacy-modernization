@@ -25,7 +25,7 @@ class BakeTask extends Shell {
  * @var string
  * @access public
  */
-	var $plugin = null;
+	public $plugin = null;
 
 /**
  * The db connection being used for baking
@@ -33,14 +33,14 @@ class BakeTask extends Shell {
  * @var string
  * @access public
  */
-	var $connection = null;
+	public $connection = null;
 
 /**
  * Flag for interactive mode
  *
  * @var boolean
  */
-	var $interactive = false;
+	public $interactive = false;
 
 /**
  * Disable caching for baking.
@@ -48,7 +48,7 @@ class BakeTask extends Shell {
  *
  * @return void
  */
-	function startup() {
+	public function startup() {
 		Configure::write('Cache.disable', 1);
 		parent::startup();
 	}
@@ -60,7 +60,7 @@ class BakeTask extends Shell {
  * @return string Path to output.
  * @access public
  */
-	function getPath() {
+	public function getPath() {
 		$path = $this->path;
 		if (isset($this->plugin)) {
 			$name = substr($this->name, 0, strlen($this->name) - 4);

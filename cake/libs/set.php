@@ -40,7 +40,7 @@ class Set {
  * @access public
  * @static
  */
-	static function merge($arr1, $arr2 = null) {
+	public static function merge($arr1, $arr2 = null) {
 		$args = func_get_args();
 
 		$r = (array)current($args);
@@ -67,9 +67,9 @@ class Set {
  * @access public
  * @static
  */
-	static function filter($var, $isArray = false) {
+	public static function filter($var, $isArray = false) {
 		if (is_array($var) && (!empty($var) || $isArray)) {
-			return array_filter($var, array('Set', 'filter'));
+			return array_filter($var, ['Set', 'filter']);
 		}
 
 		if ($var === 0 || $var === '0' || !empty($var)) {
@@ -87,7 +87,7 @@ class Set {
  * @access public
  * @static
  */
-	static function pushDiff($array, $array2) {
+	public static function pushDiff($array, $array2) {
 		if (empty($array) && !empty($array2)) {
 			return $array2;
 		}
@@ -115,7 +115,7 @@ class Set {
  * @access public
  * @static
  */
-	static function map($class = 'stdClass', $tmp = 'stdClass') {
+	public static function map($class = 'stdClass', $tmp = 'stdClass') {
 		if (is_array($class)) {
 			$val = $class;
 			$class = $tmp;
@@ -138,13 +138,13 @@ class Set {
  * @return array Array from $array.
  * @access private
  */
-	function __array($array) {
+	public function __array($array) {
 		if (empty($array)) {
-			$array = array();
+			$array = [];
 		} elseif (is_object($array)) {
 			$array = get_object_vars($array);
 		} elseif (!is_array($array)) {
-			$array = array($array);
+			$array = [$array];
 		}
 		return $array;
 	}
@@ -164,7 +164,7 @@ class Set {
  * @access private
  * @static
  */
-	static function __map(&$array, $class, $primary = false) {
+	public static function __map(&$array, $class, $primary = false) {
 		if ($class === true) {
 			$out = new stdClass;
 		} else {
@@ -183,16 +183,12 @@ class Set {
 					$out[$key] = Set::__map($value, $class);
 					if (is_object($out[$key])) {
 						if ($primary !== true && is_array($value) && Set::countDim($value, true) === 2) {
-							if (!isset($out[$key]->_name_)) {
-								$out[$key]->_name_ = $primary;
-							}
+							$out[$key]->_name_ ??= $primary;
 						}
 					}
 				} elseif (is_array($value)) {
 					if ($primary === true) {
-						if (!isset($out->_name_)) {
-							$out->_name_ = $key;
-						}
+						$out->_name_ ??= $key;
 						$primary = false;
 						foreach ($value as $key2 => $value2) {
 							$out->{$key2} = Set::__map($value2, true);
@@ -201,9 +197,7 @@ class Set {
 						if (!is_numeric($key)) {
 							$out->{$key} = Set::__map($value, true, $key);
 							if (is_object($out->{$key}) && !is_numeric($key)) {
-								if (!isset($out->{$key}->_name_)) {
-									$out->{$key}->_name_ = $key;
-								}
+								$out->{$key}->_name_ ??= $key;
 							}
 						} else {
 							$out->{$key} = Set::__map($value, true);
@@ -227,7 +221,7 @@ class Set {
  * @access public
  * @static
  */
-	static function numeric($array = null) {
+	public static function numeric($array = null) {
 		if (empty($array)) {
 			return null;
 		}
@@ -265,9 +259,9 @@ class Set {
  * @access public
  * @static
  */
-	function enum($select, $list = null) {
+	public function enum($select, $list = null) {
 		if (empty($list)) {
-			$list = array('no', 'yes');
+			$list = ['no', 'yes'];
 		}
 
 		$return = null;
@@ -289,9 +283,9 @@ class Set {
  * @access public
  * @static
  */
-	static function format($data, $format, $keys) {
+	public static function format($data, $format, $keys) {
 
-		$extracted = array();
+		$extracted = [];
 		$count = count($keys);
 
 		if (!$count) {
@@ -301,7 +295,7 @@ class Set {
 		for ($i = 0; $i < $count; $i++) {
 			$extracted[] = Set::extract($data, $keys[$i]);
 		}
-		$out = array();
+		$out = [];
 		$data = $extracted;
 		$count = count($data[0]);
 
@@ -325,7 +319,7 @@ class Set {
 		} else {
 			$count2 = count($data);
 			for ($j = 0; $j < $count; $j++) {
-				$args = array();
+				$args = [];
 				for ($i = 0; $i < $count2; $i++) {
 					if (array_key_exists($j, $data[$i])) {
 						$args[] = $data[$i][$j];
@@ -370,27 +364,27 @@ class Set {
  * @access public
  * @static
  */
-	static function extract($path, $data = null, $options = array()) {
+	public static function extract($path, $data = null, $options = []) {
 		if (is_string($data)) {
 			$tmp = $data;
 			$data = $path;
 			$path = $tmp;
 		}
-		if (strpos($path, '/') === false) {
+		if (!str_contains($path, '/')) {
 			return Set::classicExtract($data, $path);
 		}
 		if (empty($data)) {
-			return array();
+			return [];
 		}
 		if ($path === '/') {
 			return $data;
 		}
 		$contexts = $data;
-		$options = array_merge(array('flatten' => true), $options);
+		$options = array_merge(['flatten' => true], $options);
 		if (!isset($contexts[0])) {
 			$current = current($data);
 			if ((is_array($current) && count($data) < 1) || !is_array($current) || !Set::numeric(array_keys($data))) {
-				$contexts = array($data);
+				$contexts = [$data];
 			}
 		}
 		$tokens = array_slice(preg_split('/(?<!=|\\\\)\/(?![a-z-\s]*\])/', $path), 1);
@@ -402,10 +396,10 @@ class Set {
 				$conditions = $m[1];
 				$token = substr($token, 0, strpos($token, '['));
 			}
-			$matches = array();
+			$matches = [];
 			foreach ($contexts as $key => $context) {
 				if (!isset($context['trace'])) {
-					$context = array('trace' => array(null), 'item' => $context, 'key' => $key);
+					$context = ['trace' => [null], 'item' => $context, 'key' => $key];
 				}
 				if ($token === '..') {
 					if (count($context['trace']) == 1) {
@@ -426,38 +420,38 @@ class Set {
 				}
 				$match = false;
 				if ($token === '@*' && is_array($context['item'])) {
-					$matches[] = array(
+					$matches[] = [
 						'trace' => array_merge($context['trace'], (array)$key),
 						'key' => $key,
 						'item' => array_keys($context['item']),
-					);
+					];
 				} elseif (is_array($context['item'])
 					&& array_key_exists($token, $context['item'])
 					&& !(strval($key) === strval($token) && count($tokens) == 1 && $tokens[0] === '.')) {
 					$items = $context['item'][$token];
 					if (!is_array($items)) {
-						$items = array($items);
+						$items = [$items];
 					} elseif (!isset($items[0])) {
 						$current = current($items);
 						$currentKey = key($items);
 						if (!is_array($current) || (is_array($current) && count($items) <= 1 && !is_numeric($currentKey))) {
-							$items = array($items);
+							$items = [$items];
 						}
 					}
 
 					foreach ($items as $key => $item) {
-						$ctext = array($context['key']);
+						$ctext = [$context['key']];
 						if (!is_numeric($key)) {
 							$ctext[] = $token;
 							$tok = array_shift($tokens);
 							if (isset($items[$tok])) {
 								$ctext[] = $tok;
 								$item = $items[$tok];
-								$matches[] = array(
+								$matches[] = [
 									'trace' => array_merge($context['trace'], $ctext),
 									'key' => $tok,
 									'item' => $item,
-								);
+								];
 								break;
 							} elseif ($tok !== null) {
 								array_unshift($tokens, $tok);
@@ -466,27 +460,27 @@ class Set {
 							$key = $token;
 						}
 
-						$matches[] = array(
+						$matches[] = [
 							'trace' => array_merge($context['trace'], $ctext),
 							'key' => $key,
 							'item' => $item,
-						);
+						];
 					}
 				} elseif ($key === $token || (ctype_digit($token) && $key == $token) || $token === '.') {
 					$context['trace'][] = $key;
-					$matches[] = array(
+					$matches[] = [
 						'trace' => $context['trace'],
 						'key' => $key,
 						'item' => $context['item'],
-					);
+					];
 				}
 			}
 			if ($conditions) {
 				foreach ($conditions as $condition) {
-					$filtered = array();
+					$filtered = [];
 					$length = count($matches);
 					foreach ($matches as $i => $match) {
-						if (Set::matches(array($condition), $match['item'], $i + 1, $length)) {
+						if (Set::matches([$condition], $match['item'], $i + 1, $length)) {
 							$filtered[$i] = $match;
 						}
 					}
@@ -500,11 +494,11 @@ class Set {
 			}
 		} while(1);
 
-		$r = array();
+		$r = [];
 
 		foreach ($matches as $match) {
 			if ((!$options['flatten'] || is_array($match['item'])) && !is_int($match['key'])) {
-				$r[] = array($match['key'] => $match['item']);
+				$r[] = [$match['key'] => $match['item']];
 			} else {
 				$r[] = $match['item'];
 			}
@@ -522,7 +516,7 @@ class Set {
  * @access public
  * @static
  */
-	static function matches($conditions, $data = array(), $i = null, $length = null) {
+	public static function matches($conditions, $data = [], $i = null, $length = null) {
 		if (empty($conditions)) {
 			return true;
 		}
@@ -597,7 +591,7 @@ class Set {
  * @access public
  * @static
  */
-	static function classicExtract($data, $path = null) {
+	public static function classicExtract($data, $path = null) {
 		if (empty($path)) {
 			return $data;
 		}
@@ -614,7 +608,7 @@ class Set {
 			}
 			$path = CakeText::tokenize($path, '.', '{', '}');
 		}
-		$tmp = array();
+		$tmp = [];
 
 		if (!is_array($path) || empty($path)) {
 			return null;
@@ -651,7 +645,7 @@ class Set {
 					}
 				}
 				return $tmp;
-			} elseif (false !== strpos($key,'{') && false !== strpos($key,'}')) {
+			} elseif (str_contains($key,'{') && str_contains($key,'}')) {
 				$pattern = substr($key, 1, -1);
 
 				foreach ($data as $j => $val) {
@@ -686,7 +680,7 @@ class Set {
  * @access public
  * @static
  */
-	static function insert($list, $path, $data = null) {
+	public static function insert($list, $path, $data = null) {
 		if (!is_array($path)) {
 			$path = explode('.', $path);
 		}
@@ -699,13 +693,11 @@ class Set {
 			if ($i === count($path) - 1) {
 				$_list[$key] = $data;
 			} else {
-				if (!isset($_list[$key])) {
-					$_list[$key] = array();
-				}
+				$_list[$key] ??= [];
 				$_list =& $_list[$key];
 			}
 			if (!is_array($_list)) {
-				return array();
+				return [];
 			}
 		}
 		return $list;
@@ -720,7 +712,7 @@ class Set {
  * @access public
  * @static
  */
-	static function remove($list, $path = null) {
+	public static function remove($list, $path = null) {
 		if (empty($path)) {
 			return $list;
 		}
@@ -754,7 +746,7 @@ class Set {
  * @access public
  * @static
  */
-	function check($data, $path = null) {
+	public function check($data, $path = null) {
 		if (empty($path)) {
 			return $data;
 		}
@@ -788,7 +780,7 @@ class Set {
  * @access public
  * @static
  */
-	static function diff($val1, $val2 = null) {
+	public static function diff($val1, $val2 = null) {
 		if (empty($val1)) {
 			return (array)$val2;
 		}
@@ -816,7 +808,7 @@ class Set {
  * @access public
  * @static
  */
-	static function contains($val1, $val2 = null) {
+	public static function contains($val1, $val2 = null) {
 		if (empty($val1) || empty($val2)) {
 			return false;
 		}
@@ -844,9 +836,9 @@ class Set {
  * @access public
  * @static
  */
-	static function countDim($array = null, $all = false, $count = 0) {
+	public static function countDim($array = null, $all = false, $count = 0) {
 		if ($all) {
-			$depth = array($count);
+			$depth = [$count];
 			if (is_array($array) && reset($array) !== false) {
 				foreach ($array as $value) {
 					$depth[] = Set::countDim($value, true, $count + 1);
@@ -874,7 +866,7 @@ class Set {
  * @access public
  * @static
  */
-	static function normalize($list, $assoc = true, $sep = ',', $trim = true) {
+	public static function normalize($list, $assoc = true, $sep = ',', $trim = true) {
 		if (is_string($list)) {
 			$list = explode($sep, $list);
 			if ($trim) {
@@ -899,7 +891,7 @@ class Set {
 				}
 			}
 			if (!$numeric || $assoc) {
-				$newList = array();
+				$newList = [];
 				for ($i = 0; $i < $count; $i++) {
 					if (is_int($keys[$i])) {
 						$newList[$list[$keys[$i]]] = null;
@@ -927,9 +919,9 @@ class Set {
  * @access public
  * @static
  */
-	static function combine($data, $path1 = null, $path2 = null, $groupPath = null) {
+	public static function combine($data, $path1 = null, $path2 = null, $groupPath = null) {
 		if (empty($data)) {
-			return array();
+			return [];
 		}
 
 		if (is_object($data)) {
@@ -943,7 +935,7 @@ class Set {
 			$keys = Set::extract($data, $path1);
 		}
 		if (empty($keys)) {
-			return array();
+			return [];
 		}
 
 		if (!empty($path2) && is_array($path2)) {
@@ -965,19 +957,15 @@ class Set {
 			if (!empty($group)) {
 				$c = count($keys);
 				for ($i = 0; $i < $c; $i++) {
-					if (!isset($group[$i])) {
-						$group[$i] = 0;
-					}
-					if (!isset($out[$group[$i]])) {
-						$out[$group[$i]] = array();
-					}
+					$group[$i] ??= 0;
+					$out[$group[$i]] ??= [];
 					$out[$group[$i]][$keys[$i]] = $vals[$i];
 				}
 				return $out;
 			}
 		}
 		if (empty($vals)) {
-			return array();
+			return [];
 		}
 		return array_combine($keys, $vals);
 	}
@@ -989,8 +977,8 @@ class Set {
  * @public
  * @static
  */
-	static function reverse($object) {
-		$out = array();
+	public static function reverse($object) {
+		$out = [];
 		if (is_a($object, 'XmlNode')) {
 			$out = $object->toArray();
 			return $out;
@@ -1000,7 +988,7 @@ class Set {
 				$identity = $keys['_name_'];
 				unset($keys['_name_']);
 			}
-			$new = array();
+			$new = [];
 			foreach ($keys as $key => $value) {
 				if (is_array($value)) {
 					$new[$key] = (array)Set::reverse($value);
@@ -1038,8 +1026,8 @@ class Set {
  * @access public
  * @static
  */
-	static function flatten($data, $separator = '.') {
-		$result = array();
+	public static function flatten($data, $separator = '.') {
+		$result = [];
 		$path = null;
 
 		if (is_array($separator)) {
@@ -1052,10 +1040,10 @@ class Set {
 
 		foreach ($data as $key => $val) {
 			if (is_array($val)) {
-				$result += (array)Set::flatten($val, array(
+				$result += (array)Set::flatten($val, [
 					'separator' => $separator,
 					'path' => $path . $key
-				));
+				]);
 			} else {
 				$result[$path . $key] = $val;
 			}
@@ -1071,8 +1059,8 @@ class Set {
  * @return array
  * @access private
  */
-	static function __flatten($results, $key = null) {
-		$stack = array();
+	public static function __flatten($results, $key = null) {
+		$stack = [];
 		foreach ($results as $k => $r) {
 			$id = $k;
 			if (!is_null($key)) {
@@ -1081,7 +1069,7 @@ class Set {
 			if (is_array($r) && !empty($r)) {
 				$stack = array_merge($stack, Set::__flatten($r, $id));
 			} else {
-				$stack[] = array('id' => $id, 'value' => $r);
+				$stack[] = ['id' => $id, 'value' => $r];
 			}
 		}
 		return $stack;
@@ -1096,13 +1084,13 @@ class Set {
  * @return array Sorted array of data
  * @static
  */
-	static function sort($data, $path, $dir) {
+	public static function sort($data, $path, $dir) {
 		$originalKeys = array_keys($data);
 		if (is_numeric(implode('', $originalKeys))) {
 			$data = array_values($data);
 		}
 		$result = Set::__flatten(Set::extract($data, $path));
-		list($keys, $values) = array(Set::extract($result, '{n}.id'), Set::extract($result, '{n}.value'));
+		[$keys, $values] = [Set::extract($result, '{n}.id'), Set::extract($result, '{n}.value')];
 
 		$dir = strtolower($dir);
 		if ($dir === 'asc') {
@@ -1111,7 +1099,7 @@ class Set {
 			$dir = SORT_DESC;
 		}
 		array_multisort($values, $dir, $keys, $dir);
-		$sorted = array();
+		$sorted = [];
 		$keys = array_unique($keys);
 
 		foreach ($keys as $k) {
@@ -1137,8 +1125,8 @@ class Set {
  * @access public
  * @static
  */
-	function apply($path, $data, $callback, $options = array()) {
-		$defaults = array('type' => 'pass');
+	public function apply($path, $data, $callback, $options = []) {
+		$defaults = ['type' => 'pass'];
 		$options = array_merge($defaults, $options);
 
 		$extracted = Set::extract($path, $data);
@@ -1150,7 +1138,7 @@ class Set {
 			$result = array_reduce($extracted, $callback);
 
 		} elseif ($options['type'] === 'pass') {
-			$result = call_user_func_array($callback, array($extracted));
+			$result = call_user_func_array($callback, [$extracted]);
 		} else {
 			return null;
 		}

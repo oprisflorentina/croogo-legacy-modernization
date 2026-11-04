@@ -32,7 +32,7 @@ class DbConfigTask extends Shell {
  * @var string
  * @access public
  */
-	var $path = null;
+	public $path = null;
 
 /**
  * Default configuration settings to use
@@ -40,11 +40,11 @@ class DbConfigTask extends Shell {
  * @var array
  * @access private
  */
-	var $__defaultConfig = array(
+	public $__defaultConfig = [
 		'name' => 'default', 'driver'=> 'mysql', 'persistent'=> 'false', 'host'=> 'localhost',
 		'login'=> 'root', 'password'=> 'password', 'database'=> 'project_name',
 		'schema'=> null, 'prefix'=> null, 'encoding' => null, 'port' => null
-	);
+	];
 
 /**
  * String name of the database config class name.
@@ -52,7 +52,7 @@ class DbConfigTask extends Shell {
  *
  * @var string
  */
-	var $databaseClassName = 'DATABASE_CONFIG';
+	public $databaseClassName = 'DATABASE_CONFIG';
 
 /**
  * initialization callback
@@ -60,7 +60,7 @@ class DbConfigTask extends Shell {
  * @var string
  * @access public
  */
-	function initialize() {
+	public function initialize() {
 		$this->path = $this->params['working'] . DS . 'config' . DS;
 	}
 
@@ -69,7 +69,7 @@ class DbConfigTask extends Shell {
  *
  * @access public
  */
-	function execute() {
+	public function execute() {
 		if (empty($this->args)) {
 			$this->__interactive();
 			$this->_stop();
@@ -81,12 +81,12 @@ class DbConfigTask extends Shell {
  *
  * @access private
  */
-	function __interactive() {
+	public function __interactive() {
 		$this->hr();
 		$this->out('Database Configuration:');
 		$this->hr();
 		$done = false;
-		$dbConfigs = array();
+		$dbConfigs = [];
 
 		while ($done == false) {
 			$name = '';
@@ -102,9 +102,9 @@ class DbConfigTask extends Shell {
 				}
 			}
 
-			$driver = $this->in('Driver:', array('mssql', 'mysql', 'mysqli', 'oracle', 'postgres', 'sqlite'), 'mysql');
+			$driver = $this->in('Driver:', ['mssql', 'mysql', 'mysqli', 'oracle', 'postgres', 'sqlite'], 'mysql');
 
-			$persistent = $this->in('Persistent Connection?', array('y', 'n'), 'n');
+			$persistent = $this->in('Persistent Connection?', ['y', 'n'], 'n');
 			if (strtolower($persistent) == 'n') {
 				$persistent = 'false';
 			} else {
@@ -136,7 +136,7 @@ class DbConfigTask extends Shell {
 				$password = $this->in('Password:');
 
 				if ($password == '') {
-					$blank = $this->in('The password you supplied was empty. Use an empty password?', array('y', 'n'), 'n');
+					$blank = $this->in('The password you supplied was empty. Use an empty password?', ['y', 'n'], 'n');
 					if ($blank == 'y') {
 						$blankPassword = true;
 					}
@@ -198,7 +198,7 @@ class DbConfigTask extends Shell {
  * @return boolean True if user says it looks good, false otherwise
  * @access private
  */
-	function __verify($config) {
+	public function __verify($config) {
 		$config = array_merge($this->__defaultConfig, $config);
 		extract($config);
 		$this->out();
@@ -231,7 +231,7 @@ class DbConfigTask extends Shell {
 		}
 
 		$this->hr();
-		$looksGood = $this->in('Look okay?', array('y', 'n'), 'y');
+		$looksGood = $this->in('Look okay?', ['y', 'n'], 'y');
 
 		if (strtolower($looksGood) == 'y') {
 			return $config;
@@ -246,32 +246,26 @@ class DbConfigTask extends Shell {
  * @return boolean Success
  * @access public
  */
-	function bake($configs) {
+	public function bake($configs) {
 		if (!is_dir($this->path)) {
 			$this->err($this->path . ' not found');
 			return false;
 		}
 
 		$filename = $this->path . 'database.php';
-		$oldConfigs = array();
+		$oldConfigs = [];
 
 		if (file_exists($filename)) {
 			config('database');
 			$db = new $this->databaseClassName;
-			$temp = get_class_vars(get_class($db));
+			$temp = get_class_vars($db::class);
 
 			foreach ($temp as $configName => $info) {
 				$info = array_merge($this->__defaultConfig, $info);
 
-				if (!isset($info['schema'])) {
-					$info['schema'] = null;
-				}
-				if (!isset($info['encoding'])) {
-					$info['encoding'] = null;
-				}
-				if (!isset($info['port'])) {
-					$info['port'] = null;
-				}
+				$info['schema'] ??= null;
+				$info['encoding'] ??= null;
+				$info['port'] ??= null;
 
 				if ($info['persistent'] === false) {
 					$info['persistent'] = 'false';
@@ -279,7 +273,7 @@ class DbConfigTask extends Shell {
 					$info['persistent'] = ($info['persistent'] == true) ? 'true' : 'false';
 				}
 
-				$oldConfigs[] = array(
+				$oldConfigs[] = [
 					'name' => $configName,
 					'driver' => $info['driver'],
 					'persistent' => $info['persistent'],
@@ -291,7 +285,7 @@ class DbConfigTask extends Shell {
 					'prefix' => $info['prefix'],
 					'schema' => $info['schema'],
 					'encoding' => $info['encoding']
-				);
+				];
 			}
 		}
 
@@ -350,7 +344,7 @@ class DbConfigTask extends Shell {
  *
  * @return void
  */
-	function getConfig() {
+	public function getConfig() {
 		App::import('Model', 'ConnectionManager', false);
 
 		$useDbConfig = 'default';

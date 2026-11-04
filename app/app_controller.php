@@ -20,7 +20,7 @@ class AppController extends Controller {
  * @var array
  * @access public
  */
-	public $components = array(
+	public $components = [
 		'Croogo',
 		'Security',
 		'Acl',
@@ -28,7 +28,7 @@ class AppController extends Controller {
 		'Acl.AclFilter',
 		'Session',
 		'RequestHandler',
-	);
+	];
 
 /**
  * Helpers
@@ -36,7 +36,7 @@ class AppController extends Controller {
  * @var array
  * @access public
  */
-	public $helpers = array(
+	public $helpers = [
 		'Html',
 		'Form',
 		'Session',
@@ -45,7 +45,7 @@ class AppController extends Controller {
 		'Time',
 		'Layout',
 		'Custom',
-	);
+	];
 
 /**
  * Models
@@ -53,12 +53,12 @@ class AppController extends Controller {
  * @var array
  * @access public
  */
-	public $uses = array(
+	public $uses = [
 		'Block',
 		'Link',
 		'Setting',
 		'Node',
-	);
+	];
 
 /**
  * Cache pagination results

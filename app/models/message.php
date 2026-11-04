@@ -26,24 +26,24 @@ class Message extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'name' => array(
+	public $validate = [
+		'name' => [
 			'rule' => 'notEmpty',
 			'message' => 'This field cannot be left blank.',
-		),
-		'email' => array(
+		],
+		'email' => [
 			'rule' => 'email',
 			'message' => 'Please provide a valid email address.',
-		),
-		'title' => array(
+		],
+		'title' => [
 			'rule' => 'notEmpty',
 			'message' => 'This field cannot be left blank.',
-		),
-		'body' => array(
+		],
+		'body' => [
 			'rule' => 'notEmpty',
 			'message' => 'This field cannot be left blank.',
-		),
-	);
+		],
+	];
 
 /**
  * Model associations: belongsTo
@@ -51,15 +51,15 @@ class Message extends AppModel {
  * @var array
  * @access public
  */
-	public $belongsTo = array(
-		'Contact' => array(
+	public $belongsTo = [
+		'Contact' => [
 			'className' => 'Contact',
 			'foreignKey' => 'contact_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'counterCache' => true,
-		),
-	);
+		],
+	];
 
 }

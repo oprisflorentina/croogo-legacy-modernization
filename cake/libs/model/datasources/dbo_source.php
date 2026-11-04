@@ -17,7 +17,7 @@
  * @since         CakePHP(tm) v 0.10.0.1076
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-App::import('Core', array('Set', 'CakeText'));
+App::import('Core', ['Set', 'CakeText']);
 
 /**
  * DboSource
@@ -35,14 +35,14 @@ class DboSource extends DataSource {
  * @var string
  * @access public
  */
-	var $description = "Database Data Source";
+	public $description = "Database Data Source";
 
 /**
  * index definition, standard cake, primary, index, unique
  *
  * @var array
  */
-	var $index = array('PRI' => 'primary', 'MUL' => 'index', 'UNI' => 'unique');
+	public $index = ['PRI' => 'primary', 'MUL' => 'index', 'UNI' => 'unique'];
 
 /**
  * Database keyword used to assign aliases to identifiers.
@@ -50,7 +50,7 @@ class DboSource extends DataSource {
  * @var string
  * @access public
  */
-	var $alias = 'AS ';
+	public $alias = 'AS ';
 
 /**
  * Caches result from query parsing operations.  Cached results for both DboSource::name() and
@@ -60,7 +60,7 @@ class DboSource extends DataSource {
  * @var array
  * @access public
  */
-	var $methodCache = array();
+	public $methodCache = [];
 
 /**
  * Whether or not to cache the results of DboSource::name() and DboSource::conditions()
@@ -69,7 +69,7 @@ class DboSource extends DataSource {
  * @var boolean.
  * @access public
  */
-	var $cacheMethods = true ;
+	public $cacheMethods = true ;
 
 /**
  * Bypass automatic adding of joined fields/associations.
@@ -77,7 +77,7 @@ class DboSource extends DataSource {
  * @var boolean
  * @access private
  */
-	var $__bypass = false;
+	public $__bypass = false;
 
 /**
  * The set of valid SQL operations usable in a WHERE statement
@@ -85,7 +85,7 @@ class DboSource extends DataSource {
  * @var array
  * @access private
  */
-	var $__sqlOps = array('like', 'ilike', 'or', 'not', 'in', 'between', 'regexp', 'similar to');
+	public $__sqlOps = ['like', 'ilike', 'or', 'not', 'in', 'between', 'regexp', 'similar to'];
 
 /**
  * Index of basic SQL commands
@@ -93,18 +93,18 @@ class DboSource extends DataSource {
  * @var array
  * @access protected
  */
-	var $_commands = array(
+	public $_commands = [
 		'begin' => 'BEGIN',
 		'commit' => 'COMMIT',
 		'rollback' => 'ROLLBACK'
-	);
+	];
 
 /**
  * Separator string for virtualField composition
  *
  * @var string
  */
-	var $virtualFieldSeparator = '__';
+	public $virtualFieldSeparator = '__';
 
 /**
  * List of table engine specific parameters used on table creating
@@ -112,7 +112,7 @@ class DboSource extends DataSource {
  * @var array
  * @access public
  */
-	var $tableParameters = array();
+	public $tableParameters = [];
 
 /**
  * List of engine specific additional field parameters used on table creating
@@ -120,7 +120,7 @@ class DboSource extends DataSource {
  * @var array
  * @access public
  */
-	var $fieldParameters = array();
+	public $fieldParameters = [];
 
 /**
  * Constructor
@@ -129,14 +129,12 @@ class DboSource extends DataSource {
  * @param boolean $autoConnect Whether or not the datasource should automatically connect.
  * @access public
  */
-	function __construct($config = null, $autoConnect = true) {
-		if (!isset($config['prefix'])) {
-			$config['prefix'] = '';
-		}
+	public function __construct($config = null, $autoConnect = true) {
+		$config['prefix'] ??= '';
 		parent::__construct($config);
 		$this->fullDebug = Configure::read() > 1;
 		if (!$this->enabled()) {
-			trigger_error(sprintf(__('%s - Selected driver is not enabled', true), get_class($this)), E_USER_ERROR);
+			trigger_error(sprintf(__('%s - Selected driver is not enabled', true), static::class), E_USER_ERROR);
 			return false;
 		}
 		if ($autoConnect) {
@@ -153,7 +151,7 @@ class DboSource extends DataSource {
  * @return boolean True on success, false on failure
  * @access public
  */
-	function reconnect($config = array()) {
+	public function reconnect($config = []) {
 		$this->disconnect();
 		$this->setConfig($config);
 		$this->_sources = null;
@@ -170,10 +168,10 @@ class DboSource extends DataSource {
  * @return mixed Prepared value or array of values.
  * @access public
  */
-	function value($data, $column = null, $read = true) {
+	public function value($data, $column = null, $read = true) {
 		if (is_array($data) && !empty($data)) {
 			return array_map(
-				array(&$this, 'value'),
+				[&$this, 'value'],
 				$data, array_fill(0, count($data), $column), array_fill(0, count($data), $read)
 			);
 		} elseif (is_object($data) && isset($data->type)) {
@@ -182,7 +180,7 @@ class DboSource extends DataSource {
 			} elseif ($data->type == 'expression') {
 				return $data->value;
 			}
-		} elseif (in_array($data, array('{$__cakeID__$}', '{$__cakeForeignKey__$}'), true)) {
+		} elseif (in_array($data, ['{$__cakeID__$}', '{$__cakeForeignKey__$}'], true)) {
 			return $data;
 		} else {
 			return null;
@@ -196,7 +194,7 @@ class DboSource extends DataSource {
  * @return object An object representing a database identifier to be used in a query
  * @access public
  */
-	function identifier($identifier) {
+	public function identifier($identifier) {
 		$obj = new stdClass();
 		$obj->type = 'identifier';
 		$obj->value = $identifier;
@@ -210,7 +208,7 @@ class DboSource extends DataSource {
  * @return object An object representing a database expression to be used in a query
  * @access public
  */
-	function expression($expression) {
+	public function expression($expression) {
 		$obj = new stdClass();
 		$obj->type = 'expression';
 		$obj->value = $expression;
@@ -224,7 +222,7 @@ class DboSource extends DataSource {
  * @return boolean
  * @access public
  */
-	function rawQuery($sql) {
+	public function rawQuery($sql) {
 		$this->took = $this->error = $this->numRows = false;
 		return $this->execute($sql);
 	}
@@ -245,8 +243,8 @@ class DboSource extends DataSource {
  * @return mixed Resource or object representing the result set, or false on failure
  * @access public
  */
-	function execute($sql, $options = array()) {
-		$defaults = array('stats' => true, 'log' => $this->fullDebug);
+	public function execute($sql, $options = []) {
+		$defaults = ['stats' => true, 'log' => $this->fullDebug];
 		$options = array_merge($defaults, $options);
 
 		$t = getMicrotime();
@@ -275,7 +273,7 @@ class DboSource extends DataSource {
  * @return resource Result resource identifier.
  * @access public
  */
-	function query() {
+	public function query() {
 		$args	  = func_get_args();
 		$fields	  = null;
 		$order	  = null;
@@ -286,10 +284,10 @@ class DboSource extends DataSource {
 		if (count($args) == 1) {
 			return $this->fetchAll($args[0]);
 
-		} elseif (count($args) > 1 && (strpos(strtolower($args[0]), 'findby') === 0 || strpos(strtolower($args[0]), 'findallby') === 0)) {
+		} elseif (count($args) > 1 && (str_starts_with(strtolower($args[0]), 'findby') || str_starts_with(strtolower($args[0]), 'findallby'))) {
 			$params = $args[1];
 
-			if (strpos(strtolower($args[0]), 'findby') === 0) {
+			if (str_starts_with(strtolower($args[0]), 'findby')) {
 				$all  = false;
 				$field = Inflector::underscore(preg_replace('/^findBy/i', '', $args[0]));
 			} else {
@@ -297,7 +295,7 @@ class DboSource extends DataSource {
 				$field = Inflector::underscore(preg_replace('/^findAllBy/i', '', $args[0]));
 			}
 
-			$or = (strpos($field, '_or_') !== false);
+			$or = (str_contains($field, '_or_'));
 			if ($or) {
 				$field = explode('_or_', $field);
 			} else {
@@ -318,7 +316,7 @@ class DboSource extends DataSource {
 			}
 
 			$c = 0;
-			$conditions = array();
+			$conditions = [];
 
 			foreach ($field as $f) {
 				$conditions[$args[2]->alias . '.' . $f] = $params[$c];
@@ -326,7 +324,7 @@ class DboSource extends DataSource {
 			}
 
 			if ($or) {
-				$conditions = array('OR' => $conditions);
+				$conditions = ['OR' => $conditions];
 			}
 
 			if ($all) {
@@ -360,7 +358,7 @@ class DboSource extends DataSource {
 				} else {
 					$cache = true;
 				}
-				$args[1] = array_map(array(&$this, 'value'), $args[1]);
+				$args[1] = array_map([&$this, 'value'], $args[1]);
 				return $this->fetchAll(CakeText::insert($args[0], $args[1]), $cache);
 			}
 		}
@@ -372,7 +370,7 @@ class DboSource extends DataSource {
  * @return array The fetched row as an array
  * @access public
  */
-	function fetchRow($sql = null) {
+	public function fetchRow($sql = null) {
 		if (!empty($sql) && is_string($sql) && strlen($sql) > 5) {
 			if (!$this->execute($sql)) {
 				return null;
@@ -400,7 +398,7 @@ class DboSource extends DataSource {
  * @return array Array of resultset rows, or false if no rows matched
  * @access public
  */
-	function fetchAll($sql, $cache = true, $modelName = null) {
+	public function fetchAll($sql, $cache = true, $modelName = null) {
 		if ($cache && isset($this->_queryCache[$sql])) {
 			if (preg_match('/^\s*select/i', $sql)) {
 				return $this->_queryCache[$sql];
@@ -408,7 +406,7 @@ class DboSource extends DataSource {
 		}
 
 		if ($this->execute($sql)) {
-			$out = array();
+			$out = [];
 
 			$first = $this->fetchRow();
 			if ($first != null) {
@@ -439,13 +437,13 @@ class DboSource extends DataSource {
  * @param array $resut REference to the fetched row
  * @return void
  */
-	function fetchVirtualField(&$result) {
+	public function fetchVirtualField(&$result) {
 		if (isset($result[0]) && is_array($result[0])) {
 			foreach ($result[0] as $field => $value) {
-				if (strpos($field, $this->virtualFieldSeparator) === false) {
+				if (!str_contains($field, $this->virtualFieldSeparator)) {
 					continue;
 				}
-				list($alias, $virtual) = explode($this->virtualFieldSeparator, $field);
+				[$alias, $virtual] = explode($this->virtualFieldSeparator, $field);
 
 				if (!ClassRegistry::isKeySet($alias)) {
 					return;
@@ -470,7 +468,7 @@ class DboSource extends DataSource {
  * @return mixed Value of field read.
  * @access public
  */
-	function field($name, $sql) {
+	public function field($name, $sql) {
 		$data = $this->fetchRow($sql);
 		if (!isset($data[$name]) || empty($data[$name])) {
 			return false;
@@ -485,8 +483,8 @@ class DboSource extends DataSource {
  *
  * @return void
  */
-	function flushMethodCache() {
-		$this->methodCache = array();
+	public function flushMethodCache() {
+		$this->methodCache = [];
 	}
 
 /**
@@ -501,12 +499,12 @@ class DboSource extends DataSource {
  * @param mixed $value The value to cache into memory.
  * @return mixed Either null on failure, or the value if its set.
  */
-	function cacheMethod($method, $key, $value = null) {
+	public function cacheMethod($method, $key, $value = null) {
 		if ($this->cacheMethods === false) {
 			return $value;
 		}
 		if ($value === null) {
-			return (isset($this->methodCache[$method][$key])) ? $this->methodCache[$method][$key] : null;
+			return $this->methodCache[$method][$key] ?? null;
 		}
 		return $this->methodCache[$method][$key] = $value;
 	}
@@ -524,7 +522,7 @@ class DboSource extends DataSource {
  * @return string SQL field
  * @access public
  */
-	function name($data) {
+	public function name($data) {
 		if (is_object($data) && isset($data->type)) {
 			return $data->value;
 		}
@@ -543,7 +541,7 @@ class DboSource extends DataSource {
 		}
 		$data = trim($data);
 		if (preg_match('/^[\w-]+(?:\.[^ \*]*)*$/', $data)) { // string, string.string
-			if (strpos($data, '.') === false) { // string
+			if (!str_contains($data, '.')) { // string
 				return $this->cacheMethod(__FUNCTION__, $cacheKey, $this->startQuote . $data . $this->endQuote);
 			}
 			$items = explode('.', $data);
@@ -583,7 +581,7 @@ class DboSource extends DataSource {
  * @return boolean True if the database is connected, else false
  * @access public
  */
-	function isConnected() {
+	public function isConnected() {
 		return $this->connected;
 	}
 
@@ -593,7 +591,7 @@ class DboSource extends DataSource {
  * @return boolean True if the result is valid else false
  * @access public
  */
-	function hasResult() {
+	public function hasResult() {
 		return is_resource($this->_result);
 	}
 
@@ -604,16 +602,16 @@ class DboSource extends DataSource {
  * @return array Array of queries run as an array
  * @access public
  */
-	function getLog($sorted = false, $clear = true) {
+	public function getLog($sorted = false, $clear = true) {
 		if ($sorted) {
 			$log = sortByKey($this->_queriesLog, 'took', 'desc', SORT_NUMERIC);
 		} else {
 			$log = $this->_queriesLog;
 		}
 		if ($clear) {
-			$this->_queriesLog = array();
+			$this->_queriesLog = [];
 		}
-		return array('log' => $log, 'count' => $this->_queriesCnt, 'time' => $this->_queriesTime);
+		return ['log' => $log, 'count' => $this->_queriesCnt, 'time' => $this->_queriesTime];
 	}
 
 /**
@@ -623,7 +621,7 @@ class DboSource extends DataSource {
  * @param boolean $sorted Get the queries sorted by time taken, defaults to false.
  * @return void
  */
-	function showLog($sorted = false) {
+	public function showLog($sorted = false) {
 		$log = $this->getLog($sorted, false);
 		if (empty($log['log'])) {
 			return;
@@ -632,8 +630,8 @@ class DboSource extends DataSource {
 			App::import('Core', 'View');
 			$controller = null;
 			$View = new View($controller, false);
-			$View->set('logs', array($this->configKeyName => $log));
-			echo $View->element('sql_dump', array('_forced_from_dbo_' => true));
+			$View->set('logs', [$this->configKeyName => $log]);
+			echo $View->element('sql_dump', ['_forced_from_dbo_' => true]);
 		} else {
 			foreach ($log['log'] as $k => $i) {
 				print (($k + 1) . ". {$i['query']} {$i['error']}\n");
@@ -648,16 +646,16 @@ class DboSource extends DataSource {
  * @todo: Add hook to log errors instead of returning false
  * @access public
  */
-	function logQuery($sql) {
+	public function logQuery($sql) {
 		$this->_queriesCnt++;
 		$this->_queriesTime += $this->took;
-		$this->_queriesLog[] = array(
+		$this->_queriesLog[] = [
 			'query' => $sql,
 			'error'		=> $this->error,
 			'affected'	=> $this->affected,
 			'numRows'	=> $this->numRows,
 			'took'		=> $this->took
-		);
+		];
 		if (count($this->_queriesLog) > $this->_queriesLogMax) {
 			array_pop($this->_queriesLog);
 		}
@@ -673,7 +671,7 @@ class DboSource extends DataSource {
  * @param string $sql Query to show information on.
  * @access public
  */
-	function showQuery($sql) {
+	public function showQuery($sql) {
 		$error = $this->error;
 		if (strlen($sql) > 200 && !$this->fullDebug && Configure::read() > 1) {
 			$sql = substr($sql, 0, 200) . '[...]';
@@ -697,7 +695,7 @@ class DboSource extends DataSource {
  * @return string Full quoted table name
  * @access public
  */
-	function fullTableName($model, $quote = true) {
+	public function fullTableName($model, $quote = true) {
 		if (is_object($model)) {
 			$table = $model->tablePrefix . $model->table;
 		} elseif (isset($this->config['prefix'])) {
@@ -724,7 +722,7 @@ class DboSource extends DataSource {
  * @return boolean Success
  * @access public
  */
-	function create(&$model, $fields = null, $values = null) {
+	public function create(&$model, $fields = null, $values = null) {
 		$id = null;
 
 		if ($fields == null) {
@@ -741,11 +739,11 @@ class DboSource extends DataSource {
 				$id = $values[$i];
 			}
 		}
-		$query = array(
+		$query = [
 			'table' => $this->fullTableName($model),
 			'fields' => implode(', ', $fieldInsert),
 			'values' => implode(', ', $valueInsert)
-		);
+		];
 
 		if ($this->execute($this->renderStatement('create', $query))) {
 			if (empty($id)) {
@@ -770,14 +768,14 @@ class DboSource extends DataSource {
  * @param integer $recursive Number of levels of association
  * @return mixed boolean false on error/failure.  An array of results on success.
  */
-	function read(&$model, $queryData = array(), $recursive = null) {
+	public function read(&$model, $queryData = [], $recursive = null) {
 		$queryData = $this->__scrubQueryData($queryData);
 
 		$null = null;
-		$array = array('callbacks' => $queryData['callbacks']);
-		$linkedModels = array();
+		$array = ['callbacks' => $queryData['callbacks']];
+		$linkedModels = [];
 		$this->__bypass = false;
-		$this->__booleans = array();
+		$this->__booleans = [];
 
 		if ($recursive === null && isset($queryData['recursive'])) {
 			$recursive = $queryData['recursive'];
@@ -798,7 +796,7 @@ class DboSource extends DataSource {
 		$_associations = $model->__associations;
 
 		if ($model->recursive == -1) {
-			$_associations = array();
+			$_associations = [];
 		} else if ($model->recursive == 0) {
 			unset($_associations[2], $_associations[3]);
 		}
@@ -825,7 +823,7 @@ class DboSource extends DataSource {
 			return false;
 		}
 
-		$filtered = array();
+		$filtered = [];
 
 		if ($queryData['callbacks'] === true || $queryData['callbacks'] === 'after') {
 			$filtered = $this->__filterResults($resultSet, $model);
@@ -847,7 +845,7 @@ class DboSource extends DataSource {
 					}
 
 					if (isset($db) && method_exists($db, 'queryAssociation')) {
-						$stack = array($assoc);
+						$stack = [$assoc];
 						$db->queryAssociation($model, $linkModel, $type, $assoc, $assocData, $array, true, $resultSet, $model->recursive - 1, $stack);
 						unset($db);
 
@@ -877,8 +875,8 @@ class DboSource extends DataSource {
  * @return array Array of results that have been filtered through $model->afterFind
  * @access private
  */
-	function __filterResults(&$results, &$model, $filtered = array()) {
-		$filtering = array();
+	public function __filterResults(&$results, &$model, $filtered = []) {
+		$filtering = [];
 		$count = count($results);
 
 		for ($i = 0; $i < $count; $i++) {
@@ -894,7 +892,7 @@ class DboSource extends DataSource {
 						}
 
 						if (isset($model->{$className}) && is_object($model->{$className})) {
-							$data = $model->{$className}->afterFind(array(array($className => $results[$i][$className])), false);
+							$data = $model->{$className}->afterFind([[$className => $results[$i][$className]]], false);
 						}
 						if (isset($data[0][$className])) {
 							$results[$i][$className] = $data[0][$className];
@@ -920,7 +918,7 @@ class DboSource extends DataSource {
  * @param integer $recursive Number of levels of association
  * @param array $stack
  */
-	function queryAssociation(&$model, &$linkModel, $type, $association, $assocData, &$queryData, $external = false, &$resultSet, $recursive, $stack) {
+	public function queryAssociation(&$model, &$linkModel, $type, $association, $assocData, &$queryData, $external = false, &$resultSet = null, $recursive = null, $stack = null) {
 		if ($query = $this->generateAssociationQuery($model, $linkModel, $type, $association, $assocData, $queryData, $external, $resultSet)) {
 			if (!isset($resultSet) || !is_array($resultSet)) {
 				if (Configure::read() > 0) {
@@ -935,7 +933,7 @@ class DboSource extends DataSource {
 			$count = count($resultSet);
 
 			if ($type === 'hasMany' && empty($assocData['limit']) && !empty($assocData['foreignKey'])) {
-				$ins = $fetch = array();
+				$ins = $fetch = [];
 				for ($i = 0; $i < $count; $i++) {
 					if ($in = $this->insertQueryData('{$__cakeID__$}', $resultSet[$i], $association, $assocData, $model, $linkModel, $stack)) {
 						$ins[] = $in;
@@ -970,7 +968,7 @@ class DboSource extends DataSource {
 				}
 				return $this->__mergeHasMany($resultSet, $fetch, $association, $model, $linkModel, $recursive);
 			} elseif ($type === 'hasAndBelongsToMany') {
-				$ins = $fetch = array();
+				$ins = $fetch = [];
 				for ($i = 0; $i < $count; $i++) {
 					if ($in = $this->insertQueryData('{$__cakeID__$}', $resultSet[$i], $association, $assocData, $model, $linkModel, $stack)) {
 						$ins[] = $in;
@@ -989,8 +987,8 @@ class DboSource extends DataSource {
 				}
 
 				$foreignKey = $model->hasAndBelongsToMany[$association]['foreignKey'];
-				$joinKeys = array($foreignKey, $model->hasAndBelongsToMany[$association]['associationForeignKey']);
-				list($with, $habtmFields) = $model->joinModel($model->hasAndBelongsToMany[$association]['with'], $joinKeys);
+				$joinKeys = [$foreignKey, $model->hasAndBelongsToMany[$association]['associationForeignKey']];
+				[$with, $habtmFields] = $model->joinModel($model->hasAndBelongsToMany[$association]['with'], $joinKeys);
 				$habtmFieldsCount = count($habtmFields);
 				$q = $this->insertQueryData($query, null, $association, $assocData, $model, $linkModel, $stack);
 
@@ -1038,7 +1036,7 @@ class DboSource extends DataSource {
 						}
 					}
 					if ($type == 'hasAndBelongsToMany') {
-						$uniqueIds = $merge = array();
+						$uniqueIds = $merge = [];
 
 						foreach ($fetch as $j => $data) {
 							if (
@@ -1078,7 +1076,7 @@ class DboSource extends DataSource {
  * @return array Association results
  * @access public
  */
-	function fetchAssociated($model, $query, $ids) {
+	public function fetchAssociated($model, $query, $ids) {
 		$query = str_replace('{$__cakeID__$}', implode(', ', $ids), $query);
 		if (count($ids) > 1) {
 			$query = str_replace('= (', 'IN (', $query);
@@ -1097,10 +1095,10 @@ class DboSource extends DataSource {
  * @param object $linkModel Model being merged
  * @return void
  */
-	function __mergeHasMany(&$resultSet, $merge, $association, &$model, &$linkModel) {
+	public function __mergeHasMany(&$resultSet, $merge, $association, &$model, &$linkModel) {
 		foreach ($resultSet as $i => $value) {
 			$count = 0;
-			$merged[$association] = array();
+			$merged[$association] = [];
 			foreach ($merge as $j => $data) {
 				if (isset($value[$model->alias]) && $value[$model->alias][$model->primaryKey] === $data[$association][$model->hasMany[$association]['foreignKey']]) {
 					if (count($data) > 1) {
@@ -1136,7 +1134,7 @@ class DboSource extends DataSource {
  * @param boolean $selfJoin
  * @access private
  */
-	function __mergeAssociation(&$data, $merge, $association, $type, $selfJoin = false) {
+	public function __mergeAssociation(&$data, $merge, $association, $type, $selfJoin = false) {
 		if (isset($merge[0]) && !isset($merge[0][$association])) {
 			$association = Inflector::pluralize($association);
 		}
@@ -1156,7 +1154,7 @@ class DboSource extends DataSource {
 					if ($merge[0][$association] != null) {
 						$data[$association] = $merge[0][$association];
 					} else {
-						$data[$association] = array();
+						$data[$association] = [];
 					}
 				} else {
 					if (is_array($merge[0][$association])) {
@@ -1181,18 +1179,16 @@ class DboSource extends DataSource {
 							$data[$association] = array_merge($merge[0][$association], $diff);
 						}
 					} elseif ($selfJoin && array_key_exists($association, $merge[0])) {
-						$data[$association] = array_merge($data[$association], array($association => array()));
+						$data[$association] = array_merge($data[$association], [$association => []]);
 					}
 				}
 			}
 		} else {
 			if (isset($merge[0][$association]) && $merge[0][$association] === false) {
-				if (!isset($data[$association])) {
-					$data[$association] = array();
-				}
+				$data[$association] ??= [];
 			} else {
 				foreach ($merge as $i => $row) {
-					$insert = array();
+					$insert = [];
 					if (count($row) === 1) {
 						$insert = $row[$association];
 					} elseif (isset($row[$association])) {
@@ -1222,17 +1218,17 @@ class DboSource extends DataSource {
  * @return mixed
  * @access public
  */
-	function generateAssociationQuery(&$model, &$linkModel, $type, $association = null, $assocData = array(), &$queryData, $external = false, &$resultSet) {
+	public function generateAssociationQuery(&$model, &$linkModel, $type, $association = null, $assocData = [], &$queryData = null, $external = false, &$resultSet = null) {
 		$queryData = $this->__scrubQueryData($queryData);
 		$assocData = $this->__scrubQueryData($assocData);
 
 		if (empty($queryData['fields'])) {
 			$queryData['fields'] = $this->fields($model, $model->alias);
 		} elseif (!empty($model->hasMany) && $model->recursive > -1) {
-			$assocFields = $this->fields($model, $model->alias, array("{$model->alias}.{$model->primaryKey}"));
+			$assocFields = $this->fields($model, $model->alias, ["{$model->alias}.{$model->primaryKey}"]);
 			$passedFields = $this->fields($model, $model->alias, $queryData['fields']);
 			if (count($passedFields) === 1) {
-				$match = strpos($passedFields[0], $assocFields[0]);
+				$match = strpos($passedFields[0], (string) $assocFields[0]);
 				$match1 = (bool)preg_match('/^[a-z]+\(/i', $passedFields[0]);
 
 				if ($match === false && $match1 === false) {
@@ -1248,7 +1244,7 @@ class DboSource extends DataSource {
 
 		if ($linkModel == null) {
 			return $this->buildStatement(
-				array(
+				[
 					'fields' => array_unique($queryData['fields']),
 					'table' => $this->fullTableName($model),
 					'alias' => $model->alias,
@@ -1258,7 +1254,7 @@ class DboSource extends DataSource {
 					'conditions' => $queryData['conditions'],
 					'order' => $queryData['order'],
 					'group' => $queryData['group']
-				),
+				],
 				$model
 			);
 		}
@@ -1268,9 +1264,9 @@ class DboSource extends DataSource {
 
 		$alias = $association;
 		$self = ($model->name == $linkModel->name);
-		$fields = array();
+		$fields = [];
 
-		if ((!$external && in_array($type, array('hasOne', 'belongsTo')) && $this->__bypass === false) || $external) {
+		if ((!$external && in_array($type, ['hasOne', 'belongsTo']) && $this->__bypass === false) || $external) {
 			$fields = $this->fields($linkModel, $alias, $assocData['fields']);
 		}
 		if (empty($assocData['offset']) && !empty($assocData['page'])) {
@@ -1288,28 +1284,28 @@ class DboSource extends DataSource {
 
 				if (!$self && $external) {
 					foreach ($conditions as $key => $condition) {
-						if (is_numeric($key) && strpos($condition, $model->alias . '.') !== false) {
+						if (is_numeric($key) && str_contains($condition, $model->alias . '.')) {
 							unset($conditions[$key]);
 						}
 					}
 				}
 
 				if ($external) {
-					$query = array_merge($assocData, array(
+					$query = array_merge($assocData, [
 						'conditions' => $conditions,
 						'table' => $this->fullTableName($linkModel),
 						'fields' => $fields,
 						'alias' => $alias,
 						'group' => null
-					));
-					$query = array_merge(array('order' => $assocData['order'], 'limit' => $assocData['limit']), $query);
+					]);
+					$query = array_merge(['order' => $assocData['order'], 'limit' => $assocData['limit']], $query);
 				} else {
-					$join = array(
+					$join = [
 						'table' => $linkModel,
 						'alias' => $alias,
-						'type' => isset($assocData['type']) ? $assocData['type'] : 'LEFT',
+						'type' => $assocData['type'] ?? 'LEFT',
 						'conditions' => trim($this->conditions($conditions, true, false, $model))
-					);
+					];
 					$queryData['fields'] = array_merge($queryData['fields'], $fields);
 
 					if (!empty($assocData['order'])) {
@@ -1324,9 +1320,9 @@ class DboSource extends DataSource {
 			case 'hasMany':
 				$assocData['fields'] = $this->fields($linkModel, $alias, $assocData['fields']);
 				if (!empty($assocData['foreignKey'])) {
-					$assocData['fields'] = array_merge($assocData['fields'], $this->fields($linkModel, $alias, array("{$alias}.{$assocData['foreignKey']}")));
+					$assocData['fields'] = array_merge($assocData['fields'], $this->fields($linkModel, $alias, ["{$alias}.{$assocData['foreignKey']}"]));
 				}
-				$query = array(
+				$query = [
 					'conditions' => $this->__mergeConditions($this->getConstraint('hasMany', $model, $linkModel, $alias, $assocData), $assocData['conditions']),
 					'fields' => array_unique($assocData['fields']),
 					'table' => $this->fullTableName($linkModel),
@@ -1334,15 +1330,15 @@ class DboSource extends DataSource {
 					'order' => $assocData['order'],
 					'limit' => $assocData['limit'],
 					'group' => null
-				);
+				];
 			break;
 			case 'hasAndBelongsToMany':
-				$joinFields = array();
+				$joinFields = [];
 				$joinAssoc = null;
 
 				if (isset($assocData['with']) && !empty($assocData['with'])) {
-					$joinKeys = array($assocData['foreignKey'], $assocData['associationForeignKey']);
-					list($with, $joinFields) = $model->joinModel($assocData['with'], $joinKeys);
+					$joinKeys = [$assocData['foreignKey'], $assocData['associationForeignKey']];
+					[$with, $joinFields] = $model->joinModel($assocData['with'], $joinKeys);
 
 					$joinTbl = $model->{$with};
 					$joinAlias = $joinTbl;
@@ -1351,13 +1347,13 @@ class DboSource extends DataSource {
 						$joinFields = $this->fields($model->{$with}, $model->{$with}->alias, $joinFields);
 						$joinAssoc = $joinAlias = $model->{$with}->alias;
 					} else {
-						$joinFields = array();
+						$joinFields = [];
 					}
 				} else {
 					$joinTbl = $assocData['joinTable'];
 					$joinAlias = $this->fullTableName($assocData['joinTable']);
 				}
-				$query = array(
+				$query = [
 					'conditions' => $assocData['conditions'],
 					'limit' => $assocData['limit'],
 					'table' => $this->fullTableName($linkModel),
@@ -1365,12 +1361,12 @@ class DboSource extends DataSource {
 					'fields' => array_merge($this->fields($linkModel, $alias, $assocData['fields']), $joinFields),
 					'order' => $assocData['order'],
 					'group' => null,
-					'joins' => array(array(
+					'joins' => [[
 						'table' => $joinTbl,
 						'alias' => $joinAssoc,
 						'conditions' => $this->getConstraint('hasAndBelongsToMany', $model, $linkModel, $joinAlias, $assocData, $alias)
-					))
-				);
+					]]
+				];
 			break;
 		}
 		if (isset($query)) {
@@ -1388,37 +1384,37 @@ class DboSource extends DataSource {
  * @return array Conditions array defining the constraint between $model and $association
  * @access public
  */
-	function getConstraint($type, $model, $linkModel, $alias, $assoc, $alias2 = null) {
-		$assoc = array_merge(array('external' => false, 'self' => false), $assoc);
+	public function getConstraint($type, $model, $linkModel, $alias, $assoc, $alias2 = null) {
+		$assoc = array_merge(['external' => false, 'self' => false], $assoc);
 
 		if (array_key_exists('foreignKey', $assoc) && empty($assoc['foreignKey'])) {
-			return array();
+			return [];
 		}
 
 		switch (true) {
 			case ($assoc['external'] && $type == 'hasOne'):
-				return array("{$alias}.{$assoc['foreignKey']}" => '{$__cakeID__$}');
+				return ["{$alias}.{$assoc['foreignKey']}" => '{$__cakeID__$}'];
 			break;
 			case ($assoc['external'] && $type == 'belongsTo'):
-				return array("{$alias}.{$linkModel->primaryKey}" => '{$__cakeForeignKey__$}');
+				return ["{$alias}.{$linkModel->primaryKey}" => '{$__cakeForeignKey__$}'];
 			break;
 			case (!$assoc['external'] && $type == 'hasOne'):
-				return array("{$alias}.{$assoc['foreignKey']}" => $this->identifier("{$model->alias}.{$model->primaryKey}"));
+				return ["{$alias}.{$assoc['foreignKey']}" => $this->identifier("{$model->alias}.{$model->primaryKey}")];
 			break;
 			case (!$assoc['external'] && $type == 'belongsTo'):
-				return array("{$model->alias}.{$assoc['foreignKey']}" => $this->identifier("{$alias}.{$linkModel->primaryKey}"));
+				return ["{$model->alias}.{$assoc['foreignKey']}" => $this->identifier("{$alias}.{$linkModel->primaryKey}")];
 			break;
 			case ($type == 'hasMany'):
-				return array("{$alias}.{$assoc['foreignKey']}" => array('{$__cakeID__$}'));
+				return ["{$alias}.{$assoc['foreignKey']}" => ['{$__cakeID__$}']];
 			break;
 			case ($type == 'hasAndBelongsToMany'):
-				return array(
-					array("{$alias}.{$assoc['foreignKey']}" => '{$__cakeID__$}'),
-					array("{$alias}.{$assoc['associationForeignKey']}" => $this->identifier("{$alias2}.{$linkModel->primaryKey}"))
-				);
+				return [
+					["{$alias}.{$assoc['foreignKey']}" => '{$__cakeID__$}'],
+					["{$alias}.{$assoc['associationForeignKey']}" => $this->identifier("{$alias2}.{$linkModel->primaryKey}")]
+				];
 			break;
 		}
-		return array();
+		return [];
 	}
 
 /**
@@ -1430,13 +1426,13 @@ class DboSource extends DataSource {
  * @see DboSource::renderJoinStatement()
  * @see DboSource::buildStatement()
  */
-	function buildJoinStatement($join) {
-		$data = array_merge(array(
+	public function buildJoinStatement($join) {
+		$data = array_merge([
 			'type' => null,
 			'alias' => null,
 			'table' => 'join_table',
-			'conditions' => array()
-		), $join);
+			'conditions' => []
+		], $join);
 
 		if (!empty($data['alias'])) {
 			$data['alias'] = $this->alias . $this->name($data['alias']);
@@ -1459,8 +1455,8 @@ class DboSource extends DataSource {
  * @access public
  * @see DboSource::renderStatement()
  */
-	function buildStatement($query, &$model) {
-		$query = array_merge(array('offset' => null, 'joins' => array()), $query);
+	public function buildStatement($query, &$model) {
+		$query = array_merge(['offset' => null, 'joins' => []], $query);
 		if (!empty($query['joins'])) {
 			$count = count($query['joins']);
 			for ($i = 0; $i < $count; $i++) {
@@ -1469,7 +1465,7 @@ class DboSource extends DataSource {
 				}
 			}
 		}
-		return $this->renderStatement('select', array(
+		return $this->renderStatement('select', [
 			'conditions' => $this->conditions($query['conditions'], true, true, $model),
 			'fields' => implode(', ', $query['fields']),
 			'table' => $query['table'],
@@ -1478,7 +1474,7 @@ class DboSource extends DataSource {
 			'limit' => $this->limit($query['limit'], $query['offset']),
 			'joins' => implode(' ', $query['joins']),
 			'group' => $this->group($query['group'], $model)
-		));
+		]);
 	}
 
 /**
@@ -1488,7 +1484,7 @@ class DboSource extends DataSource {
  * @return string
  * @access public
  */
-	function renderJoinStatement($data) {
+	public function renderJoinStatement($data) {
 		extract($data);
 		return trim("{$type} JOIN {$table} {$alias} ON ({$conditions})");
 	}
@@ -1501,7 +1497,7 @@ class DboSource extends DataSource {
  * @return string Rendered SQL expression to be run.
  * @access public
  */
-	function renderStatement($type, $data) {
+	public function renderStatement($type, $data) {
 		extract($data);
 		$aliases = null;
 
@@ -1525,7 +1521,7 @@ class DboSource extends DataSource {
 				return "DELETE {$alias} FROM {$table} {$aliases}{$conditions}";
 			break;
 			case 'schema':
-				foreach (array('columns', 'indexes', 'tableParameters') as $var) {
+				foreach (['columns', 'indexes', 'tableParameters'] as $var) {
 					if (is_array(${$var})) {
 						${$var} = "\t" . join(",\n\t", array_filter(${$var}));
 					} else {
@@ -1548,7 +1544,7 @@ class DboSource extends DataSource {
  * @return array
  * @access private
  */
-	function __mergeConditions($query, $assoc) {
+	public function __mergeConditions($query, $assoc) {
 		if (empty($assoc)) {
 			return $query;
 		}
@@ -1558,7 +1554,7 @@ class DboSource extends DataSource {
 		}
 
 		if (!empty($query)) {
-			$query = array($query);
+			$query = [$query];
 			if (is_array($assoc)) {
 				$query = array_merge($query, $assoc);
 			} else {
@@ -1581,7 +1577,7 @@ class DboSource extends DataSource {
  * @return boolean Success
  * @access public
  */
-	function update(&$model, $fields = array(), $values = null, $conditions = null) {
+	public function update(&$model, $fields = [], $values = null, $conditions = null) {
 		if ($values == null) {
 			$combined = $fields;
 		} else {
@@ -1616,14 +1612,14 @@ class DboSource extends DataSource {
  * @return array Fields and values, quoted and preparted
  * @access protected
  */
-	function _prepareUpdateFields(&$model, $fields, $quoteValues = true, $alias = false) {
+	public function _prepareUpdateFields(&$model, $fields, $quoteValues = true, $alias = false) {
 		$quotedAlias = $this->startQuote . $model->alias . $this->endQuote;
 
-		$updates = array();
+		$updates = [];
 		foreach ($fields as $field => $value) {
-			if ($alias && strpos($field, '.') === false) {
+			if ($alias && !str_contains($field, '.')) {
 				$quoted = $model->escapeField($field);
-			} elseif (!$alias && strpos($field, '.') !== false) {
+			} elseif (!$alias && str_contains($field, '.')) {
 				$quoted = $this->name(str_replace($quotedAlias . '.', '', str_replace(
 					$model->alias . '.', '', $field
 				)));
@@ -1660,7 +1656,7 @@ class DboSource extends DataSource {
  * @return boolean Success
  * @access public
  */
-	function delete(&$model, $conditions = null) {
+	public function delete(&$model, $conditions = null) {
 		$alias = $joins = null;
 		$table = $this->fullTableName($model);
 		$conditions = $this->_matchRecords($model, $conditions);
@@ -1685,7 +1681,7 @@ class DboSource extends DataSource {
  * @return array List of record IDs
  * @access protected
  */
-	function _matchRecords(&$model, $conditions = null) {
+	public function _matchRecords(&$model, $conditions = null) {
 		if ($conditions === true) {
 			$conditions = $this->conditions(true);
 		} elseif ($conditions === null) {
@@ -1694,8 +1690,8 @@ class DboSource extends DataSource {
 			$noJoin = true;
 			foreach ($conditions as $field => $value) {
 				$originalField = $field;
-				if (strpos($field, '.') !== false) {
-					list($alias, $field) = explode('.', $field);
+				if (str_contains($field, '.')) {
+					[$alias, $field] = explode('.', $field);
 					$field = ltrim($field, $this->startQuote);
 					$field = rtrim($field, $this->endQuote);
 				}
@@ -1711,17 +1707,17 @@ class DboSource extends DataSource {
 			if ($noJoin === true) {
 				return $this->conditions($conditions);
 			}
-			$idList = $model->find('all', array(
+			$idList = $model->find('all', [
 				'fields' => "{$model->alias}.{$model->primaryKey}",
 				'conditions' => $conditions
-			));
+			]);
 
 			if (empty($idList)) {
 				return false;
 			}
-			$conditions = $this->conditions(array(
+			$conditions = $this->conditions([
 				$model->primaryKey => Set::extract($idList, "{n}.{$model->alias}.{$model->primaryKey}")
-			));
+			]);
 		}
 		return $conditions;
 	}
@@ -1733,22 +1729,22 @@ class DboSource extends DataSource {
  * @return array
  * @access protected
  */
-	function _getJoins($model) {
-		$join = array();
+	public function _getJoins($model) {
+		$join = [];
 		$joins = array_merge($model->getAssociated('hasOne'), $model->getAssociated('belongsTo'));
 
 		foreach ($joins as $assoc) {
 			if (isset($model->{$assoc}) && $model->useDbConfig == $model->{$assoc}->useDbConfig) {
 				$assocData = $model->getAssociated($assoc);
-				$join[] = $this->buildJoinStatement(array(
+				$join[] = $this->buildJoinStatement([
 					'table' => $model->{$assoc},
 					'alias' => $assoc,
-					'type' => isset($assocData['type']) ? $assocData['type'] : 'LEFT',
+					'type' => $assocData['type'] ?? 'LEFT',
 					'conditions' => trim($this->conditions(
 						$this->__mergeConditions($assocData['conditions'], $this->getConstraint($assocData['association'], $model, $model->{$assoc}, $assoc, $assocData)),
 						true, false, $model
 					))
-				));
+				]);
 			}
 		}
 		return $join;
@@ -1763,17 +1759,13 @@ class DboSource extends DataSource {
  * @return string An SQL calculation function
  * @access public
  */
-	function calculate(&$model, $func, $params = array()) {
+	public function calculate(&$model, $func, $params = []) {
 		$params = (array)$params;
 
 		switch (strtolower($func)) {
 			case 'count':
-				if (!isset($params[0])) {
-					$params[0] = '*';
-				}
-				if (!isset($params[1])) {
-					$params[1] = 'count';
-				}
+				$params[0] ??= '*';
+				$params[1] ??= 'count';
 				if (is_object($model) && $model->isVirtualField($params[0])){
 					$arg = $this->__quoteFields($model->getVirtualField($params[0]));
 				} else {
@@ -1782,9 +1774,7 @@ class DboSource extends DataSource {
 				return 'COUNT(' . $arg . ') AS ' . $this->name($params[1]);
 			case 'max':
 			case 'min':
-				if (!isset($params[1])) {
-					$params[1] = $params[0];
-				}
+				$params[1] ??= $params[0];
 				if (is_object($model) && $model->isVirtualField($params[0])) {
 					$arg = $this->__quoteFields($model->getVirtualField($params[0]));
 				} else {
@@ -1803,7 +1793,7 @@ class DboSource extends DataSource {
  * @return boolean	SQL TRUNCATE TABLE statement, false if not applicable.
  * @access public
  */
-	function truncate($table) {
+	public function truncate($table) {
 		return $this->execute('TRUNCATE TABLE ' . $this->fullTableName($table));
 	}
 
@@ -1816,7 +1806,7 @@ class DboSource extends DataSource {
  * or a transaction has not started).
  * @access public
  */
-	function begin(&$model) {
+	public function begin(&$model) {
 		if (parent::begin($model) && $this->execute($this->_commands['begin'])) {
 			$this->_transactionStarted = true;
 			return true;
@@ -1833,7 +1823,7 @@ class DboSource extends DataSource {
  * or a transaction has not started).
  * @access public
  */
-	function commit(&$model) {
+	public function commit(&$model) {
 		if (parent::commit($model) && $this->execute($this->_commands['commit'])) {
 			$this->_transactionStarted = false;
 			return true;
@@ -1850,7 +1840,7 @@ class DboSource extends DataSource {
  * or a transaction has not started).
  * @access public
  */
-	function rollback(&$model) {
+	public function rollback(&$model) {
 		if (parent::rollback($model) && $this->execute($this->_commands['rollback'])) {
 			$this->_transactionStarted = false;
 			return true;
@@ -1873,7 +1863,7 @@ class DboSource extends DataSource {
  * @see DboSource::conditions()
  * @access public
  */
-	function defaultConditions(&$model, $conditions, $useAlias = true) {
+	public function defaultConditions(&$model, $conditions, $useAlias = true) {
 		if (!empty($conditions)) {
 			return $conditions;
 		}
@@ -1888,7 +1878,7 @@ class DboSource extends DataSource {
 		if (!$useAlias) {
 			$alias = $this->fullTableName($model, false);
 		}
-		return array("{$alias}.{$model->primaryKey}" => $model->getID());
+		return ["{$alias}.{$model->primaryKey}" => $model->getID()];
 	}
 
 /**
@@ -1900,11 +1890,11 @@ class DboSource extends DataSource {
  * @return string
  * @access public
  */
-	function resolveKey($model, $key, $assoc = null) {
+	public function resolveKey($model, $key, $assoc = null) {
 		if (empty($assoc)) {
 			$assoc = $model->alias;
 		}
-		if (!strpos('.', $key)) {
+		if (!strpos('.', (string) $key)) {
 			return $this->name($model->alias) . '.' . $this->name($key);
 		}
 		return $key;
@@ -1917,10 +1907,10 @@ class DboSource extends DataSource {
  * @return array
  * @access public
  */
-	function __scrubQueryData($data) {
-		foreach (array('conditions', 'fields', 'joins', 'order', 'limit', 'offset', 'group') as $key) {
+	public function __scrubQueryData($data) {
+		foreach (['conditions', 'fields', 'joins', 'order', 'limit', 'offset', 'group'] as $key) {
 			if (empty($data[$key])) {
-				$data[$key] = array();
+				$data[$key] = [];
 			}
 		}
 		if (!array_key_exists('callbacks', $data)) {
@@ -1937,8 +1927,8 @@ class DboSource extends DataSource {
  * @param mixed $fields virtual fields to be used on query
  * @return array
  */
-	function _constructVirtualFields(&$model, $alias, $fields) {
-		$virtual = array();
+	public function _constructVirtualFields(&$model, $alias, $fields) {
+		$virtual = [];
 		foreach ($fields as $field) {
 			$virtualField = $this->name($alias . $this->virtualFieldSeparator . $field);
 			$expression = $this->__quoteFields($model->getVirtualField($field));
@@ -1957,11 +1947,11 @@ class DboSource extends DataSource {
  * @return array
  * @access public
  */
-	function fields(&$model, $alias = null, $fields = array(), $quote = true) {
+	public function fields(&$model, $alias = null, $fields = [], $quote = true) {
 		if (empty($alias)) {
 			$alias = $model->alias;
 		}
-		$cacheKey = array(
+		$cacheKey = [
 			$model->useDbConfig,
 			$model->table,
 			array_keys($model->schema()),
@@ -1970,7 +1960,7 @@ class DboSource extends DataSource {
 			$alias,
 			$fields,
 			$quote
-		);
+		];
 		$cacheKey = md5(serialize($cacheKey));
 		if ($return = $this->cacheMethod(__FUNCTION__, $cacheKey)) {
 			return $return;
@@ -1984,7 +1974,7 @@ class DboSource extends DataSource {
 		$fields = array_values(array_filter($fields));
 		$allFields = $allFields || in_array('*', $fields) || in_array($model->alias . '.*', $fields);
 
-		$virtual = array();
+		$virtual = [];
 		$virtualFields = $model->getVirtualField();
 		if (!empty($virtualFields)) {
 			$virtualKeys = array_keys($virtualFields);
@@ -1993,10 +1983,10 @@ class DboSource extends DataSource {
 			}
 			$virtual = ($allFields) ? $virtualKeys : array_intersect($virtualKeys, $fields);
 			foreach ($virtual as $i => $field) {
-				if (strpos($field, '.') !== false) {
+				if (str_contains($field, '.')) {
 					$virtual[$i] = str_replace($model->alias . '.', '', $field);
 				}
-				$fields = array_diff($fields, array($field));
+				$fields = array_diff($fields, [$field]);
 			}
 			$fields = array_values($fields);
 		}
@@ -2009,7 +1999,7 @@ class DboSource extends DataSource {
 		}
 		$count = count($fields);
 
-		if ($count >= 1 && !in_array($fields[0], array('*', 'COUNT(*)'))) {
+		if ($count >= 1 && !in_array($fields[0], ['*', 'COUNT(*)'])) {
 			for ($i = 0; $i < $count; $i++) {
 				if (is_string($fields[$i]) && in_array($fields[$i], $virtual)) {
 					unset($fields[$i]);
@@ -2022,7 +2012,7 @@ class DboSource extends DataSource {
 				} elseif (!preg_match('/^.+\\(.*\\)/', $fields[$i])) {
 					$prepend = '';
 
-					if (strpos($fields[$i], 'DISTINCT') !== false) {
+					if (str_contains($fields[$i], 'DISTINCT')) {
 						$prepend = 'DISTINCT ';
 						$fields[$i] = trim(str_replace('DISTINCT', '', $fields[$i]));
 					}
@@ -2030,12 +2020,12 @@ class DboSource extends DataSource {
 
 					if ($dot === false) {
 						$prefix = !(
-							strpos($fields[$i], ' ') !== false ||
-							strpos($fields[$i], '(') !== false
+							str_contains($fields[$i], ' ') ||
+							str_contains($fields[$i], '(')
 						);
 						$fields[$i] = $this->name(($prefix ? $alias . '.' : '') . $fields[$i]);
 					} else {
-						$value = array();
+						$value = [];
 						$comma = strpos($fields[$i], ',');
 						if ($comma === false) {
 							$build = explode('.', $fields[$i]);
@@ -2047,12 +2037,12 @@ class DboSource extends DataSource {
 					$fields[$i] = $prepend . $fields[$i];
 				} elseif (preg_match('/\(([\.\w]+)\)/', $fields[$i], $field)) {
 					if (isset($field[1])) {
-						if (strpos($field[1], '.') === false) {
+						if (!str_contains($field[1], '.')) {
 							$field[1] = $this->name($alias . '.' . $field[1]);
 						} else {
 							$field[0] = explode('.', $field[1]);
 							if (!Set::numeric($field[0])) {
-								$field[0] = implode('.', array_map(array(&$this, 'name'), $field[0]));
+								$field[0] = implode('.', array_map([&$this, 'name'], $field[0]));
 								$fields[$i] = preg_replace('/\(' . $field[1] . '\)/', '(' . $field[0] . ')', $fields[$i], 1);
 							}
 						}
@@ -2082,9 +2072,9 @@ class DboSource extends DataSource {
  * @return string SQL fragment
  * @access public
  */
-	function conditions($conditions, $quoteValues = true, $where = true, $model = null) {
+	public function conditions($conditions, $quoteValues = true, $where = true, $model = null) {
 		if (is_object($model)) {
-			$cacheKey = array(
+			$cacheKey = [
 				$model->useDbConfig,
 				$model->table,
 				$model->schema(),
@@ -2093,9 +2083,9 @@ class DboSource extends DataSource {
 				$conditions,
 				$quoteValues,
 				$where
-			);
+			];
 		} else {
-			$cacheKey = array($conditions, $quoteValues, $where);
+			$cacheKey = [$conditions, $quoteValues, $where];
 		}
 		$cacheKey = md5(serialize($cacheKey));
 		if ($return = $this->cacheMethod(__FUNCTION__, $cacheKey)) {
@@ -2145,11 +2135,11 @@ class DboSource extends DataSource {
  * @return string SQL fragment
  * @access public
  */
-	function conditionKeysToString($conditions, $quoteValues = true, $model = null) {
+	public function conditionKeysToString($conditions, $quoteValues = true, $model = null) {
 		$c = 0;
-		$out = array();
+		$out = [];
 		$data = $columnType = null;
-		$bool = array('and', 'or', 'not', 'and not', 'or not', 'xor', '||', '&&');
+		$bool = ['and', 'or', 'not', 'and not', 'or not', 'xor', '||', '&&'];
 
 		foreach ($conditions as $key => $value) {
 			$join = ' AND ';
@@ -2172,7 +2162,7 @@ class DboSource extends DataSource {
 				}
 				$value = $this->conditionKeysToString($value, $quoteValues, $model);
 
-				if (strpos($join, 'NOT') !== false) {
+				if (str_contains($join, 'NOT')) {
 					if (strtoupper(trim($key)) == 'NOT') {
 						$key = 'AND ' . trim($key);
 					}
@@ -2250,17 +2240,17 @@ class DboSource extends DataSource {
  * @return string
  * @access private
  */
-	function __parseKey(&$model, $key, $value) {
+	public function __parseKey(&$model, $key, $value) {
 		$operatorMatch = '/^(((' . implode(')|(', $this->__sqlOps);
 		$operatorMatch .= ')\\x20?)|<[>=]?(?![^>]+>)\\x20?|[>=!]{1,3}(?!<)\\x20?)/is';
-		$bound = (strpos($key, '?') !== false || (is_array($value) && strpos($key, ':') !== false));
+		$bound = (str_contains($key, '?') || (is_array($value) && str_contains($key, ':')));
 
 		if (!strpos($key, ' ')) {
 			$operator = '=';
 		} else {
-			list($key, $operator) = explode(' ', trim($key), 2);
+			[$key, $operator] = explode(' ', trim($key), 2);
 
-			if (!preg_match($operatorMatch, trim($operator)) && strpos($operator, ' ') !== false) {
+			if (!preg_match($operatorMatch, trim($operator)) && str_contains($operator, ' ')) {
 				$key = $key . ' ' . $operator;
 				$split = strrpos($key, ' ');
 				$operator = substr($key, $split);
@@ -2280,7 +2270,7 @@ class DboSource extends DataSource {
 
 		if (strtolower($operator) === 'not') {
 			$data = $this->conditionKeysToString(
-				array($operator => array($key => $value)), true, $model
+				[$operator => [$key => $value]], true, $model
 			);
 			return $data[0];
 		}
@@ -2288,7 +2278,7 @@ class DboSource extends DataSource {
 		$value = $this->value($value, $type);
 
 		if (!$virtual && $key !== '?') {
-			$isKey = (strpos($key, '(') !== false || strpos($key, ')') !== false);
+			$isKey = (str_contains($key, '(') || str_contains($key, ')'));
 			$key = $isKey ? $this->__quoteFields($key) : $this->name($key);
 		}
 
@@ -2338,7 +2328,7 @@ class DboSource extends DataSource {
  * @return string or false if no match
  * @access private
  */
-	function __quoteFields($conditions) {
+	public function __quoteFields($conditions) {
 		$start = $end  = null;
 		$original = $conditions;
 
@@ -2348,8 +2338,8 @@ class DboSource extends DataSource {
 		if (!empty($this->endQuote)) {
 			$end = preg_quote($this->endQuote);
 		}
-		$conditions = str_replace(array($start, $end), '', $conditions);
-		$conditions = preg_replace_callback('/(?:[\'\"][^\'\"\\\]*(?:\\\.[^\'\"\\\]*)*[\'\"])|([a-z0-9_' . $start . $end . ']*\\.[a-z0-9_' . $start . $end . ']*)/i', array(&$this, '__quoteMatchedField'), $conditions);
+		$conditions = str_replace([$start, $end], '', $conditions);
+		$conditions = preg_replace_callback('/(?:[\'\"][^\'\"\\\]*(?:\\\.[^\'\"\\\]*)*[\'\"])|([a-z0-9_' . $start . $end . ']*\\.[a-z0-9_' . $start . $end . ']*)/i', [&$this, '__quoteMatchedField'], $conditions);
 
 		if ($conditions !== null) {
 			return $conditions;
@@ -2364,7 +2354,7 @@ class DboSource extends DataSource {
  * @return string quoted strig
  * @access private
  */
-	function __quoteMatchedField($match) {
+	public function __quoteMatchedField($match) {
 		if (is_numeric($match[0])) {
 			return $match[0];
 		}
@@ -2379,10 +2369,10 @@ class DboSource extends DataSource {
  * @return string SQL limit/offset statement
  * @access public
  */
-	function limit($limit, $offset = null) {
+	public function limit($limit, $offset = null) {
 		if ($limit) {
 			$rt = '';
-			if (!strpos(strtolower($limit), 'limit') || strpos(strtolower($limit), 'limit') === 0) {
+			if (!strpos(strtolower($limit), 'limit') || str_starts_with(strtolower($limit), 'limit')) {
 				$rt = ' LIMIT';
 			}
 
@@ -2405,12 +2395,12 @@ class DboSource extends DataSource {
  * @return string ORDER BY clause
  * @access public
  */
-	function order($keys, $direction = 'ASC', $model = null) {
+	public function order($keys, $direction = 'ASC', $model = null) {
 		if (!is_array($keys)) {
-			$keys = array($keys);
+			$keys = [$keys];
 		}
 		$keys = array_filter($keys);
-		$result = array();
+		$result = [];
 		while (!empty($keys)) {
 			$key = key($keys);
 			$dir = current($keys);
@@ -2431,7 +2421,7 @@ class DboSource extends DataSource {
 					if (is_numeric($k)) {
 						array_unshift($keys, $v);
 					} else {
-						$keys = array($k => $v) + $keys;
+						$keys = [$k => $v] + $keys;
 					}
 				}
 				continue;
@@ -2452,7 +2442,7 @@ class DboSource extends DataSource {
 			}
 
 			if (strpos($key, '.')) {
-				$key = preg_replace_callback('/([a-zA-Z0-9_-]{1,})\\.([a-zA-Z0-9_-]{1,})/', array(&$this, '__quoteMatchedField'), $key);
+				$key = preg_replace_callback('/([a-zA-Z0-9_-]{1,})\\.([a-zA-Z0-9_-]{1,})/', [&$this, '__quoteMatchedField'], $key);
 			}
 			if (!preg_match('/\s/', $key) && !strpos($key, '.')) {
 				$key = $this->name($key);
@@ -2473,10 +2463,10 @@ class DboSource extends DataSource {
  * @return mixed string condition or null
  * @access public
  */
-	function group($group, $model = null) {
+	public function group($group, $model = null) {
 		if ($group) {
 			if (!is_array($group)) {
-				$group = array($group);
+				$group = [$group];
 			}
 			foreach($group as $index => $key) {
 				if (is_object($model) && $model->isVirtualField($key)) {
@@ -2495,7 +2485,7 @@ class DboSource extends DataSource {
  * @return void
  * @access public
  */
-	function close() {
+	public function close() {
 		$this->disconnect();
 	}
 
@@ -2507,7 +2497,7 @@ class DboSource extends DataSource {
  * @return boolean True if the table has a matching record, else false
  * @access public
  */
-	function hasAny(&$Model, $sql) {
+	public function hasAny(&$Model, $sql) {
 		$sql = $this->conditions($sql);
 		$table = $this->fullTableName($Model);
 		$alias = $this->alias . $this->name($Model->alias);
@@ -2529,14 +2519,14 @@ class DboSource extends DataSource {
  * @return mixed An integer or string representing the length of the column
  * @access public
  */
-	function length($real) {
+	public function length($real) {
 		if (!preg_match_all('/([\w\s]+)(?:\((\d+)(?:,(\d+))?\))?(\sunsigned)?(\szerofill)?/', $real, $result)) {
 			trigger_error(__("FIXME: Can't parse field: " . $real, true), E_USER_WARNING);
-			$col = str_replace(array(')', 'unsigned'), '', $real);
+			$col = str_replace([')', 'unsigned'], '', $real);
 			$limit = null;
 
-			if (strpos($col, '(') !== false) {
-				list($col, $limit) = explode('(', $col);
+			if (str_contains($col, '(')) {
+				[$col, $limit] = explode('(', $col);
 			}
 			if ($limit != null) {
 				return intval($limit);
@@ -2544,17 +2534,17 @@ class DboSource extends DataSource {
 			return null;
 		}
 
-		$types = array(
+		$types = [
 			'int' => 1, 'tinyint' => 1, 'smallint' => 1, 'mediumint' => 1, 'integer' => 1, 'bigint' => 1
-		);
+		];
 
-		list($real, $type, $length, $offset, $sign, $zerofill) = $result;
+		[$real, $type, $length, $offset, $sign, $zerofill] = $result;
 		$typeArr = $type;
 		$type = $type[0];
 		$length = $length[0];
 		$offset = $offset[0];
 
-		$isFloat = in_array($type, array('dec', 'decimal', 'float', 'numeric', 'double'));
+		$isFloat = in_array($type, ['dec', 'decimal', 'float', 'numeric', 'double']);
 		if ($isFloat && $offset) {
 			return $length.','.$offset;
 		}
@@ -2568,7 +2558,7 @@ class DboSource extends DataSource {
 			if (!empty($sign)) {
 				$length--;
 			}
-		} elseif (in_array($type, array('enum', 'set'))) {
+		} elseif (in_array($type, ['enum', 'set'])) {
 			$length = 0;
 			foreach ($typeArr as $key => $enumValue) {
 				if ($key == 0) {
@@ -2590,7 +2580,7 @@ class DboSource extends DataSource {
  * @return mixed Converted boolean value
  * @access public
  */
-	function boolean($data) {
+	public function boolean($data) {
 		if ($data === true || $data === false) {
 			if ($data === true) {
 				return 1;
@@ -2609,10 +2599,10 @@ class DboSource extends DataSource {
  * @param array $values
  * @access protected
  */
-	function insertMulti($table, $fields, $values) {
+	public function insertMulti($table, $fields, $values) {
 		$table = $this->fullTableName($table);
 		if (is_array($fields)) {
-			$fields = implode(', ', array_map(array(&$this, 'name'), $fields));
+			$fields = implode(', ', array_map([&$this, 'name'], $fields));
 		}
 		$count = count($values);
 		for ($x = 0; $x < $count; $x++) {
@@ -2627,7 +2617,7 @@ class DboSource extends DataSource {
  * @return array Fields in table. Keys are column and unique
  * @access public
  */
-	function index($model) {
+	public function index($model) {
 		return false;
 	}
 
@@ -2640,7 +2630,7 @@ class DboSource extends DataSource {
  * @return string
  * @access public
  */
-	function createSchema($schema, $tableName = null) {
+	public function createSchema($schema, $tableName = null) {
 		if (!is_a($schema, 'CakeSchema')) {
 			trigger_error(__('Invalid schema object', true), E_USER_WARNING);
 			return null;
@@ -2649,22 +2639,20 @@ class DboSource extends DataSource {
 
 		foreach ($schema->tables as $curTable => $columns) {
 			if (!$tableName || $tableName == $curTable) {
-				$cols = $colList = $indexes = $tableParameters = array();
+				$cols = $colList = $indexes = $tableParameters = [];
 				$primary = null;
 				$table = $this->fullTableName($curTable);
 
 				foreach ($columns as $name => $col) {
 					if (is_string($col)) {
-						$col = array('type' => $col);
+						$col = ['type' => $col];
 					}
 					if (isset($col['key']) && $col['key'] == 'primary') {
 						$primary = $name;
 					}
 					if ($name !== 'indexes' && $name !== 'tableParameters') {
 						$col['name'] = $name;
-						if (!isset($col['type'])) {
-							$col['type'] = 'string';
-						}
+						$col['type'] ??= 'string';
 						$cols[] = $this->buildColumn($col);
 					} elseif ($name == 'indexes') {
 						$indexes = array_merge($indexes, $this->buildIndex($col, $table));
@@ -2673,7 +2661,7 @@ class DboSource extends DataSource {
 					}
 				}
 				if (empty($indexes) && !empty($primary)) {
-					$col = array('PRIMARY' => array('column' => $primary, 'unique' => 1));
+					$col = ['PRIMARY' => ['column' => $primary, 'unique' => 1]];
 					$indexes = array_merge($indexes, $this->buildIndex($col, $table));
 				}
 				$columns = $cols;
@@ -2689,7 +2677,7 @@ class DboSource extends DataSource {
  * @param unknown_type $schema
  * @return boolean
  */
-	function alterSchema($compare, $table = null) {
+	public function alterSchema($compare, $table = null) {
 		return false;
 	}
 
@@ -2702,7 +2690,7 @@ class DboSource extends DataSource {
  * @return string
  * @access public
  */
-	function dropSchema($schema, $table = null) {
+	public function dropSchema($schema, $table = null) {
 		if (!is_a($schema, 'CakeSchema')) {
 			trigger_error(__('Invalid schema object', true), E_USER_WARNING);
 			return null;
@@ -2725,9 +2713,9 @@ class DboSource extends DataSource {
  * @return string
  * @access public
  */
-	function buildColumn($column) {
+	public function buildColumn($column) {
 		$name = $type = null;
-		extract(array_merge(array('null' => true), $column));
+		extract(array_merge(['null' => true], $column));
 
 		if (empty($name) || empty($type)) {
 			trigger_error(__('Column name or type not defined in schema', true), E_USER_WARNING);
@@ -2776,7 +2764,7 @@ class DboSource extends DataSource {
 			$out .= ' NOT NULL';
 		}
 		if ($type == 'timestamp' && isset($column['default']) && strtolower($column['default']) == 'current_timestamp') {
-			$out = str_replace(array("'CURRENT_TIMESTAMP'", "'current_timestamp'"), 'CURRENT_TIMESTAMP', $out);
+			$out = str_replace(["'CURRENT_TIMESTAMP'", "'current_timestamp'"], 'CURRENT_TIMESTAMP', $out);
 		}
 		$out = $this->_buildFieldParameters($out, $column, 'afterDefault');
 		return $out;
@@ -2791,7 +2779,7 @@ class DboSource extends DataSource {
  * @return string a built column with the field parameters added.
  * @access public
  */
-	function _buildFieldParameters($columnString, $columnData, $position) {
+	public function _buildFieldParameters($columnString, $columnData, $position) {
 		foreach ($this->fieldParameters as $paramName => $value) {
 			if (isset($columnData[$paramName]) && $value['position'] == $position) {
 				if (isset($value['options']) && !in_array($columnData[$paramName], $value['options'])) {
@@ -2815,8 +2803,8 @@ class DboSource extends DataSource {
  * @return array
  * @access public
  */
-	function buildIndex($indexes, $table = null) {
-		$join = array();
+	public function buildIndex($indexes, $table = null) {
+		$join = [];
 		foreach ($indexes as $name => $value) {
 			$out = '';
 			if ($name == 'PRIMARY') {
@@ -2829,7 +2817,7 @@ class DboSource extends DataSource {
 				$name = $this->startQuote . $name . $this->endQuote;
 			}
 			if (is_array($value['column'])) {
-				$out .= 'KEY ' . $name . ' (' . implode(', ', array_map(array(&$this, 'name'), $value['column'])) . ')';
+				$out .= 'KEY ' . $name . ' (' . implode(', ', array_map([&$this, 'name'], $value['column'])) . ')';
 			} else {
 				$out .= 'KEY ' . $name . ' (' . $this->name($value['column']) . ')';
 			}
@@ -2846,8 +2834,8 @@ class DboSource extends DataSource {
  * @return array
  * @access public
  */
-	function readTableParameters($name) {
-		$parameters = array();
+	public function readTableParameters($name) {
+		$parameters = [];
 		if ($this->isInterfaceSupported('listDetailedSources')) {
 			$currentTableDetails = $this->listDetailedSources($name);
 			foreach ($this->tableParameters as $paramName => $parameter) {
@@ -2867,8 +2855,8 @@ class DboSource extends DataSource {
  * @return array
  * @access public
  */
-	function buildTableParameters($parameters, $table = null) {
-		$result = array();
+	public function buildTableParameters($parameters, $table = null) {
+		$result = [];
 		foreach ($parameters as $name => $value) {
 			if (isset($this->tableParameters[$name])) {
 				if ($this->tableParameters[$name]['quote']) {
@@ -2887,7 +2875,7 @@ class DboSource extends DataSource {
  * @return void
  * @access public
  */
-	function introspectType($value) {
+	public function introspectType($value) {
 		if (!is_array($value)) {
 			if ($value === true || $value === false) {
 				return 'boolean';

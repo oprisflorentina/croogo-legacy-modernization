@@ -42,14 +42,14 @@ class CroogoTranslateBehavior extends ModelBehavior {
 /**
  * Used for runtime configuration of model
  */
-	public $runtime = array();
+	public $runtime = [];
 
 /**
  * Field names
  *
  * @var array
  */
-	public $translationFields = array();
+	public $translationFields = [];
 
 /**
  * Callback
@@ -68,7 +68,7 @@ class CroogoTranslateBehavior extends ModelBehavior {
  * @return mixed
  * @access public
  */
-	public function setup(&$model, $config = array()) {
+	public function setup(&$model, $config = []) {
 		$db =& ConnectionManager::getDataSource($model->useDbConfig);
 		if (!$db->connected) {
 			trigger_error(
@@ -78,8 +78,8 @@ class CroogoTranslateBehavior extends ModelBehavior {
 			return false;
 		}
 
-		$this->settings[$model->alias] = array();
-		$this->runtime[$model->alias] = array('fields' => array());
+		$this->settings[$model->alias] = [];
+		$this->runtime[$model->alias] = ['fields' => []];
 		$this->translateModel($model);
 		$this->translationFields[$model->alias] = $config;
 		//return $this->bindTranslation($model, $config, false);
@@ -135,13 +135,13 @@ class CroogoTranslateBehavior extends ModelBehavior {
 			foreach ($results AS $result) {
 				if (!isset($result[$model->alias][$model->primaryKey])) continue;
 
-				$translations = $RuntimeModel->find('all', array(
-					'conditions' => array(
+				$translations = $RuntimeModel->find('all', [
+					'conditions' => [
 						$RuntimeModel->alias.'.model' => $model->alias,
 						$RuntimeModel->alias.'.foreign_key' => $result[$model->alias][$model->primaryKey],
 						$RuntimeModel->alias.'.field' => $fields,
-					),
-				));
+					],
+				]);
 
 				foreach ($translations AS $translation) {
 					$field = $translation[$RuntimeModel->alias]['field'];
@@ -160,9 +160,7 @@ class CroogoTranslateBehavior extends ModelBehavior {
 					// Other translations
 					if (!Set::numeric(array_keys($this->translationFields[$model->alias])) &&
 						isset($results[$i][$model->alias][$field])) {
-						if (!isset($results[$i][$field.'Translation'])) {
-							$results[$i][$field.'Translation'] = array();
-						}
+						$results[$i][$field.'Translation'] ??= [];
 						$results[$i][$field.'Translation'][] = $translation[$RuntimeModel->alias];
 					}
 				}
@@ -193,7 +191,7 @@ class CroogoTranslateBehavior extends ModelBehavior {
 		}
 
 		$RuntimeModel =& $this->translateModel($model);
-		$conditions = array('model' => $model->alias, 'foreign_key' => $model->id);
+		$conditions = ['model' => $model->alias, 'foreign_key' => $model->id];
 
 		foreach ($model->data[$model->alias] as $field => $value) {
 			unset($conditions['content']);
@@ -203,22 +201,22 @@ class CroogoTranslateBehavior extends ModelBehavior {
 			} else {
 				$conditions['locale'] = $locale;
 				if (is_array($locale)) {
-					$value = array($locale[0] => $value);
+					$value = [$locale[0] => $value];
 				} else {
-					$value = array($locale => $value);
+					$value = [$locale => $value];
 				}
 			}
-			$translations = $RuntimeModel->find('list', array('conditions' => $conditions, 'fields' => array($RuntimeModel->alias . '.locale', $RuntimeModel->alias . '.id')));
+			$translations = $RuntimeModel->find('list', ['conditions' => $conditions, 'fields' => [$RuntimeModel->alias . '.locale', $RuntimeModel->alias . '.id']]);
 			foreach ($value as $_locale => $_value) {
 				$RuntimeModel->create();
 				$conditions['locale'] = $_locale;
 				$conditions['content'] = $_value;
 				if (array_key_exists($_locale, $translations)) {
-					if (!$RuntimeModel->save(array($RuntimeModel->alias => array_merge($conditions, array('id' => $translations[$_locale]))))) {
+					if (!$RuntimeModel->save([$RuntimeModel->alias => array_merge($conditions, ['id' => $translations[$_locale]])])) {
 						return false;
 					}
 				} else {
-					if (!$RuntimeModel->save(array($RuntimeModel->alias => $conditions))) {
+					if (!$RuntimeModel->save([$RuntimeModel->alias => $conditions])) {
 						return false;
 					}
 				}
@@ -236,7 +234,7 @@ class CroogoTranslateBehavior extends ModelBehavior {
  */
 	public function afterDelete(&$model) {
 		$RuntimeModel =& $this->translateModel($model);
-		$conditions = array('model' => $model->alias, 'foreign_key' => $model->id);
+		$conditions = ['model' => $model->alias, 'foreign_key' => $model->id];
 		$RuntimeModel->deleteAll($conditions);
 	}
 
@@ -299,12 +297,12 @@ if (!defined('CAKEPHP_UNIT_TEST_EXECUTION')) {
 		public $name = 'I18nModel';
 		public $useTable = 'i18n';
 		public $displayField = 'field';
-		public $actsAs = array(
-			'Cached' => array(
-				'prefix' => array(
+		public $actsAs = [
+			'Cached' => [
+				'prefix' => [
 					'',
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 }

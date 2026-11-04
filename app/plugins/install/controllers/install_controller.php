@@ -43,7 +43,7 @@ class InstallController extends InstallAppController {
  * @var array
  * @access public
  */
-	public $defaultConfig = array(
+	public $defaultConfig = [
 		'name' => 'default',
 		'driver'=> 'mysql',
 		'persistent'=> false,
@@ -55,7 +55,7 @@ class InstallController extends InstallAppController {
 		'prefix'=> null,
 		'encoding' => 'UTF8',
 		'port' => null,
-	);
+	];
 
 /**
  * beforeFilter
@@ -124,7 +124,7 @@ class InstallController extends InstallAppController {
 		@ConnectionManager::create('default', $config);
 		$db = ConnectionManager::getDataSource('default');
 		if (!$db->isConnected()) {
-			$this->Session->setFlash(__('Could not connect to database.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Could not connect to database.', true), 'default', ['class' => 'error']);
 			return;
 		}
 
@@ -138,9 +138,9 @@ class InstallController extends InstallAppController {
 		}
 
 		if($file->write($content) ) {
-			return $this->redirect(array('action' => 'data'));
+			return $this->redirect(['action' => 'data']);
 		} else {
-			$this->Session->setFlash(__('Could not write database.php file.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Could not write database.php file.', true), 'default', ['class' => 'error']);
 		}
 	}
 
@@ -160,9 +160,9 @@ class InstallController extends InstallAppController {
 
 			$db = ConnectionManager::getDataSource('default');
 			if(!$db->isConnected()) {
-				$this->Session->setFlash(__('Could not connect to database.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('Could not connect to database.', true), 'default', ['class' => 'error']);
 			} else {
-				$schema = new CakeSchema(array('name'=>'app'));
+				$schema = new CakeSchema(['name'=>'app']);
 				$schema = $schema->load();
 				foreach($schema->tables as $table => $fields) {
 					$create = $db->createSchema($schema, $table);
@@ -177,11 +177,11 @@ class InstallController extends InstallAppController {
 					$table = $classVars['table'];
 					$records = $classVars['records'];
 					App::import('Model', 'Model', false);
-					$modelObject = new Model(array(
+					$modelObject = new Model([
 						'name' => $modelAlias,
 						'table' => $table,
 						'ds' => 'default',
-					));
+					]);
 					if (is_array($records) && count($records) > 0) {
 						foreach($records as $record) {
 							$modelObject->create($record);
@@ -190,7 +190,7 @@ class InstallController extends InstallAppController {
 					}
 				}
 
-				$this->redirect(array('action' => 'finish'));
+				$this->redirect(['action' => 'finish']);
 			}
 		}
 	}
@@ -210,10 +210,10 @@ class InstallController extends InstallAppController {
 			App::import('Core', 'Folder');
 			$this->folder = new Folder;
 			if ($this->folder->delete(APP.'plugins'.DS.'install')) {
-				$this->Session->setFlash(__('Installation files deleted successfully.', true), 'default', array('class' => 'success'));
+				$this->Session->setFlash(__('Installation files deleted successfully.', true), 'default', ['class' => 'success']);
 				$this->redirect('/');
 			} else {
-				return $this->Session->setFlash(__('Could not delete installation files.', true), 'default', array('class' => 'error'));
+				return $this->Session->setFlash(__('Could not delete installation files.', true), 'default', ['class' => 'error']);
 			}
 		}
 		$this->_check();
@@ -235,7 +235,7 @@ class InstallController extends InstallAppController {
 
 		// set new password for admin, hashed according to new salt value
 		$User = ClassRegistry::init('User');
-		$User->id = $User->field('id', array('username' => 'admin'));
+		$User->id = $User->field('id', ['username' => 'admin']);
 		$User->saveField('password', Security::hash('password', null, $salt));
 	}
 

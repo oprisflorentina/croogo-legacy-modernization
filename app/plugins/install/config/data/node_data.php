@@ -3,8 +3,8 @@ class NodeData {
 
 	public $table = 'nodes';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '1',
 			'parent_id' => '',
 			'user_id' => '1',
@@ -26,8 +26,8 @@ class NodeData {
 			'type' => 'blog',
 			'updated' => '2009-12-25 11:00:00',
 			'created' => '2009-12-25 11:00:00'
-		),
-		array(
+		],
+		[
 			'id' => '2',
 			'parent_id' => '',
 			'user_id' => '1',
@@ -49,7 +49,7 @@ class NodeData {
 			'type' => 'page',
 			'updated' => '2009-12-25 22:00:00',
 			'created' => '2009-12-25 22:00:00'
-		),
-	);
+		],
+	];
 
 }

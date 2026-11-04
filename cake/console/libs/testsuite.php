@@ -26,7 +26,7 @@ class TestSuiteShell extends Shell {
  * @var string
  * @access public
  */
-	var $category = '';
+	public $category = '';
 
 /**
  * "group", "case" or "all"
@@ -34,7 +34,7 @@ class TestSuiteShell extends Shell {
  * @var string
  * @access public
  */
-	var $type = '';
+	public $type = '';
 
 /**
  * Path to the test case/group file
@@ -42,7 +42,7 @@ class TestSuiteShell extends Shell {
  * @var string
  * @access public
  */
-	var $file = '';
+	public $file = '';
 
 /**
  * Storage for plugins that have tests
@@ -50,7 +50,7 @@ class TestSuiteShell extends Shell {
  * @var string
  * @access public
  */
-	var $plugins = array();
+	public $plugins = [];
 
 /**
  * Convenience variable to avoid duplicated code
@@ -58,7 +58,7 @@ class TestSuiteShell extends Shell {
  * @var string
  * @access public
  */
-	var $isPluginTest = false;
+	public $isPluginTest = false;
 
 /**
  * Stores if the user wishes to get a code coverage analysis report
@@ -66,7 +66,7 @@ class TestSuiteShell extends Shell {
  * @var string
  * @access public
  */
-	var $doCoverage = false;
+	public $doCoverage = false;
 
 /**
  * Initialization method installs Simpletest and loads all plugins
@@ -74,7 +74,7 @@ class TestSuiteShell extends Shell {
  * @return void
  * @access public
  */
-	function initialize() {
+	public function initialize() {
 		$corePath = App::core('cake');
 		if (isset($corePath[0])) {
 			define('TEST_CAKE_CORE_INCLUDE_PATH', rtrim($corePath[0], DS) . DS);
@@ -101,13 +101,13 @@ class TestSuiteShell extends Shell {
  * @return void
  * @access public
  */
-	function parseArgs() {
+	public function parseArgs() {
 		if (empty($this->args)) {
 			return;
 		}
 		$this->category = $this->args[0];
 
-		if (!in_array($this->category, array('app', 'core'))) {
+		if (!in_array($this->category, ['app', 'core'])) {
 			$this->isPluginTest = true;
 		}
 
@@ -133,7 +133,7 @@ class TestSuiteShell extends Shell {
  *
  * @return void
  */
-	function getManager() {
+	public function getManager() {
 		$this->Manager = new TestManager();
 		$this->Manager->appTest = ($this->category === 'app');
 		if ($this->isPluginTest) {
@@ -147,7 +147,7 @@ class TestSuiteShell extends Shell {
  * @return void
  * @access public
  */
-	function main() {
+	public function main() {
 		$this->out(__('CakePHP Test Shell', true));
 		$this->hr();
 
@@ -175,7 +175,7 @@ class TestSuiteShell extends Shell {
  * @return void
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->out('Usage: ');
 		$this->out("\tcake testsuite category test_type file");
 		$this->out("\t\t- category - \"app\", \"core\" or name of a plugin");
@@ -213,8 +213,8 @@ class TestSuiteShell extends Shell {
  * @return bool true if it's a valid test file, false otherwise
  * @access private
  */
-	function __canRun() {
-		$isNeitherAppNorCore = !in_array($this->category, array('app', 'core'));
+	public function __canRun() {
+		$isNeitherAppNorCore = !in_array($this->category, ['app', 'core']);
 		$isPlugin = in_array(Inflector::underscore($this->category), $this->plugins);
 
 		if ($isNeitherAppNorCore && !$isPlugin) {
@@ -232,7 +232,7 @@ class TestSuiteShell extends Shell {
 			return false;
 		}
 
-		if (!in_array($this->type, array('all', 'group', 'case'))) {
+		if (!in_array($this->type, ['all', 'group', 'case'])) {
 			$this->err(sprintf(__('%s is invalid. Should be case, group or all', true), $this->type));
 			return false;
 		}
@@ -255,13 +255,13 @@ class TestSuiteShell extends Shell {
  * @return void
  * @access private
  */
-	function __run() {
-		$Reporter = new CakeCliReporter('utf-8', array(
+	public function __run() {
+		$Reporter = new CakeCliReporter('utf-8', [
 			'app' => $this->Manager->appTest,
 			'plugin' => $this->Manager->pluginTest,
 			'group' => ($this->type === 'group'),
 			'codeCoverage' => $this->doCoverage
-		));
+		]);
 
 		if ($this->type == 'all') {
 			return $this->Manager->runAllTests($Reporter);
@@ -305,7 +305,7 @@ class TestSuiteShell extends Shell {
  * @return mixed Either string filename or boolean false on failure. Or true if the type is 'all'
  * @access private
  */
-	function __getFileName($folder, $isPlugin) {
+	public function __getFileName($folder, $isPlugin) {
 		$ext = $this->Manager->getExtension($this->type);
 		switch ($this->type) {
 			case 'all':
@@ -335,12 +335,12 @@ class TestSuiteShell extends Shell {
  * @return string the folder path
  * @access private
  */
-	function __findFolderByCategory($category) {
+	public function __findFolderByCategory($category) {
 		$folder = '';
-		$paths = array(
+		$paths = [
 			'core' => CAKE,
 			'app' => APP
-		);
+		];
 		$typeDir = $this->type === 'group' ? 'groups' : 'cases';
 
 		if (array_key_exists($category, $paths)) {
@@ -360,7 +360,7 @@ class TestSuiteShell extends Shell {
  * @return void
  * @access private
  */
-	function __installSimpleTest() {
+	public function __installSimpleTest() {
 		if (!App::import('Vendor', 'simpletest' . DS . 'reporter')) {
 			$this->err(__('Sorry, Simpletest could not be found. Download it from http://simpletest.org and install it to your vendors directory.', true));
 			exit;

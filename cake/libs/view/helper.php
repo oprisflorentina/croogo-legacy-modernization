@@ -39,77 +39,77 @@ class Helper extends Overloadable {
  *
  * @var array
  */
-	var $helpers = null;
+	public $helpers = null;
 
 /**
  * Base URL
  *
  * @var string
  */
-	var $base = null;
+	public $base = null;
 
 /**
  * Webroot path
  *
  * @var string
  */
-	var $webroot = null;
+	public $webroot = null;
 
 /**
  * The current theme name if any.
  *
  * @var string
  */
-	var $theme = null;
+	public $theme = null;
 
 /**
  * URL to current action.
  *
  * @var string
  */
-	var $here = null;
+	public $here = null;
 
 /**
  * Parameter array.
  *
  * @var array
  */
-	var $params = array();
+	public $params = [];
 
 /**
  * Current action.
  *
  * @var string
  */
-	var $action = null;
+	public $action = null;
 
 /**
  * Plugin path
  *
  * @var string
  */
-	var $plugin = null;
+	public $plugin = null;
 
 /**
  * POST data for models
  *
  * @var array
  */
-	var $data = null;
+	public $data = null;
 
 /**
  * List of named arguments
  *
  * @var array
  */
-	var $namedArgs = null;
+	public $namedArgs = null;
 
 /**
  * URL argument separator character
  *
  * @var string
  */
-	var $argSeparator = null;
+	public $argSeparator = null;
 
 /**
  * Contains model validation errors of form post-backs
@@ -117,7 +117,7 @@ class Helper extends Overloadable {
  * @access public
  * @var array
  */
-	var $validationErrors = null;
+	public $validationErrors = null;
 
 /**
  * Holds tag templates.
@@ -125,7 +125,7 @@ class Helper extends Overloadable {
  * @access public
  * @var array
  */
-	var $tags = array();
+	public $tags = [];
 
 /**
  * Holds the content to be cleaned.
@@ -133,7 +133,7 @@ class Helper extends Overloadable {
  * @access private
  * @var mixed
  */
-	var $__tainted = null;
+	public $__tainted = null;
 
 /**
  * Holds the cleaned content.
@@ -141,17 +141,17 @@ class Helper extends Overloadable {
  * @access private
  * @var mixed
  */
-	var $__cleaned = null;
+	public $__cleaned = null;
 
 /**
  * Default overload methods
  *
  * @access protected
  */
-	function get__($name) {}
-	function set__($name, $value) {}
-	function call__($method, $params) {
-		trigger_error(sprintf(__('Method %1$s::%2$s does not exist', true), get_class($this), $method), E_USER_WARNING);
+	public function get__($name) {}
+	public function set__($name, $value) {}
+	public function call__($method, $params) {
+		trigger_error(sprintf(__('Method %1$s::%2$s does not exist', true), static::class, $method), E_USER_WARNING);
 	}
 
 /**
@@ -161,7 +161,7 @@ class Helper extends Overloadable {
  * @return array merged tags from config/$name.php
  * @access public
  */
-	function loadConfig($name = 'tags') {
+	public function loadConfig($name = 'tags') {
 		if (file_exists(CONFIGS . $name .'.php')) {
 			require(CONFIGS . $name .'.php');
 			if (isset($tags)) {
@@ -184,7 +184,7 @@ class Helper extends Overloadable {
  * @access public
  * @link http://book.cakephp.org/view/1448/url
  */
-	function url($url = null, $full = false) {
+	public function url($url = null, $full = false) {
 		return h(Router::url($url, $full));
 	}
 
@@ -195,7 +195,7 @@ class Helper extends Overloadable {
  * @return string Web accessible path to file.
  * @access public
  */
-	function webroot($file) {
+	public function webroot($file) {
 		$asset = explode('?', $file);
 		$asset[1] = isset($asset[1]) ? '?' . $asset[1] : null;
 		$webPath = "{$this->webroot}" . $asset[0];
@@ -224,7 +224,7 @@ class Helper extends Overloadable {
 				}
 			}
 		}
-		if (strpos($webPath, '//') !== false) {
+		if (str_contains($webPath, '//')) {
 			return str_replace('//', '/', $webPath . $asset[1]);
 		}
 		return $webPath . $asset[1];
@@ -239,12 +239,12 @@ class Helper extends Overloadable {
  * @return string Path with a timestamp added, or not.
  * @access public
  */
-	function assetTimestamp($path) {
+	public function assetTimestamp($path) {
 		$timestampEnabled = (
 			(Configure::read('Asset.timestamp') === true && Configure::read() > 0) ||
 			Configure::read('Asset.timestamp') === 'force'
 		);
-		if (strpos($path, '?') === false && $timestampEnabled) {
+		if (!str_contains($path, '?') && $timestampEnabled) {
 			$filepath = preg_replace('/^' . preg_quote($this->webroot, '/') . '/', '', $path);
 			$webrootPath = WWW_ROOT . str_replace('/', DS, $filepath);
 			if (file_exists($webrootPath)) {
@@ -275,7 +275,7 @@ class Helper extends Overloadable {
  * @return cleaned content for output
  * @access public
  */
-	function clean($output) {
+	public function clean($output) {
 		$this->__reset();
 		if (empty($output)) {
 			return null;
@@ -331,17 +331,17 @@ class Helper extends Overloadable {
  * @return string Composed attributes.
  * @access public
  */
-	function _parseAttributes($options, $exclude = null, $insertBefore = ' ', $insertAfter = null) {
+	public function _parseAttributes($options, $exclude = null, $insertBefore = ' ', $insertAfter = null) {
 		if (is_array($options)) {
-			$options = array_merge(array('escape' => true), $options);
+			$options = array_merge(['escape' => true], $options);
 
 			if (!is_array($exclude)) {
-				$exclude = array();
+				$exclude = [];
 			}
-			$keys = array_diff(array_keys($options), array_merge($exclude, array('escape')));
+			$keys = array_diff(array_keys($options), array_merge($exclude, ['escape']));
 			$values = array_intersect_key(array_values($options), $keys);
 			$escape = $options['escape'];
-			$attributes = array();
+			$attributes = [];
 
 			foreach ($keys as $index => $key) {
 				if ($values[$index] !== false && $values[$index] !== null) {
@@ -364,11 +364,11 @@ class Helper extends Overloadable {
  * @return string The composed attribute.
  * @access private
  */
-	function __formatAttribute($key, $value, $escape = true) {
+	public function __formatAttribute($key, $value, $escape = true) {
 		$attribute = '';
 		$attributeFormat = '%s="%s"';
-		$minimizedAttributes = array('compact', 'checked', 'declare', 'readonly', 'disabled',
-			'selected', 'defer', 'ismap', 'nohref', 'noshade', 'nowrap', 'multiple', 'noresize');
+		$minimizedAttributes = ['compact', 'checked', 'declare', 'readonly', 'disabled',
+			'selected', 'defer', 'ismap', 'nohref', 'noshade', 'nowrap', 'multiple', 'noresize'];
 		if (is_array($value)) {
 			$value = '';
 		}
@@ -391,7 +391,7 @@ class Helper extends Overloadable {
  * @return void
  * @access public
  */
-	function setEntity($entity, $setScope = false) {
+	public function setEntity($entity, $setScope = false) {
 		$view =& ClassRegistry::getObject('view');
 
 		if ($setScope) {
@@ -479,29 +479,29 @@ class Helper extends Overloadable {
 			break;
 			case 2:
 				if ($view->modelScope === false) {
-					list($view->model, $view->field) = $parts;
+					[$view->model, $view->field] = $parts;
 				} elseif ($sameScope === true && $hasField === 0) {
-					list($view->field, $view->fieldSuffix) = $parts;
+					[$view->field, $view->fieldSuffix] = $parts;
 				} elseif ($sameScope === true && $hasField === 1) {
-					list($view->modelId, $view->field) = $parts;
+					[$view->modelId, $view->field] = $parts;
 				} else {
-					list($view->association, $view->field) = $parts;
+					[$view->association, $view->field] = $parts;
 				}
 			break;
 			case 3:
 				if ($sameScope === true && $hasField === 1) {
-					list($view->modelId, $view->field, $view->fieldSuffix) = $parts;
+					[$view->modelId, $view->field, $view->fieldSuffix] = $parts;
 				} elseif ($hasField === 2) {
-					list($view->association, $view->modelId, $view->field) = $parts;
+					[$view->association, $view->modelId, $view->field] = $parts;
 				} else {
-					list($view->association, $view->field, $view->fieldSuffix) = $parts;
+					[$view->association, $view->field, $view->fieldSuffix] = $parts;
 				}
 			break;
 			case 4:
 				if ($parts[0] === $view->model) {
-					list($view->model, $view->modelId, $view->field, $view->fieldSuffix) = $parts;
+					[$view->model, $view->modelId, $view->field, $view->fieldSuffix] = $parts;
 				} else {
-					list($view->association, $view->modelId, $view->field, $view->fieldSuffix) = $parts;
+					[$view->association, $view->modelId, $view->field, $view->fieldSuffix] = $parts;
 				}
 			break;
 			default:
@@ -541,7 +541,7 @@ class Helper extends Overloadable {
  * @return string
  * @access public
  */
-	function model() {
+	public function model() {
 		$view =& ClassRegistry::getObject('view');
 		if (!empty($view->association)) {
 			return $view->association;
@@ -556,7 +556,7 @@ class Helper extends Overloadable {
  * @return mixed
  * @access public
  */
-	function modelID() {
+	public function modelID() {
 		$view =& ClassRegistry::getObject('view');
 		return $view->modelId;
 	}
@@ -567,7 +567,7 @@ class Helper extends Overloadable {
  * @return string
  * @access public
  */
-	function field() {
+	public function field() {
 		$view =& ClassRegistry::getObject('view');
 		return $view->field;
 	}
@@ -581,7 +581,7 @@ class Helper extends Overloadable {
  * @param integer $modelID Unique index identifying this record within the form
  * @return mixed Null if no errors, string with error otherwhise.
  */
-	function tagIsInvalid($model = null, $field = null, $modelID = null) {
+	public function tagIsInvalid($model = null, $field = null, $modelID = null) {
 		$view =& ClassRegistry::getObject('view');
 		$errors = $this->validationErrors;
 		$entity = $view->entity();
@@ -601,7 +601,7 @@ class Helper extends Overloadable {
  *   was supplied, a string will be returned.
  * @todo Refactor this method to not have as many input/output options.
  */
-	function domId($options = null, $id = 'id') {
+	public function domId($options = null, $id = 'id') {
 		$view =& ClassRegistry::getObject('view');
 
 		if (is_array($options) && array_key_exists($id, $options) && $options[$id] === null) {
@@ -614,7 +614,7 @@ class Helper extends Overloadable {
 
 		$entity = $view->entity();
 		$model = array_shift($entity);
-		$dom = $model . join('', array_map(array('Inflector', 'camelize'), $entity));
+		$dom = $model . join('', array_map(['Inflector', 'camelize'], $entity));
 
 		if (is_array($options) && !array_key_exists($id, $options)) {
 			$options[$id] = $dom;
@@ -637,10 +637,10 @@ class Helper extends Overloadable {
  * @access protected
  * @todo Refactor this method to not have as many input/output options.
  */
-	function _name($options = array(), $field = null, $key = 'name') {
+	public function _name($options = [], $field = null, $key = 'name') {
 		$view =& ClassRegistry::getObject('view');
 		if ($options === null) {
-			$options = array();
+			$options = [];
 		} elseif (is_string($options)) {
 			$field = $options;
 			$options = 0;
@@ -683,9 +683,9 @@ class Helper extends Overloadable {
  * @access public
  * @todo Refactor this method to not have as many input/output options.
  */
-	function value($options = array(), $field = null, $key = 'value') {
+	public function value($options = [], $field = null, $key = 'value') {
 		if ($options === null) {
-			$options = array();
+			$options = [];
 		} elseif (is_string($options)) {
 			$field = $options;
 			$options = 0;
@@ -748,7 +748,7 @@ class Helper extends Overloadable {
  * @return array Array options for the form input.
  * @access protected
  */
-	function _initInputField($field, $options = array()) {
+	public function _initInputField($field, $options = []) {
 		if ($field !== null) {
 			$this->setEntity($field);
 		}
@@ -771,7 +771,7 @@ class Helper extends Overloadable {
  * @return array Array of options with $key set.
  * @access public
  */
-	function addClass($options = array(), $class = null, $key = 'class') {
+	public function addClass($options = [], $class = null, $key = 'class') {
 		if (isset($options[$key]) && trim($options[$key]) != '') {
 			$options[$key] .= ' ' . $class;
 		} else {
@@ -789,7 +789,7 @@ class Helper extends Overloadable {
  * @return string
  * @deprecated This method will be removed in future versions.
  */
-	function output($str) {
+	public function output($str) {
 		return $str;
 	}
 
@@ -801,7 +801,7 @@ class Helper extends Overloadable {
  * @return void
  * @access public
  */
-	function beforeRender() {
+	public function beforeRender() {
 	}
 
 /**
@@ -813,7 +813,7 @@ class Helper extends Overloadable {
  * @return void
  * @access public
  */
-	function afterRender() {
+	public function afterRender() {
 	}
 
 /**
@@ -824,7 +824,7 @@ class Helper extends Overloadable {
  * @return void
  * @access public
  */
-	function beforeLayout() {
+	public function beforeLayout() {
 	}
 
 /**
@@ -835,7 +835,7 @@ class Helper extends Overloadable {
  * @return void
  * @access public
  */
-	function afterLayout() {
+	public function afterLayout() {
 	}
 
 /**
@@ -847,7 +847,7 @@ class Helper extends Overloadable {
  * @return array
  * @access private
  */
-	function __selectedArray($data, $key = 'id') {
+	public function __selectedArray($data, $key = 'id') {
 		if (!is_array($data)) {
 			$model = $data;
 			if (!empty($this->data[$model][$model])) {
@@ -857,7 +857,7 @@ class Helper extends Overloadable {
 				$data = $this->data[$model];
 			}
 		}
-		$array = array();
+		$array = [];
 		if (!empty($data)) {
 			foreach ($data as $var) {
 				$array[$var[$key]] = $var[$key];
@@ -872,7 +872,7 @@ class Helper extends Overloadable {
  * @return void
  * @access private
  */
-	function __reset() {
+	public function __reset() {
 		$this->__tainted = null;
 		$this->__cleaned = null;
 	}
@@ -883,10 +883,10 @@ class Helper extends Overloadable {
  * @return void
  * @access private
  */
-	function __clean() {
+	public function __clean() {
 		$this->__cleaned = $this->__tainted;
 
-		$this->__cleaned = str_replace(array("&amp;", "&lt;", "&gt;"), array("&amp;amp;", "&amp;lt;", "&amp;gt;"), $this->__cleaned);
+		$this->__cleaned = str_replace(["&amp;", "&lt;", "&gt;"], ["&amp;amp;", "&amp;lt;", "&amp;gt;"], $this->__cleaned);
 		$this->__cleaned = preg_replace('#(&\#*\w+)[\x00-\x20]+;#u', "$1;", $this->__cleaned);
 		$this->__cleaned = preg_replace('#(&\#x*)([0-9A-F]+);*#iu', "$1$2;", $this->__cleaned);
 		$this->__cleaned = html_entity_decode($this->__cleaned, ENT_COMPAT, "UTF-8");
@@ -903,6 +903,6 @@ class Helper extends Overloadable {
 			$oldstring = $this->__cleaned;
 			$this->__cleaned = preg_replace('#</*(applet|meta|xml|blink|link|style|script|embed|object|iframe|frame|frameset|ilayer|layer|bgsound|title|base)[^>]*>#i', "", $this->__cleaned);
 		} while ($oldstring != $this->__cleaned);
-		$this->__cleaned = str_replace(array("&amp;", "&lt;", "&gt;"), array("&amp;amp;", "&amp;lt;", "&amp;gt;"), $this->__cleaned);
+		$this->__cleaned = str_replace(["&amp;", "&lt;", "&gt;"], ["&amp;amp;", "&amp;lt;", "&amp;gt;"], $this->__cleaned);
 	}
 }

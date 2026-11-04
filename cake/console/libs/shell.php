@@ -32,7 +32,7 @@ class Shell extends CakeObject {
  * @var ShellDispatcher
  * @access public
  */
-	var $Dispatch = null;
+	public $Dispatch = null;
 
 /**
  * If true, the script will ask for permission to perform actions.
@@ -40,7 +40,7 @@ class Shell extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $interactive = true;
+	public $interactive = true;
 
 /**
  * Holds the DATABASE_CONFIG object for the app. Null if database.php could not be found,
@@ -49,7 +49,7 @@ class Shell extends CakeObject {
  * @var DATABASE_CONFIG
  * @access public
  */
-	var $DbConfig = null;
+	public $DbConfig = null;
 
 /**
  * Contains command switches parsed from the command line.
@@ -57,7 +57,7 @@ class Shell extends CakeObject {
  * @var array
  * @access public
  */
-	var $params = array();
+	public $params = [];
 
 /**
  * Contains arguments parsed from the command line.
@@ -65,7 +65,7 @@ class Shell extends CakeObject {
  * @var array
  * @access public
  */
-	var $args = array();
+	public $args = [];
 
 /**
  * The file name of the shell that was invoked.
@@ -73,7 +73,7 @@ class Shell extends CakeObject {
  * @var string
  * @access public
  */
-	var $shell = null;
+	public $shell = null;
 
 /**
  * The class name of the shell that was invoked.
@@ -81,7 +81,7 @@ class Shell extends CakeObject {
  * @var string
  * @access public
  */
-	var $className = null;
+	public $className = null;
 
 /**
  * The command called if public methods are available.
@@ -89,7 +89,7 @@ class Shell extends CakeObject {
  * @var string
  * @access public
  */
-	var $command = null;
+	public $command = null;
 
 /**
  * The name of the shell in camelized.
@@ -97,7 +97,7 @@ class Shell extends CakeObject {
  * @var string
  * @access public
  */
-	var $name = null;
+	public $name = null;
 
 /**
  * An alias for the shell
@@ -105,7 +105,7 @@ class Shell extends CakeObject {
  * @var string
  * @access public
  */
-	var $alias = null;
+	public $alias = null;
 
 /**
  * Contains tasks to load and instantiate
@@ -113,7 +113,7 @@ class Shell extends CakeObject {
  * @var array
  * @access public
  */
-	var $tasks = array();
+	public $tasks = [];
 
 /**
  * Contains the loaded tasks
@@ -121,7 +121,7 @@ class Shell extends CakeObject {
  * @var array
  * @access public
  */
-	var $taskNames = array();
+	public $taskNames = [];
 
 /**
  * Contains models to load and instantiate
@@ -129,14 +129,14 @@ class Shell extends CakeObject {
  * @var array
  * @access public
  */
-	var $uses = array();
+	public $uses = [];
 
 /**
  *  Constructs this Shell instance.
  *
  */
-	function __construct(&$dispatch) {
-		$vars = array('params', 'args', 'shell', 'shellCommand' => 'command');
+	public function __construct(&$dispatch) {
+		$vars = ['params', 'args', 'shell', 'shellCommand' => 'command'];
 
 		foreach ($vars as $key => $var) {
 			if (is_string($key)) {
@@ -147,7 +147,7 @@ class Shell extends CakeObject {
 		}
 
 		if ($this->name == null) {
-			$this->name = get_class($this);
+			$this->name = static::class;
 		}
 
 		if ($this->alias == null) {
@@ -158,7 +158,7 @@ class Shell extends CakeObject {
 		ClassRegistry::map($this->name, $this->alias);
 
 		if (!PHP5 && isset($this->args[0])) {
-			if (strpos($this->name, strtolower(Inflector::camelize($this->args[0]))) !== false) {
+			if (str_contains($this->name, strtolower(Inflector::camelize($this->args[0])))) {
 				$dispatch->shiftArgs();
 			}
 			if (strtolower($this->command) == strtolower(Inflector::variable($this->args[0])) && method_exists($this, $this->command)) {
@@ -176,7 +176,7 @@ class Shell extends CakeObject {
  *
  * @access public
  */
-	function initialize() {
+	public function initialize() {
 		$this->_loadModels();
 	}
 
@@ -187,7 +187,7 @@ class Shell extends CakeObject {
  *
  * @access public
  */
-	function startup() {
+	public function startup() {
 		$this->_welcome();
 	}
 
@@ -196,7 +196,7 @@ class Shell extends CakeObject {
  *
  * @access protected
  */
-	function _welcome() {
+	public function _welcome() {
 		$this->Dispatch->clear();
 		$this->out();
 		$this->out('Welcome to CakePHP v' . Configure::version() . ' Console');
@@ -213,7 +213,7 @@ class Shell extends CakeObject {
  * @return bool
  * @access protected
  */
-	function _loadDbConfig() {
+	public function _loadDbConfig() {
 		if (config('database') && class_exists('DATABASE_CONFIG')) {
 			$this->DbConfig = new DATABASE_CONFIG();
 			return true;
@@ -232,7 +232,7 @@ class Shell extends CakeObject {
  * @return bool
  * @access protected
  */
-	function _loadModels() {
+	public function _loadModels() {
 		if ($this->uses === null || $this->uses === false) {
 			return;
 		}
@@ -243,16 +243,16 @@ class Shell extends CakeObject {
 		}
 
 		if ($this->uses !== true && !empty($this->uses)) {
-			$uses = is_array($this->uses) ? $this->uses : array($this->uses);
+			$uses = is_array($this->uses) ? $this->uses : [$this->uses];
 
 			$modelClassName = $uses[0];
-			if (strpos($uses[0], '.') !== false) {
-				list($plugin, $modelClassName) = explode('.', $uses[0]);
+			if (str_contains($uses[0], '.')) {
+				[$plugin, $modelClassName] = explode('.', $uses[0]);
 			}
 			$this->modelClass = $modelClassName;
 
 			foreach ($uses as $modelClass) {
-				list($plugin, $modelClass) = pluginSplit($modelClass, true);
+				[$plugin, $modelClass] = pluginSplit($modelClass, true);
 				if (PHP5) {
 					$this->{$modelClass} = ClassRegistry::init($plugin . $modelClass);
 				} else {
@@ -270,14 +270,14 @@ class Shell extends CakeObject {
  * @return bool
  * @access public
  */
-	function loadTasks() {
+	public function loadTasks() {
 		if ($this->tasks === null || $this->tasks === false || $this->tasks === true || empty($this->tasks)) {
 			return true;
 		}
 
 		$tasks = $this->tasks;
 		if (!is_array($tasks)) {
-			$tasks = array($tasks);
+			$tasks = [$tasks];
 		}
 
 		foreach ($tasks as $taskName) {
@@ -331,7 +331,7 @@ class Shell extends CakeObject {
  * @return Either the default value, or the user-provided input.
  * @access public
  */
-	function in($prompt, $options = null, $default = null) {
+	public function in($prompt, $options = null, $default = null) {
 		if (!$this->interactive) {
 			return $default;
 		}
@@ -343,7 +343,7 @@ class Shell extends CakeObject {
 			} elseif (strpos($options, '/')) {
 				$options = explode('/', $options);
 			} else {
-				$options = array($options);
+				$options = [$options];
 			}
 		}
 		if (is_array($options)) {
@@ -363,7 +363,7 @@ class Shell extends CakeObject {
  * @return integer Returns the number of bytes returned from writing to stdout.
  * @access public
  */
-	function out($message = null, $newlines = 1) {
+	public function out($message = null, $newlines = 1) {
 		if (is_array($message)) {
 			$message = implode($this->nl(), $message);
 		}
@@ -378,7 +378,7 @@ class Shell extends CakeObject {
  * @param integer $newlines Number of newlines to append
  * @access public
  */
-	function err($message = null, $newlines = 1) {
+	public function err($message = null, $newlines = 1) {
 		if (is_array($message)) {
 			$message = implode($this->nl(), $message);
 		}
@@ -392,7 +392,7 @@ class Shell extends CakeObject {
  * @access public
  * @return string
  */
-	function nl($multiplier = 1) {
+	public function nl($multiplier = 1) {
 		return str_repeat("\n", $multiplier);
 	}
 
@@ -402,7 +402,7 @@ class Shell extends CakeObject {
  * @param integer $newlines Number of newlines to pre- and append
  * @access public
  */
-	function hr($newlines = 0) {
+	public function hr($newlines = 0) {
 		$this->out(null, $newlines);
 		$this->out('---------------------------------------------------------------');
 		$this->out(null, $newlines);
@@ -416,7 +416,7 @@ class Shell extends CakeObject {
  * @param string $message An optional error message
  * @access public
  */
-	function error($title, $message = null) {
+	public function error($title, $message = null) {
 		$this->err(sprintf(__('Error: %s', true), $title));
 
 		if (!empty($message)) {
@@ -432,7 +432,7 @@ class Shell extends CakeObject {
  * @param string $command Command
  * @access protected
  */
-	function _checkArgs($expectedNum, $command = null) {
+	public function _checkArgs($expectedNum, $command = null) {
 		if (!$command) {
 			$command = $this->command;
 		}
@@ -453,7 +453,7 @@ class Shell extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function createFile($path, $contents) {
+	public function createFile($path, $contents) {
 		$path = str_replace(DS . DS, DS, $path);
 
 		$this->out();
@@ -461,7 +461,7 @@ class Shell extends CakeObject {
 
 		if (is_file($path) && $this->interactive === true) {
 			$prompt = sprintf(__('File `%s` exists, overwrite?', true), $path);
-			$key = $this->in($prompt,  array('y', 'n', 'q'), 'n');
+			$key = $this->in($prompt,  ['y', 'n', 'q'], 'n');
 
 			if (strtolower($key) == 'q') {
 				$this->out(__('Quitting.', true), 2);
@@ -491,7 +491,7 @@ class Shell extends CakeObject {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		if ($this->command != null) {
 			$this->err("Unknown {$this->name} command `{$this->command}`.");
 			$this->err("For usage, try `cake {$this->shell} help`.", 2);
@@ -506,12 +506,12 @@ class Shell extends CakeObject {
  * @return boolean Success
  * @access protected
  */
-	function _checkUnitTest() {
+	public function _checkUnitTest() {
 		if (App::import('vendor', 'simpletest' . DS . 'simpletest')) {
 			return true;
 		}
 		$prompt = 'SimpleTest is not installed. Do you want to bake unit test files anyway?';
-		$unitTest = $this->in($prompt, array('y','n'), 'y');
+		$unitTest = $this->in($prompt, ['y','n'], 'y');
 		$result = strtolower($unitTest) == 'y' || strtolower($unitTest) == 'yes';
 
 		if ($result) {
@@ -528,7 +528,7 @@ class Shell extends CakeObject {
  * @return sting short path
  * @access public
  */
-	function shortPath($file) {
+	public function shortPath($file) {
 		$shortPath = str_replace(ROOT, null, $file);
 		$shortPath = str_replace('..' . DS, '', $shortPath);
 		return str_replace(DS . DS, DS, $shortPath);
@@ -541,7 +541,7 @@ class Shell extends CakeObject {
  * @return string Path to controller
  * @access protected
  */
-	function _controllerPath($name) {
+	public function _controllerPath($name) {
 		return strtolower(Inflector::underscore($name));
 	}
 
@@ -552,7 +552,7 @@ class Shell extends CakeObject {
  * @return string Controller plural name
  * @access protected
  */
-	function _controllerName($name) {
+	public function _controllerName($name) {
 		return Inflector::pluralize(Inflector::camelize($name));
 	}
 
@@ -563,7 +563,7 @@ class Shell extends CakeObject {
  * @return string Camelized and singularized controller name
  * @access protected
  */
-	function _modelName($name) {
+	public function _modelName($name) {
 		return Inflector::camelize(Inflector::singularize($name));
 	}
 
@@ -574,7 +574,7 @@ class Shell extends CakeObject {
  * @return string Singular model key
  * @access protected
  */
-	function _modelKey($name) {
+	public function _modelKey($name) {
 		return Inflector::underscore($name) . '_id';
 	}
 
@@ -585,7 +585,7 @@ class Shell extends CakeObject {
  * @return string Model name
  * @access protected
  */
-	function _modelNameFromKey($key) {
+	public function _modelNameFromKey($key) {
 		return Inflector::camelize(str_replace('_id', '', $key));
 	}
 
@@ -596,7 +596,7 @@ class Shell extends CakeObject {
  * @return string $name
  * @access protected
  */
-	function _singularName($name) {
+	public function _singularName($name) {
 		return Inflector::variable(Inflector::singularize($name));
 	}
 
@@ -607,7 +607,7 @@ class Shell extends CakeObject {
  * @return string Plural name for views
  * @access protected
  */
-	function _pluralName($name) {
+	public function _pluralName($name) {
 		return Inflector::variable(Inflector::pluralize($name));
 	}
 
@@ -618,7 +618,7 @@ class Shell extends CakeObject {
  * @return string Singular human name
  * @access protected
  */
-	function _singularHumanName($name) {
+	public function _singularHumanName($name) {
 		return Inflector::humanize(Inflector::underscore(Inflector::singularize($name)));
 	}
 
@@ -629,7 +629,7 @@ class Shell extends CakeObject {
  * @return string Plural human name
  * @access protected
  */
-	function _pluralHumanName($name) {
+	public function _pluralHumanName($name) {
 		return Inflector::humanize(Inflector::underscore($name));
 	}
 
@@ -639,7 +639,7 @@ class Shell extends CakeObject {
  * @param string $pluginName Name of the plugin you want ie. DebugKit
  * @return string $path path to the correct plugin.
  */
-	function _pluginPath($pluginName) {
+	public function _pluginPath($pluginName) {
 		return App::pluginPath($pluginName);
 	}
 }

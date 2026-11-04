@@ -35,7 +35,7 @@ class Cache {
  * @var array
  * @access private
  */
-	var $__config = array();
+	public $__config = [];
 
 /**
  * Holds name of the current configuration name being used.
@@ -43,7 +43,7 @@ class Cache {
  * @var array
  * @access private
  */
-	var $__name = 'default';
+	public $__name = 'default';
 
 /**
  * Whether to reset the settings with the next call to Cache::set();
@@ -51,14 +51,14 @@ class Cache {
  * @var array
  * @access private
  */
-	var $__reset = false;
+	public $__reset = false;
 
 /**
  * Engine instances keyed by configuration name.
  *
  * @var array
  */
-	var $_engines = array();
+	public $_engines = [];
 
 /**
  * Returns a singleton instance
@@ -67,8 +67,8 @@ class Cache {
  * @access public
  * @static
  */
-	static function &getInstance() {
-		static $instance = array();
+	public static function &getInstance() {
+		static $instance = [];
 		if (!$instance) {
 			$instance[0] = new Cache();
 		}
@@ -111,7 +111,7 @@ class Cache {
  * @access public
  * @static
  */
-	static function config($name = null, $settings = array()) {
+	public static function config($name = null, $settings = []) {
 		$self =& Cache::getInstance();
 		if (is_array($name)) {
 			$settings = $name;
@@ -121,7 +121,7 @@ class Cache {
 			$name = $self->__name;
 		}
 
-		$current = array();
+		$current = [];
 		if (isset($self->__config[$name])) {
 			$current = $self->__config[$name];
 		}
@@ -153,10 +153,10 @@ class Cache {
  * @return void
  * @access protected
  */
-	function _buildEngine($name) {
+	public function _buildEngine($name) {
 		$config = $this->__config[$name];
 
-		list($plugin, $class) = pluginSplit($config['engine']);
+		[$plugin, $class] = pluginSplit($config['engine']);
 		$cacheClass = $class . 'Engine';
 		if (!class_exists($cacheClass) && $this->__loadEngine($class, $plugin) === false) {
 			return false;
@@ -177,7 +177,7 @@ class Cache {
  *
  * @return array Array of configured Cache config names.
  */
-	function configured() {
+	public function configured() {
 		$self =& Cache::getInstance();
 		return array_keys($self->__config);
 	}
@@ -190,7 +190,7 @@ class Cache {
  * @param string $name A currently configured cache config you wish to remove.
  * @return boolen success of the removal, returns false when the config does not exist.
  */
-	function drop($name) {
+	public function drop($name) {
 		$self =& Cache::getInstance();
 		if (!isset($self->__config[$name])) {
 			return false;
@@ -207,7 +207,7 @@ class Cache {
  * @return mixed $engine object or null
  * @access private
  */
-	function __loadEngine($name, $plugin = null) {
+	public function __loadEngine($name, $plugin = null) {
 		if ($plugin) {
 			return App::import('Lib', $plugin . '.cache' . DS . $name, false);
 		} else {
@@ -231,7 +231,7 @@ class Cache {
  * @access public
  * @static
  */
-	function set($settings = array(), $value = null) {
+	public function set($settings = [], $value = null) {
 		$self =& Cache::getInstance();
 		if (!isset($self->__config[$self->__name]) || !isset($self->_engines[$self->__name])) {
 			return false;
@@ -247,7 +247,7 @@ class Cache {
 				$settings = $self->__config[$name];
 			} else {
 				if (is_string($settings) && $value !== null) {
-					$settings = array($settings => $value);
+					$settings = [$settings => $value];
 				}
 				$settings = array_merge($self->__config[$name], $settings);
 				if (isset($settings['duration']) && !is_numeric($settings['duration'])) {
@@ -268,7 +268,7 @@ class Cache {
  * @access public
  * @static
  */
-	static function gc() {
+	public static function gc() {
 		$self =& Cache::getInstance();
 		$self->_engines[$self->__name]->gc();
 	}
@@ -295,7 +295,7 @@ class Cache {
  * @access public
  * @static
  */
-	static function write($key, $value, $config = null) {
+	public static function write($key, $value, $config = null) {
 		$self =& Cache::getInstance();
 
 		if (!$config) {
@@ -341,7 +341,7 @@ class Cache {
  * @access public
  * @static
  */
-	static function read($key, $config = null) {
+	public static function read($key, $config = null) {
 		$self =& Cache::getInstance();
 
 		if (!$config) {
@@ -378,7 +378,7 @@ class Cache {
  *    or if there was an error fetching it.
  * @access public
  */
-	function increment($key, $offset = 1, $config = null) {
+	public function increment($key, $offset = 1, $config = null) {
 		$self =& Cache::getInstance();
 
 		if (!$config) {
@@ -412,7 +412,7 @@ class Cache {
  *   or if there was an error fetching it
  * @access public
  */
-	function decrement($key, $offset = 1, $config = null) {
+	public function decrement($key, $offset = 1, $config = null) {
 		$self =& Cache::getInstance();
 
 		if (!$config) {
@@ -456,7 +456,7 @@ class Cache {
  * @access public
  * @static
  */
-	function delete($key, $config = null) {
+	public function delete($key, $config = null) {
 		$self =& Cache::getInstance();
 		if (!$config) {
 			$config = $self->__name;
@@ -488,7 +488,7 @@ class Cache {
  * @access public
  * @static
  */
-	function clear($check = false, $config = null) {
+	public function clear($check = false, $config = null) {
 		$self =& Cache::getInstance();
 		if (!$config) {
 			$config = $self->__name;
@@ -516,7 +516,7 @@ class Cache {
  * @access public
  * @static
  */
-	function isInitialized($name = null) {
+	public function isInitialized($name = null) {
 		if (Configure::read('Cache.disable')) {
 			return false;
 		}
@@ -538,7 +538,7 @@ class Cache {
  * @access public
  * @static
  */
-	static function settings($name = null) {
+	public static function settings($name = null) {
 		$self =& Cache::getInstance();
 		if (!$name && isset($self->__config[$self->__name])) {
 			$name = $self->__name;
@@ -546,7 +546,7 @@ class Cache {
 		if (!empty($self->_engines[$name])) {
 			return $self->_engines[$name]->settings();
 		}
-		return array();
+		return [];
 	}
 
 /**
@@ -555,7 +555,7 @@ class Cache {
  * @return void
  * @access public
  */ 
-	function __destruct() {
+	public function __destruct() {
 		if (Configure::read('Session.save') == 'cache' && function_exists('session_write_close')) {
 			session_write_close();
 		}
@@ -576,7 +576,7 @@ class CacheEngine {
  * @var int
  * @access public
  */
-	var $settings = array();
+	public $settings = [];
 
 /**
  * Initialize the cache engine
@@ -587,9 +587,9 @@ class CacheEngine {
  * @return boolean True if the engine has been succesfully initialized, false if not
  * @access public
  */
-	function init($settings = array()) {
+	public function init($settings = []) {
 		$this->settings = array_merge(
-			array('prefix' => 'cake_', 'duration'=> 3600, 'probability'=> 100),
+			['prefix' => 'cake_', 'duration'=> 3600, 'probability'=> 100],
 			$this->settings,
 			$settings
 		);
@@ -606,7 +606,7 @@ class CacheEngine {
  *
  * @access public
  */
-	function gc() {
+	public function gc() {
 	}
 
 /**
@@ -618,8 +618,8 @@ class CacheEngine {
  * @return boolean True if the data was succesfully cached, false on failure
  * @access public
  */
-	function write($key, &$value, $duration) {
-		trigger_error(sprintf(__('Method write() not implemented in %s', true), get_class($this)), E_USER_ERROR);
+	public function write($key, &$value, $duration) {
+		trigger_error(sprintf(__('Method write() not implemented in %s', true), static::class), E_USER_ERROR);
 	}
 
 /**
@@ -629,8 +629,8 @@ class CacheEngine {
  * @return mixed The cached data, or false if the data doesn't exist, has expired, or if there was an error fetching it
  * @access public
  */
-	function read($key) {
-		trigger_error(sprintf(__('Method read() not implemented in %s', true), get_class($this)), E_USER_ERROR);
+	public function read($key) {
+		trigger_error(sprintf(__('Method read() not implemented in %s', true), static::class), E_USER_ERROR);
 	}
 
 /**
@@ -641,8 +641,8 @@ class CacheEngine {
  * @return New incremented value, false otherwise
  * @access public
  */
-	function increment($key, $offset = 1) {
-		trigger_error(sprintf(__('Method increment() not implemented in %s', true), get_class($this)), E_USER_ERROR);
+	public function increment($key, $offset = 1) {
+		trigger_error(sprintf(__('Method increment() not implemented in %s', true), static::class), E_USER_ERROR);
 	}
 /**
  * Decrement a number under the key and return decremented value
@@ -652,8 +652,8 @@ class CacheEngine {
  * @return New incremented value, false otherwise
  * @access public
  */
-	function decrement($key, $offset = 1) {
-		trigger_error(sprintf(__('Method decrement() not implemented in %s', true), get_class($this)), E_USER_ERROR);
+	public function decrement($key, $offset = 1) {
+		trigger_error(sprintf(__('Method decrement() not implemented in %s', true), static::class), E_USER_ERROR);
 	}
 /**
  * Delete a key from the cache
@@ -662,7 +662,7 @@ class CacheEngine {
  * @return boolean True if the value was succesfully deleted, false if it didn't exist or couldn't be removed
  * @access public
  */
-	function delete($key) {
+	public function delete($key) {
 	}
 
 /**
@@ -672,7 +672,7 @@ class CacheEngine {
  * @return boolean True if the cache was succesfully cleared, false otherwise
  * @access public
  */
-	function clear($check) {
+	public function clear($check) {
 	}
 
 /**
@@ -681,7 +681,7 @@ class CacheEngine {
  * @return array settings
  * @access public
  */
-	function settings() {
+	public function settings() {
 		return $this->settings;
 	}
 
@@ -692,11 +692,11 @@ class CacheEngine {
  * @return mixed string $key or false
  * @access public
  */
-	function key($key) {
+	public function key($key) {
 		if (empty($key)) {
 			return false;
 		}
-		$key = Inflector::underscore(str_replace(array(DS, '/', '.'), '_', strval($key)));
+		$key = Inflector::underscore(str_replace([DS, '/', '.'], '_', strval($key)));
 		return $key;
 	}
 }

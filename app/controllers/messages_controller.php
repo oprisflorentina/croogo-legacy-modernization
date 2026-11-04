@@ -26,13 +26,13 @@ class MessagesController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Message');
+	public $uses = ['Message'];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Messages', true));
 
 		$this->Message->recursive = 0;
-		$this->paginate['Message']['conditions'] = array('Message.status' => 0);
+		$this->paginate['Message']['conditions'] = ['Message.status' => 0];
 		if (isset($this->params['named']['contact'])) {
 			$this->paginate['Message']['conditions'] = $this->params['named']['contact'];
 		}
@@ -40,7 +40,7 @@ class MessagesController extends AppController {
 		if (isset($this->params['named']['filter'])) {
 			$filters = $this->Croogo->extractFilter();
 			foreach ($filters AS $filterKey => $filterValue) {
-				if (strpos($filterKey, '.') === false) {
+				if (!str_contains($filterKey, '.')) {
 					$filterKey = 'Message.' . $filterKey;
 				}
 				$this->paginate['Message']['conditions'][$filterKey] = $filterValue;
@@ -62,14 +62,14 @@ class MessagesController extends AppController {
 
 		if (!$id && empty($this->data)) {
 			$this->Session->setFlash(__('Invalid Message', true));
-			$this->redirect(array('action'=>'index'));
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Message->save($this->data)) {
-				$this->Session->setFlash(__('The Message has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Message has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Message could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Message could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -79,22 +79,22 @@ class MessagesController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Message', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Message', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Message->delete($id)) {
-			$this->Session->setFlash(__('Message deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Message deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 
 	public function admin_process() {
 		$action = $this->data['Message']['action'];
-		$ids = array();
+		$ids = [];
 		foreach ($this->data['Message'] AS $id => $value) {
 			if ($id != 'action' && $value['id'] == 1) {
 				$ids[] = $id;
@@ -102,24 +102,24 @@ class MessagesController extends AppController {
 		}
 
 		if (count($ids) == 0 || $action == null) {
-			$this->Session->setFlash(__('No items selected.', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action' => 'index'));
+			$this->Session->setFlash(__('No items selected.', true), 'default', ['class' => 'error']);
+			$this->redirect(['action' => 'index']);
 		}
 
 		if ($action == 'delete' &&
-			$this->Message->deleteAll(array('Message.id' => $ids), true, true)) {
-			$this->Session->setFlash(__('Messages deleted.', true), 'default', array('class' => 'success'));
+			$this->Message->deleteAll(['Message.id' => $ids], true, true)) {
+			$this->Session->setFlash(__('Messages deleted.', true), 'default', ['class' => 'success']);
 		} elseif ($action == 'read' &&
-			$this->Message->updateAll(array('Message.status' => 1), array('Message.id' => $ids))) {
-			$this->Session->setFlash(__('Messages marked as read', true), 'default', array('class' => 'success'));
+			$this->Message->updateAll(['Message.status' => 1], ['Message.id' => $ids])) {
+			$this->Session->setFlash(__('Messages marked as read', true), 'default', ['class' => 'success']);
 		} elseif ($action == 'unread' &&
-			$this->Message->updateAll(array('Message.status' => 0), array('Message.id' => $ids))) {
-			$this->Session->setFlash(__('Messages marked as unread', true), 'default', array('class' => 'success'));
+			$this->Message->updateAll(['Message.status' => 0], ['Message.id' => $ids])) {
+			$this->Session->setFlash(__('Messages marked as unread', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('An error occurred.', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('An error occurred.', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 }

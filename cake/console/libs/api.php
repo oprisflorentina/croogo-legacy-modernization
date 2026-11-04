@@ -34,15 +34,15 @@ class ApiShell extends Shell {
  * @var array
  * @access public
  */
-	var $paths = array();
+	public $paths = [];
 
 /**
  * Override intialize of the Shell
  *
  * @access public
  */
-	function initialize() {
-		$this->paths = array_merge($this->paths, array(
+	public function initialize() {
+		$this->paths = array_merge($this->paths, [
 			'behavior' => LIBS . 'model' . DS . 'behaviors' . DS,
 			'cache' => LIBS . 'cache' . DS,
 			'controller' => LIBS . 'controller' . DS,
@@ -51,7 +51,7 @@ class ApiShell extends Shell {
 			'model' => LIBS . 'model' . DS,
 			'view' => LIBS . 'view' . DS,
 			'core' => LIBS
-		));
+		]);
 	}
 
 /**
@@ -59,7 +59,7 @@ class ApiShell extends Shell {
  *
  * @access public
  */
-	function main() {
+	public function main() {
 		if (empty($this->args)) {
 			return $this->help();
 		}
@@ -82,7 +82,7 @@ class ApiShell extends Shell {
 
 		$objects = App::objects('class', $path);
 		if (in_array($class, $objects)) {
-			if (in_array($type, array('behavior', 'component', 'helper')) && $type !== $file) {
+			if (in_array($type, ['behavior', 'component', 'helper']) && $type !== $file) {
 				if (!preg_match('/' . Inflector::camelize($type) . '$/', $class)) {
 					$class .= Inflector::camelize($type);
 				}
@@ -142,12 +142,12 @@ class ApiShell extends Shell {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$head  = "Usage: cake api [<type>] <className> [-m <method>]\n";
 		$head .= "-----------------------------------------------\n";
 		$head .= "Parameters:\n\n";
 
-		$commands = array(
+		$commands = [
 			'path' => "\t<type>\n" .
 				"\t\tEither a full path or type of class (model, behavior, controller, component, view, helper).\n".
 				"\t\tAvailable values:\n\n".
@@ -160,7 +160,7 @@ class ApiShell extends Shell {
 				"\t\tview\tLook for class in CakePHP view path\n",
 			'className' => "\t<className>\n" .
 				"\t\tA CakePHP core class name (e.g: Component, HtmlHelper).\n"
-		);
+		];
 
 		$this->out($head);
 		if (!isset($this->args[1])) {
@@ -183,8 +183,8 @@ class ApiShell extends Shell {
  * @return array Methods and signatures indexed by method name
  * @access private
  */
-	function __parseClass($path) {
-		$parsed = array();
+	public function __parseClass($path) {
+		$parsed = [];
 
 		$File = new File($path);
 		if (!$File->exists()) {
@@ -198,12 +198,12 @@ class ApiShell extends Shell {
 			foreach ($result[2] as $key => $method) {
 				$method = str_replace('function ', '', trim($method));
 
-				if (strpos($method, '__') === false && $method[0] != '_') {
-					$parsed[$method] = array(
-						'comment' => str_replace(array('/*', '*/', '*'), '', trim($result[1][$key])),
+				if (!str_contains($method, '__') && $method[0] != '_') {
+					$parsed[$method] = [
+						'comment' => str_replace(['/*', '*/', '*'], '', trim($result[1][$key])),
 						'method' => $method,
 						'parameters' => trim($result[3][$key])
-					);
+					];
 				}
 			}
 		}

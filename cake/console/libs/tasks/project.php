@@ -31,7 +31,7 @@ class ProjectTask extends Shell {
  *
  * @var string
  */
-	var $configPath = null;
+	public $configPath = null;
 
 /**
  * Checks that given project path does not already exist, and
@@ -40,7 +40,7 @@ class ProjectTask extends Shell {
  * @param string $project Project path
  * @access public
  */
-	function execute($project = null) {
+	public function execute($project = null) {
 		if ($project === null) {
 			if (isset($this->args[0])) {
 				$project = $this->args[0];
@@ -48,7 +48,7 @@ class ProjectTask extends Shell {
 		}
 
 		if ($project) {
-			$this->Dispatch->parseParams(array('-app', $project));
+			$this->Dispatch->parseParams(['-app', $project]);
 			$project = $this->params['working'];
 		}
 
@@ -69,7 +69,7 @@ class ProjectTask extends Shell {
 			$response = false;
 			while ($response == false && is_dir($project) === true && file_exists($project . 'config' . 'core.php')) {
 				$prompt = sprintf(__('A project already exists in this location: %s Overwrite?', true), $project);
-				$response = $this->in($prompt, array('y','n'), 'n');
+				$response = $this->in($prompt, ['y','n'], 'n');
 				if (strtolower($response) === 'n') {
 					$response = $project = false;
 				}
@@ -127,7 +127,7 @@ class ProjectTask extends Shell {
  * @param string $skip array of directories to skip when copying
  * @access private
  */
-	function bake($path, $skel = null, $skip = array('empty')) {
+	public function bake($path, $skel = null, $skip = ['empty']) {
 		if (!$skel) {
 			$skel = $this->params['skel'];
 		}
@@ -149,16 +149,16 @@ class ProjectTask extends Shell {
 		$this->out(__("Will be copied to: ", true) . $path);
 		$this->hr();
 
-		$looksGood = $this->in(__('Look okay?', true), array('y', 'n', 'q'), 'y');
+		$looksGood = $this->in(__('Look okay?', true), ['y', 'n', 'q'], 'y');
 
 		if (strtolower($looksGood) == 'y') {
-			$verbose = $this->in(__('Do you want verbose output?', true), array('y', 'n'), 'n');
+			$verbose = $this->in(__('Do you want verbose output?', true), ['y', 'n'], 'n');
 
 			$Folder = new Folder($skel);
 			if (!empty($this->params['empty'])) {
-				$skip = array();
+				$skip = [];
 			}
-			if ($Folder->copy(array('to' => $path, 'skip' => $skip))) {
+			if ($Folder->copy(['to' => $path, 'skip' => $skip])) {
 				$this->hr();
 				$this->out(sprintf(__("Created: %s in %s", true), $app, $path));
 				$this->hr();
@@ -189,7 +189,7 @@ class ProjectTask extends Shell {
  * @return boolean Success
  * @access public
  */
-	function createHome($dir) {
+	public function createHome($dir) {
 		$app = basename($dir);
 		$path = $dir . 'views' . DS . 'pages' . DS;
 		$source = CAKE . 'console' . DS . 'templates' . DS .'default' . DS . 'views' . DS . 'home.ctp';
@@ -204,7 +204,7 @@ class ProjectTask extends Shell {
  * @return boolean Success
  * @access public
  */
-	function securitySalt($path) {
+	public function securitySalt($path) {
 		$File = new File($path . 'config' . DS . 'core.php');
 		$contents = $File->read();
 		if (preg_match('/([\\t\\x20]*Configure::write\\(\\\'Security.salt\\\',[\\t\\x20\'A-z0-9]*\\);)/', $contents, $match)) {
@@ -228,7 +228,7 @@ class ProjectTask extends Shell {
 	 * @return boolean Success
 	 * @access public
 	 */
-		function securityCipherSeed($path) {
+		public function securityCipherSeed($path) {
 			$File = new File($path . 'config' . DS . 'core.php');
 			$contents = $File->read();
 			if (preg_match('/([\\t\\x20]*Configure::write\\(\\\'Security.cipherSeed\\\',[\\t\\x20\'A-z0-9]*\\);)/', $contents, $match)) {
@@ -252,12 +252,12 @@ class ProjectTask extends Shell {
  * @return boolean Success
  * @access public
  */
-	function corePath($path) {
+	public function corePath($path) {
 		if (dirname($path) !== CAKE_CORE_INCLUDE_PATH) {
 			$File = new File($path . 'webroot' . DS . 'index.php');
 			$contents = $File->read();
 			if (preg_match('/([\\t\\x20]*define\\(\\\'CAKE_CORE_INCLUDE_PATH\\\',[\\t\\x20\'A-z0-9]*\\);)/', $contents, $match)) {
-				$root = strpos(CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
+				$root = str_starts_with(CAKE_CORE_INCLUDE_PATH, '/') ? " DS . '" : "'";
 				$result = str_replace($match[0], "\t\tdefine('CAKE_CORE_INCLUDE_PATH', " . $root . str_replace(DS, "' . DS . '", trim(CAKE_CORE_INCLUDE_PATH, DS)) . "');", $contents);
 				if (!$File->write($result)) {
 					return false;
@@ -287,14 +287,14 @@ class ProjectTask extends Shell {
  * @return boolean Success
  * @access public
  */
-	function cakeAdmin($name) {
+	public function cakeAdmin($name) {
 		$path = (empty($this->configPath)) ? CONFIGS : $this->configPath;
 		$File = new File($path . 'core.php');
 		$contents = $File->read();
 		if (preg_match('%([/\\t\\x20]*Configure::write\(\'Routing.prefixes\',[\\t\\x20\'a-z,\)\(]*\\);)%', $contents, $match)) {
 			$result = str_replace($match[0], "\t" . 'Configure::write(\'Routing.prefixes\', array(\''.$name.'\'));', $contents);
 			if ($File->write($result)) {
-				Configure::write('Routing.prefixes', array($name));
+				Configure::write('Routing.prefixes', [$name]);
 				return true;
 			} else {
 				return false;
@@ -310,7 +310,7 @@ class ProjectTask extends Shell {
  * @return string Admin route to use
  * @access public
  */
-	function getPrefix() {
+	public function getPrefix() {
 		$admin = '';
 		$prefixes = Configure::read('Routing.prefixes');
 		if (!empty($prefixes)) {
@@ -321,7 +321,7 @@ class ProjectTask extends Shell {
 				$this->out();
 				$this->out(__('You have more than one routing prefix configured', true));
 			}
-			$options = array();
+			$options = [];
 			foreach ($prefixes as $i => $prefix) {
 				$options[] = $i + 1;
 				if ($this->interactive) {
@@ -355,7 +355,7 @@ class ProjectTask extends Shell {
  * @return void
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->hr();
 		$this->out("Usage: cake bake project <arg1>");
 		$this->hr();

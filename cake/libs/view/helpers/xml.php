@@ -17,7 +17,7 @@
  * @since         CakePHP(tm) v 1.2
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-App::import('Core', array('Xml', 'Set'));
+App::import('Core', ['Xml', 'Set']);
 
 /**
  * XML Helper class for easy output of XML structures.
@@ -36,19 +36,19 @@ class XmlHelper extends AppHelper {
  * @access public
  * @var string
  */
-	var $encoding = 'UTF-8';
+	public $encoding = 'UTF-8';
 
-	var $Xml;
-	var $XmlElement;
+	public $Xml;
+	public $XmlElement;
 /**
  * Constructor
  *
  * @return void
  */
-	function __construct() {
+	public function __construct() {
 		parent::__construct();
 		$this->Xml = new Xml();
-		$this->Xml->options(array('verifyNs' => false));
+		$this->Xml->options(['verifyNs' => false]);
 	}
 
 /**
@@ -59,15 +59,15 @@ class XmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/XML.html#header
  */
-	function header($attrib = array()) {
+	public function header($attrib = []) {
 		if (Configure::read('App.encoding') !== null) {
 			$this->encoding = Configure::read('App.encoding');
 		}
 
 		if (is_array($attrib)) {
-			$attrib = array_merge(array('encoding' => $this->encoding), $attrib);
+			$attrib = array_merge(['encoding' => $this->encoding], $attrib);
 		}
-		if (is_string($attrib) && strpos($attrib, 'xml') !== 0) {
+		if (is_string($attrib) && !str_starts_with($attrib, 'xml')) {
 			$attrib = 'xml ' . $attrib;
 		}
 
@@ -84,7 +84,7 @@ class XmlHelper extends AppHelper {
  * @deprecated
  * @see Xml::addNs()
  */
-	function addNs($name, $url = null) {
+	public function addNs($name, $url = null) {
 		return $this->Xml->addNamespace($name, $url);
 	}
 
@@ -96,7 +96,7 @@ class XmlHelper extends AppHelper {
  * @see Xml::removeNs()
  * @access public
  */
-	function removeNs($name) {
+	public function removeNs($name) {
 		return $this->Xml->removeGlobalNamespace($name);
 	}
 
@@ -111,7 +111,7 @@ class XmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/XML.html#elem
  */
-	function elem($name, $attrib = array(), $content = null, $endTag = true) {
+	public function elem($name, $attrib = [], $content = null, $endTag = true) {
 		$namespace = null;
 		if (isset($attrib['namespace'])) {
 			$namespace = $attrib['namespace'];
@@ -125,7 +125,7 @@ class XmlHelper extends AppHelper {
 		if (is_array($content) && array_key_exists('value', $content)) {
 			$content = $content['value'];
 		}
-		$children = array();
+		$children = [];
 		if (is_array($content)) {
 			$children = $content;
 			$content = null;
@@ -135,7 +135,7 @@ class XmlHelper extends AppHelper {
 		foreach ($children as $child) {
 			$elem->createElement($child);
 		}
-		$out = $elem->toString(array('cdata' => $cdata, 'leaveOpen' => !$endTag));
+		$out = $elem->toString(['cdata' => $cdata, 'leaveOpen' => !$endTag]);
 
 		if (!$endTag) {
 			$this->XmlElement =& $elem;
@@ -149,7 +149,7 @@ class XmlHelper extends AppHelper {
  * @return string
  * @access public
  */
-	function closeElem() {
+	public function closeElem() {
 		$elem = (empty($this->XmlElement)) ? $this->Xml : $this->XmlElement;
 		$name = $elem->name();
 		if ($parent =& $elem->parent()) {
@@ -169,9 +169,9 @@ class XmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/XML.html#serialize
  */
-	function serialize($data, $options = array()) {
-		$options += array('attributes' => false, 'format' => 'attributes');
+	public function serialize($data, $options = []) {
+		$options += ['attributes' => false, 'format' => 'attributes'];
 		$data = new Xml($data, $options);
-		return $data->toString($options + array('header' => false));
+		return $data->toString($options + ['header' => false]);
 	}
 }

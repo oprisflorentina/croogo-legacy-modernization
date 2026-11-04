@@ -3,8 +3,8 @@ class AroData {
 
 	public $table = 'aros';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '1',
 			'parent_id' => '',
 			'model' => 'Role',
@@ -12,8 +12,8 @@ class AroData {
 			'alias' => '',
 			'lft' => '1',
 			'rght' => '2'
-		),
-		array(
+		],
+		[
 			'id' => '2',
 			'parent_id' => '',
 			'model' => 'Role',
@@ -21,8 +21,8 @@ class AroData {
 			'alias' => '',
 			'lft' => '3',
 			'rght' => '4'
-		),
-		array(
+		],
+		[
 			'id' => '3',
 			'parent_id' => '',
 			'model' => 'Role',
@@ -30,8 +30,8 @@ class AroData {
 			'alias' => '',
 			'lft' => '5',
 			'rght' => '6'
-		),
-		array(
+		],
+		[
 			'id' => '5',
 			'parent_id' => '',
 			'model' => 'User',
@@ -39,7 +39,7 @@ class AroData {
 			'alias' => '',
 			'lft' => '7',
 			'rght' => '8'
-		),
-	);
+		],
+	];
 
 }

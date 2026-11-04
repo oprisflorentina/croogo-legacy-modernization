@@ -26,7 +26,7 @@ class RegionsController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Region');
+	public $uses = ['Region'];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Region', true));
@@ -42,10 +42,10 @@ class RegionsController extends AppController {
 		if (!empty($this->data)) {
 			$this->Region->create();
 			if ($this->Region->save($this->data)) {
-				$this->Session->setFlash(__('The Region has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Region has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Region could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Region could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 	}
@@ -54,15 +54,15 @@ class RegionsController extends AppController {
 		$this->set('title_for_layout', __('Edit Region', true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Region', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Region', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Region->save($this->data)) {
-				$this->Session->setFlash(__('The Region has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Region has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Region could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Region could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -72,16 +72,16 @@ class RegionsController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Region', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Region', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Region->delete($id)) {
-			$this->Session->setFlash(__('Region deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Region deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 

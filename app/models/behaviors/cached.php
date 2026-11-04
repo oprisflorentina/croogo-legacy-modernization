@@ -19,9 +19,9 @@ class CachedBehavior extends ModelBehavior {
  * @param array  $config
  * @return void
  */
-	public function setup(&$model, $config = array()) {
+	public function setup(&$model, $config = []) {
 		if (is_string($config)) {
-			$config = array($config);
+			$config = [$config];
 		}
 
 		$this->settings[$model->alias] = $config;

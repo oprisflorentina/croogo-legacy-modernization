@@ -38,20 +38,20 @@ class NumberHelper extends AppHelper {
  * @var array
  * @access protected
  */
-	var $_currencies = array(
-		'USD' => array(
+	public $_currencies = [
+		'USD' => [
 			'before' => '$', 'after' => 'c', 'zero' => 0, 'places' => 2, 'thousands' => ',',
 			'decimals' => '.', 'negative' => '()', 'escape' => true
-		),
-		'GBP' => array(
+		],
+		'GBP' => [
 			'before'=>'&#163;', 'after' => 'p', 'zero' => 0, 'places' => 2, 'thousands' => ',',
 			'decimals' => '.', 'negative' => '()','escape' => false
-		),
-		'EUR' => array(
+		],
+		'EUR' => [
 			'before'=>'&#8364;', 'after' => false, 'zero' => 0, 'places' => 2, 'thousands' => '.',
 			'decimals' => ',', 'negative' => '()', 'escape' => false
-		)
-	);
+		]
+	];
 
 /**
  * Default options for currency formats
@@ -59,10 +59,10 @@ class NumberHelper extends AppHelper {
  * @var array
  * @access protected
  */
-	var $_currencyDefaults = array(
+	public $_currencyDefaults = [
 		'before'=>'', 'after' => false, 'zero' => '0', 'places' => 2, 'thousands' => ',',
 		'decimals' => '.','negative' => '()', 'escape' => true
-	);
+	];
 
 /**
  * Formats a number with a level of precision.
@@ -73,7 +73,7 @@ class NumberHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Number.html#precision
  */
-	function precision($number, $precision = 3) {
+	public function precision($number, $precision = 3) {
 		return sprintf("%01.{$precision}f", $number);
 	}
 
@@ -85,7 +85,7 @@ class NumberHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Number.html#toReadableSize
  */
-	function toReadableSize($size) {
+	public function toReadableSize($size) {
 		switch (true) {
 			case $size < 1024:
 				return sprintf(__n('%d Byte', '%d Bytes', $size, true), $size);
@@ -109,7 +109,7 @@ class NumberHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Number.html#toPercentage
  */
-	function toPercentage($number, $precision = 2) {
+	public function toPercentage($number, $precision = 2) {
 		return $this->precision($number, $precision) . '%';
 	}
 
@@ -123,13 +123,13 @@ class NumberHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Number.html#format
  */
-	function format($number, $options = false) {
+	public function format($number, $options = false) {
 		$places = 0;
 		if (is_int($options)) {
 			$places = $options;
 		}
 
-		$separators = array(',', '.', '-', ':');
+		$separators = [',', '.', '-', ':'];
 
 		$before = $after = null;
 		if (is_string($options) && !in_array($options, $separators)) {
@@ -146,7 +146,7 @@ class NumberHelper extends AppHelper {
 
 		$escape = true;
 		if (is_array($options)) {
-			$options = array_merge(array('before'=>'$', 'places' => 2, 'thousands' => ',', 'decimals' => '.'), $options);
+			$options = array_merge(['before'=>'$', 'places' => 2, 'thousands' => ',', 'decimals' => '.'], $options);
 			extract($options);
 		}
 
@@ -181,7 +181,7 @@ class NumberHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Number.html#currency
  */
-	function currency($number, $currency = 'USD', $options = array()) {
+	public function currency($number, $currency = 'USD', $options = []) {
 		$default = $this->_currencyDefaults;
 
 		if (isset($this->_currencies[$currency])) {
@@ -250,7 +250,7 @@ class NumberHelper extends AppHelper {
  * @see NumberHelper::currency()
  * @access public
  */
-	function addFormat($formatName, $options) {
+	public function addFormat($formatName, $options) {
 		$this->_currencies[$formatName] = $options + $this->_currencyDefaults;
 	}
 

@@ -38,8 +38,8 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_plural = array(
-		'rules' => array(
+	public $_plural = [
+		'rules' => [
 			'/(s)tatus$/i' => '\1\2tatuses',
 			'/(quiz)$/i' => '\1zes',
 			'/^(ox)$/i' => '\1\2en',
@@ -62,11 +62,11 @@ class Inflector {
 			'/s$/' => 's',
 			'/^$/' => '',
 			'/$/' => 's',
-		),
-		'uninflected' => array(
+		],
+		'uninflected' => [
 			'.*[nrlm]ese', '.*deer', '.*fish', '.*measles', '.*ois', '.*pox', '.*sheep', 'people'
-		),
-		'irregular' => array(
+		],
+		'irregular' => [
 			'atlas' => 'atlases',
 			'beef' => 'beefs',
 			'brother' => 'brothers',
@@ -98,8 +98,8 @@ class Inflector {
 			'testis' => 'testes',
 			'trilby' => 'trilbys',
 			'turf' => 'turfs'
-		)
-	);
+		]
+	];
 
 /**
  * Singular inflector rules
@@ -107,8 +107,8 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_singular = array(
-		'rules' => array(
+	public $_singular = [
+		'rules' => [
 			'/(s)tatuses$/i' => '\1\2tatus',
 			'/^(.*)(menu)s$/i' => '\1\2',
 			'/(quiz)zes$/i' => '\\1',
@@ -143,16 +143,16 @@ class Inflector {
 			'/eaus$/' => 'eau',
 			'/^(.*us)$/' => '\\1',
 			'/s$/i' => ''
-		),
-		'uninflected' => array(
+		],
+		'uninflected' => [
 			'.*[nrlm]ese', '.*deer', '.*fish', '.*measles', '.*ois', '.*pox', '.*sheep', '.*ss'
-		),
-		'irregular' => array(
+		],
+		'irregular' => [
 			'foes' => 'foe',
 			'waves' => 'wave',
 			'curves' => 'curve'
-		)
-	);
+		]
+	];
 
 /**
  * Words that should not be inflected
@@ -160,7 +160,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_uninflected = array(
+	public $_uninflected = [
 		'Amoyese', 'bison', 'Borghese', 'bream', 'breeches', 'britches', 'buffalo', 'cantus',
 		'carp', 'chassis', 'clippers', 'cod', 'coitus', 'Congoese', 'contretemps', 'corps',
 		'debris', 'diabetes', 'djinn', 'eland', 'elk', 'equipment', 'Faroese', 'flounder',
@@ -173,7 +173,7 @@ class Inflector {
 		'sea[- ]bass', 'series', 'Shavese', 'shears', 'siemens', 'species', 'swine', 'testes',
 		'trousers', 'trout', 'tuna', 'Vermontese', 'Wenchowese', 'whiting', 'wildebeest',
 		'Yengeese'
-	);
+	];
 
 /**
  * Default map of accented and special characters to ASCII characters
@@ -181,7 +181,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_transliteration = array(
+	public $_transliteration = [
 		'/ä|æ|ǽ/' => 'ae',
 		'/ö|œ/' => 'oe',
 		'/ü/' => 'ue',
@@ -232,7 +232,7 @@ class Inflector {
 		'/ĳ/' => 'ij',
 		'/Œ/' => 'OE',
 		'/ƒ/' => 'f'
-	);
+	];
 
 /**
  * Cached array identity map of pluralized words.
@@ -240,7 +240,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_pluralized = array();
+	public $_pluralized = [];
 
 /**
  * Cached array identity map of singularized words.
@@ -248,7 +248,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_singularized = array();
+	public $_singularized = [];
 
 /**
  * Cached Underscore Inflections
@@ -256,7 +256,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_underscore = array();
+	public $_underscore = [];
 
 /**
  * Cached Camelize Inflections
@@ -264,7 +264,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_camelize = array();
+	public $_camelize = [];
 
 /**
  * Classify cached inflecctions
@@ -272,7 +272,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_classify = array();
+	public $_classify = [];
 
 /**
  * Tablize cached inflections
@@ -280,7 +280,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_tableize = array();
+	public $_tableize = [];
 
 /**
  * Humanize cached inflections
@@ -288,7 +288,7 @@ class Inflector {
  * @var array
  * @access protected
  */
-	var $_humanize = array();
+	public $_humanize = [];
 
 /**
  * Gets a reference to the Inflector object instance
@@ -296,8 +296,8 @@ class Inflector {
  * @return object
  * @access public
  */
-	static function &getInstance() {
-		static $instance = array();
+	public static function &getInstance() {
+		static $instance = [];
 
 		if (!$instance) {
 			$instance[0] = new Inflector();
@@ -314,7 +314,7 @@ class Inflector {
  * @return string Inflected value, from cache
  * @access protected
  */
-	function _cache($type, $key, $value = false) {
+	public function _cache($type, $key, $value = false) {
 		$key = '_' . $key;
 		$type = '_' . $type;
 		if ($value !== false) {
@@ -351,7 +351,7 @@ class Inflector {
  * @return void
  * @static
  */
-	function rules($type, $rules, $reset = false) {
+	public function rules($type, $rules, $reset = false) {
 		$_this =& Inflector::getInstance();
 		$var = '_'.$type;
 
@@ -381,9 +381,9 @@ class Inflector {
 							unset($_this->{$var}['merged'][$rule]);
 						}
 						if ($type === 'plural') {
-							$_this->_pluralized = $_this->_tableize = array();
+							$_this->_pluralized = $_this->_tableize = [];
 						} elseif ($type === 'singular') {
-							$_this->_singularized = array();
+							$_this->_singularized = [];
 						}
 					}
 				}
@@ -401,16 +401,14 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function pluralize($word) {
+	public static function pluralize($word) {
 		$_this =& Inflector::getInstance();
 
 		if (isset($_this->_pluralized[$word])) {
 			return $_this->_pluralized[$word];
 		}
 
-		if (!isset($_this->_plural['merged']['irregular'])) {
-			$_this->_plural['merged']['irregular'] = $_this->_plural['irregular'];
-		}
+		$_this->_plural['merged']['irregular'] ??= $_this->_plural['irregular'];
 
 		if (!isset($_this->plural['merged']['uninflected'])) {
 			$_this->_plural['merged']['uninflected'] = array_merge($_this->_plural['uninflected'], $_this->_uninflected);
@@ -448,20 +446,16 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function singularize($word) {
+	public static function singularize($word) {
 		$_this =& Inflector::getInstance();
 
 		if (isset($_this->_singularized[$word])) {
 			return $_this->_singularized[$word];
 		}
 
-		if (!isset($_this->_singular['merged']['uninflected'])) {
-			$_this->_singular['merged']['uninflected'] = array_merge($_this->_singular['uninflected'], $_this->_uninflected);
-		}
+		$_this->_singular['merged']['uninflected'] ??= array_merge($_this->_singular['uninflected'], $_this->_uninflected);
 
-		if (!isset($_this->_singular['merged']['irregular'])) {
-			$_this->_singular['merged']['irregular'] = array_merge($_this->_singular['irregular'], array_flip($_this->_plural['irregular']));
-		}
+		$_this->_singular['merged']['irregular'] ??= array_merge($_this->_singular['irregular'], array_flip($_this->_plural['irregular']));
 
 		if (!isset($_this->_singular['cacheUninflected']) || !isset($_this->_singular['cacheIrregular'])) {
 			$_this->_singular['cacheUninflected'] = '(?:' . join( '|', $_this->_singular['merged']['uninflected']) . ')';
@@ -497,7 +491,7 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function camelize($lowerCaseAndUnderscoredWord) {
+	public static function camelize($lowerCaseAndUnderscoredWord) {
 		$_this =& Inflector::getInstance();
 		if (!($result = $_this->_cache(__FUNCTION__, $lowerCaseAndUnderscoredWord))) {
 			$result = str_replace(' ', '', Inflector::humanize($lowerCaseAndUnderscoredWord));
@@ -515,7 +509,7 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function underscore($camelCasedWord) {
+	public static function underscore($camelCasedWord) {
 		$_this =& Inflector::getInstance();
 		if (!($result = $_this->_cache(__FUNCTION__, $camelCasedWord))) {
 			$result = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $camelCasedWord));
@@ -534,7 +528,7 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function humanize($lowerCaseAndUnderscoredWord) {
+	public static function humanize($lowerCaseAndUnderscoredWord) {
 		$_this =& Inflector::getInstance();
 		if (!($result = $_this->_cache(__FUNCTION__, $lowerCaseAndUnderscoredWord))) {
 			$result = ucwords(str_replace('_', ' ', $lowerCaseAndUnderscoredWord));
@@ -552,7 +546,7 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function tableize($className) {
+	public static function tableize($className) {
 		$_this =& Inflector::getInstance();
 		if (!($result = $_this->_cache(__FUNCTION__, $className))) {
 			$result = Inflector::pluralize(Inflector::underscore($className));
@@ -570,7 +564,7 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function classify($tableName) {
+	public static function classify($tableName) {
 		$_this =& Inflector::getInstance();
 		if (!($result = $_this->_cache(__FUNCTION__, $tableName))) {
 			$result = Inflector::camelize(Inflector::singularize($tableName));
@@ -588,7 +582,7 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function variable($string) {
+	public static function variable($string) {
 		$_this =& Inflector::getInstance();
 		if (!($result = $_this->_cache(__FUNCTION__, $string))) {
 			$string2 = Inflector::camelize(Inflector::underscore($string));
@@ -612,7 +606,7 @@ class Inflector {
  * @static
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Utility-Libraries/Inflector.html#Class-methods
  */
-	static function slug($string, $replacement = '_', $map = array()) {
+	public static function slug($string, $replacement = '_', $map = []) {
 		$_this =& Inflector::getInstance();
 
 		if (is_array($replacement)) {
@@ -621,11 +615,11 @@ class Inflector {
 		}
 		$quotedReplacement = preg_quote($replacement, '/');
 
-		$merge = array(
+		$merge = [
 			'/[^\s\p{Ll}\p{Lm}\p{Lo}\p{Lt}\p{Lu}\p{Nd}]/mu' => ' ',
 			'/\\s+/' => $replacement,
 			sprintf('/^[%s]+|[%s]+$/', $quotedReplacement, $quotedReplacement) => '',
-		);
+		];
 
 		$map = $map + $_this->_transliteration + $merge;
 		return preg_replace(array_keys($map), array_values($map), $string);

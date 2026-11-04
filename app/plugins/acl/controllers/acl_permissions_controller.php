@@ -26,47 +26,47 @@ class AclPermissionsController extends AclAppController {
  * @var array
  * @access public
  */
-	public $uses = array(
+	public $uses = [
 		'Acl.AclAco',
 		'Acl.AclAro',
 		'Acl.AclArosAco',
 		'Role',
-	);
+	];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Permissions', true));
 
-		$acoConditions = array(
+		$acoConditions = [
 			'parent_id !=' => null,
 			//'model' => null,
 			'foreign_key' => null,
 			'alias !=' => null,
-		);
+		];
 		$acos  = $this->Acl->Aco->generatetreelist($acoConditions, '{n}.Aco.id', '{n}.Aco.alias');
 		$roles = $this->Role->find('list');
 		$this->set(compact('acos', 'roles'));
 
-		$rolesAros = $this->AclAro->find('all', array(
-			'conditions' => array(
+		$rolesAros = $this->AclAro->find('all', [
+			'conditions' => [
 				'AclAro.model' => 'Role',
 				'AclAro.foreign_key' => array_keys($roles),
-			),
-		));
+			],
+		]);
 		$rolesAros = Set::combine($rolesAros, '{n}.AclAro.foreign_key', '{n}.AclAro.id');
 
-		$permissions = array(); // acoId => roleId => bool
+		$permissions = []; // acoId => roleId => bool
 		foreach ($acos AS $acoId => $acoAlias) {
 			if (substr_count($acoAlias, '_') != 0) {
-				$permission = array();
+				$permission = [];
 				foreach ($roles AS $roleId => $roleTitle) {
-					$hasAny = array(
+					$hasAny = [
 						'aco_id'  => $acoId,
 						'aro_id'  => $rolesAros[$roleId],
 						'_create' => 1,
 						'_read'   => 1,
 						'_update' => 1,
 						'_delete' => 1,
-					);
+					];
 					if ($this->AclArosAco->hasAny($hasAny)) {
 						$permission[$roleId] = 1;
 					} else {
@@ -81,16 +81,16 @@ class AclPermissionsController extends AclAppController {
 
 	public function admin_toggle($acoId, $aroId) {
 		if (!$this->RequestHandler->isAjax()) {
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		// see if acoId and aroId combination exists
-		$conditions = array(
+		$conditions = [
 			'AclArosAco.aco_id' => $acoId,
 			'AclArosAco.aro_id' => $aroId,
-		);
+		];
 		if ($this->AclArosAco->hasAny($conditions)) {
-			$data = $this->AclArosAco->find('first', array('conditions' => $conditions));
+			$data = $this->AclArosAco->find('first', ['conditions' => $conditions]);
 			if ($data['AclArosAco']['_create'] == 1 &&
 				$data['AclArosAco']['_read'] == 1 &&
 				$data['AclArosAco']['_update'] == 1 &&

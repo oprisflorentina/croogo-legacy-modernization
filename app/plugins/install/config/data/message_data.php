@@ -3,7 +3,7 @@ class MessageData {
 
 	public $table = 'messages';
 
-	public $records = array(
-	);
+	public $records = [
+	];
 
 }

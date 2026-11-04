@@ -2,23 +2,23 @@
 /**
  * Configuration
  */
-	Configure::write('Tinymce.actions', array(
-		'Nodes/admin_add' => array(
-			array(
+	Configure::write('Tinymce.actions', [
+		'Nodes/admin_add' => [
+			[
 				'elements' => 'NodeBody',
-			),
-		),
-		'Nodes/admin_edit' => array(
-			array(
+			],
+		],
+		'Nodes/admin_edit' => [
+			[
 				'elements' => 'NodeBody',
-			),
-		),
-		'Translate/admin_edit' => array(
-			array(
+			],
+		],
+		'Translate/admin_edit' => [
+			[
 				'elements' => 'NodeBody',
-			),
-		),
-	));
+			],
+		],
+	]);
 
 /**
  * Hook helper

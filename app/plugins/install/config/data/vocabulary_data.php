@@ -3,8 +3,8 @@ class VocabularyData {
 
 	public $table = 'vocabularies';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '1',
 			'title' => 'Categories',
 			'alias' => 'categories',
@@ -16,8 +16,8 @@ class VocabularyData {
 			'weight' => '1',
 			'updated' => '2010-05-17 20:03:11',
 			'created' => '2009-07-22 02:16:21'
-		),
-		array(
+		],
+		[
 			'id' => '2',
 			'title' => 'Tags',
 			'alias' => 'tags',
@@ -29,7 +29,7 @@ class VocabularyData {
 			'weight' => '2',
 			'updated' => '2010-05-17 20:03:11',
 			'created' => '2009-07-22 02:16:34'
-		),
-	);
+		],
+	];
 
 }

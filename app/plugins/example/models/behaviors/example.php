@@ -18,9 +18,9 @@ class ExampleBehavior extends ModelBehavior {
  * @param array  $config
  * @return void
  */
-	public function setup(&$model, $config = array()) {
+	public function setup(&$model, $config = []) {
 		if (is_string($config)) {
-			$config = array($config);
+			$config = [$config];
 		}
 
 		$this->settings[$model->alias] = $config;
@@ -34,7 +34,7 @@ class ExampleBehavior extends ModelBehavior {
  * @param boolean $primary
  * @return array
  */
-	public function afterFind(&$model, $results = array(), $primary = false) {
+	public function afterFind(&$model, $results = [], $primary = false) {
 		if ($primary && isset($results[0][$model->alias])) {
 			foreach ($results AS $i => $result) {
 				if (isset($results[$i][$model->alias]['body'])) {

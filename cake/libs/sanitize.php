@@ -41,7 +41,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function paranoid($string, $allowed = array()) {
+	public function paranoid($string, $allowed = []) {
 		$allow = null;
 		if (!empty($allowed)) {
 			foreach ($allowed as $value) {
@@ -50,7 +50,7 @@ class Sanitize {
 		}
 
 		if (is_array($string)) {
-			$cleaned = array();
+			$cleaned = [];
 			foreach ($string as $key => $clean) {
 				$cleaned[$key] = preg_replace("/[^{$allow}a-zA-Z0-9]/", '', $clean);
 			}
@@ -69,7 +69,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	static function escape($string, $connection = 'default') {
+	public static function escape($string, $connection = 'default') {
 		$db =& ConnectionManager::getDataSource($connection);
 		if (is_numeric($string) || $string === null || is_bool($string)) {
 			return $string;
@@ -97,19 +97,17 @@ class Sanitize {
  * @access public
  * @static
  */
-	static function html($string, $options = array()) {
+	public static function html($string, $options = []) {
 		static $defaultCharset = false;
 		if ($defaultCharset === false) {
 			$defaultCharset = Configure::read('App.encoding');
-			if ($defaultCharset === null) {
-				$defaultCharset = 'UTF-8';
-			}
+			$defaultCharset ??= 'UTF-8';
 		}
-		$default = array(
+		$default = [
 			'remove' => false,
 			'charset' => $defaultCharset,
 			'quotes' => ENT_QUOTES
-		);
+		];
 
 		$options = array_merge($default, $options);
 
@@ -128,7 +126,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	static function stripWhitespace($str) {
+	public static function stripWhitespace($str) {
 		$r = preg_replace('/[\n\r\t]+/', '', $str);
 		return preg_replace('/\s{2,}/u', ' ', $r);
 	}
@@ -141,7 +139,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	static function stripImages($str) {
+	public static function stripImages($str) {
 		$str = preg_replace('/(<a[^>]*>)(<img[^>]+alt=")([^"]*)("[^>]*>)(<\/a>)/i', '$1$3$5<br />', $str);
 		$str = preg_replace('/(<img[^>]+alt=")([^"]*)("[^>]*>)/i', '$2<br />', $str);
 		$str = preg_replace('/<img[^>]*>/i', '', $str);
@@ -156,7 +154,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	static function stripScripts($str) {
+	public static function stripScripts($str) {
 		return preg_replace('/(<link[^>]+rel="[^"]*stylesheet"[^>]*>|<img[^>]*>|style="[^"]*")|<script[^>]*>.*?<\/script>|<style[^>]*>.*?<\/style>|<!--.*?-->/is', '', $str);
 	}
 
@@ -167,7 +165,7 @@ class Sanitize {
  * @return string sanitized string
  * @access public
  */
-	function stripAll($str) {
+	public function stripAll($str) {
 		$str = Sanitize::stripWhitespace($str);
 		$str = Sanitize::stripImages($str);
 		$str = Sanitize::stripScripts($str);
@@ -188,7 +186,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function stripTags() {
+	public function stripTags() {
 		$params = params(func_get_args());
 		$str = $params[0];
 
@@ -219,18 +217,18 @@ class Sanitize {
  * @access public
  * @static
  */
-	static function clean($data, $options = array()) {
+	public static function clean($data, $options = []) {
 		if (empty($data)) {
 			return $data;
 		}
 
 		if (is_string($options)) {
-			$options = array('connection' => $options);
+			$options = ['connection' => $options];
 		} else if (!is_array($options)) {
-			$options = array();
+			$options = [];
 		}
 
-		$options = array_merge(array(
+		$options = array_merge([
 			'connection' => 'default',
 			'odd_spaces' => true,
 			'remove_html' => false,
@@ -240,7 +238,7 @@ class Sanitize {
 			'unicode' => true,
 			'escape' => true,
 			'backslash' => true
-		), $options);
+		], $options);
 
 		if (is_array($data)) {
 			foreach ($data as $key => $val) {
@@ -252,7 +250,7 @@ class Sanitize {
 				$data = str_replace(chr(0xCA), '', $data);
 			}
 			if ($options['encode']) {
-				$data = Sanitize::html($data, array('remove' => $options['remove_html']));
+				$data = Sanitize::html($data, ['remove' => $options['remove_html']]);
 			}
 			if ($options['dollar']) {
 				$data = str_replace("\\\$", "$", $data);
@@ -280,7 +278,7 @@ class Sanitize {
  * @access public
  * @static
  */
-	function formatColumns(&$model) {
+	public function formatColumns(&$model) {
 		foreach ($model->data as $name => $values) {
 			if ($name == $model->alias) {
 				$curModel =& $model;

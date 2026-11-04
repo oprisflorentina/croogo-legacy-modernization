@@ -26,17 +26,17 @@ class Setting extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
-		'Ordered' => array(
+	public $actsAs = [
+		'Ordered' => [
 			'field' => 'weight',
 			'foreign_key' => false,
-		),
-		'Cached' => array(
-			'prefix' => array(
+		],
+		'Cached' => [
+			'prefix' => [
 				'setting_',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Validation
@@ -44,18 +44,18 @@ class Setting extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'key' => array(
-			'isUnique' => array(
+	public $validate = [
+		'key' => [
+			'isUnique' => [
 				'rule' => 'isUnique',
 				'message' => 'This key has already been taken.',
-			),
-			'minLength' => array(
-				'rule' => array('minLength', 1),
+			],
+			'minLength' => [
+				'rule' => ['minLength', 1],
 				'message' => 'Key cannot be empty.',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * afterSave callback
@@ -85,13 +85,13 @@ class Setting extends AppModel {
  * @param array $options
  * @return boolean
  */
-	public function write($key, $value, $options = array()) {
-		$_options = array(
+	public function write($key, $value, $options = []) {
+		$_options = [
 			'description' => '',
 			'input_type' => '',
 			'editable' => 0,
 			'params' => '',
-		);
+		];
 		$options = array_merge($_options, $options);
 
 		$setting = $this->findByKey($key);
@@ -103,7 +103,7 @@ class Setting extends AppModel {
 			$setting['Setting']['editable'] = $options['editable'];
 			$setting['Setting']['params'] = $options['params'];
 		} else {
-			$setting = array();
+			$setting = [];
 			$setting['key'] = $key;
 			$setting['value'] = $value;
 			$setting['description'] = $options['description'];
@@ -142,16 +142,16 @@ class Setting extends AppModel {
  * @return void
  */
 	public function writeConfiguration() {
-		$settings = $this->find('all', array(
-			'fields' => array(
+		$settings = $this->find('all', [
+			'fields' => [
 				'Setting.key',
 				'Setting.value',
-			),
-			'cache' => array(
+			],
+			'cache' => [
 				'name' => 'setting_write_configuration',
 				'config' => 'setting_write_configuration',
-			),
-		));
+			],
+		]);
 		foreach($settings AS $setting) {
 			Configure::write($setting['Setting']['key'], $setting['Setting']['value']);
 		}
@@ -164,15 +164,15 @@ class Setting extends AppModel {
  * @return void
  */
 	public function updateYaml() {
-		$list = $this->find('list', array(
-			'fields' => array(
+		$list = $this->find('list', [
+			'fields' => [
 				'key',
 				'value',
-			),
-			'order' => array(
+			],
+			'order' => [
 				'Setting.key' => 'ASC',
-			),
-		));
+			],
+		]);
 		$filePath = APP.'config'.DS.'settings.yml';
 		App::import('Core', 'File');
 		$file = new File($filePath, true);

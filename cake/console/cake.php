@@ -37,7 +37,7 @@ class ShellDispatcher {
  * @var filehandle
  * @access public
  */
-	var $stdin;
+	public $stdin;
 
 /**
  * Standard output stream.
@@ -45,7 +45,7 @@ class ShellDispatcher {
  * @var filehandle
  * @access public
  */
-	var $stdout;
+	public $stdout;
 
 /**
  * Standard error stream.
@@ -53,7 +53,7 @@ class ShellDispatcher {
  * @var filehandle
  * @access public
  */
-	var $stderr;
+	public $stderr;
 
 /**
  * Contains command switches parsed from the command line.
@@ -61,7 +61,7 @@ class ShellDispatcher {
  * @var array
  * @access public
  */
-	var $params = array();
+	public $params = [];
 
 /**
  * Contains arguments parsed from the command line.
@@ -69,7 +69,7 @@ class ShellDispatcher {
  * @var array
  * @access public
  */
-	var $args = array();
+	public $args = [];
 
 /**
  * The file name of the shell that was invoked.
@@ -77,7 +77,7 @@ class ShellDispatcher {
  * @var string
  * @access public
  */
-	var $shell = null;
+	public $shell = null;
 
 /**
  * The class name of the shell that was invoked.
@@ -85,7 +85,7 @@ class ShellDispatcher {
  * @var string
  * @access public
  */
-	var $shellClass = null;
+	public $shellClass = null;
 
 /**
  * The command called if public methods are available.
@@ -93,7 +93,7 @@ class ShellDispatcher {
  * @var string
  * @access public
  */
-	var $shellCommand = null;
+	public $shellCommand = null;
 
 /**
  * The path locations of shells.
@@ -101,7 +101,7 @@ class ShellDispatcher {
  * @var array
  * @access public
  */
-	var $shellPaths = array();
+	public $shellPaths = [];
 
 /**
  * The path to the current shell location.
@@ -109,7 +109,7 @@ class ShellDispatcher {
  * @var string
  * @access public
  */
-	var $shellPath = null;
+	public $shellPath = null;
 
 /**
  * The name of the shell in camelized.
@@ -117,7 +117,7 @@ class ShellDispatcher {
  * @var string
  * @access public
  */
-	var $shellName = null;
+	public $shellName = null;
 
 /**
  * Constructor
@@ -129,7 +129,7 @@ class ShellDispatcher {
  * @return void
  * @access public
  */
-	function __construct($args = array()) {
+	public function __construct($args = []) {
 		set_time_limit(0);
 
 		$this->__initConstants();
@@ -144,7 +144,7 @@ class ShellDispatcher {
  *
  * @access private
  */
-	function __initConstants() {
+	public function __initConstants() {
 		if (function_exists('ini_set')) {
 			ini_set('display_errors', '1');
 			ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT);
@@ -156,7 +156,7 @@ class ShellDispatcher {
 		if (!defined('CAKE_CORE_INCLUDE_PATH')) {
 			define('PHP5', (PHP_VERSION >= 5));
 			define('DS', DIRECTORY_SEPARATOR);
-			define('CAKE_CORE_INCLUDE_PATH', dirname(dirname(dirname(__FILE__))));
+			define('CAKE_CORE_INCLUDE_PATH', dirname(__FILE__, 3));
 			define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 			define('DISABLE_DEFAULT_ERROR_HANDLING', false);
 			define('CAKEPHP_SHELL', true);
@@ -169,7 +169,7 @@ class ShellDispatcher {
  *
  * @access protected
  */
-	function _initEnvironment() {
+	public function _initEnvironment() {
 		$this->stdin = fopen('php://stdin', 'r');
 		$this->stdout = fopen('php://stdout', 'w');
 		$this->stderr = fopen('php://stderr', 'w');
@@ -193,7 +193,7 @@ class ShellDispatcher {
 		if (basename(__FILE__) !=  basename($this->args[0])) {
 			$this->stderr("\nCakePHP Console: ");
 			$this->stderr('Warning: the dispatcher may have been loaded incorrectly, which could lead to unexpected results...');
-			if ($this->getInput('Continue anyway?', array('y', 'n'), 'y') == 'n') {
+			if ($this->getInput('Continue anyway?', ['y', 'n'], 'y') == 'n') {
 				$this->_stop();
 			}
 		}
@@ -207,8 +207,8 @@ class ShellDispatcher {
  * @access private
  * @return void
  */
-	function __buildPaths() {
-		$paths = array();
+	public function __buildPaths() {
+		$paths = [];
 		if (!class_exists('Folder')) {
 			require LIBS . 'folder.php';
 		}
@@ -238,7 +238,7 @@ class ShellDispatcher {
  * @return boolean Success.
  * @access private
  */
-	function __bootstrap() {
+	public function __bootstrap() {
 
 		define('ROOT', $this->params['root']);
 		define('APP_DIR', $this->params['app']);
@@ -248,7 +248,7 @@ class ShellDispatcher {
 			define('TMP', CORE_PATH . 'cake' . DS . 'console' . DS . 'templates' . DS . 'skel' . DS . 'tmp' . DS);
 		}
 
-		$includes = array(
+		$includes = [
 			CORE_PATH . 'cake' . DS . 'config' . DS . 'paths.php',
 			CORE_PATH . 'cake' . DS . 'libs' . DS . 'cake_object.php',
 			CORE_PATH . 'cake' . DS . 'libs' . DS . 'inflector.php',
@@ -258,7 +258,7 @@ class ShellDispatcher {
 			CORE_PATH . 'cake' . DS . 'libs' . DS . 'cake_text.php',
 			CORE_PATH . 'cake' . DS . 'libs' . DS . 'class_registry.php',
 			CORE_PATH . 'cake' . DS . 'console' . DS . 'error.php'
-		);
+		];
 
 		foreach ($includes as $inc) {
 			if (!require($inc)) {
@@ -283,7 +283,7 @@ class ShellDispatcher {
  * @return void
  * @access public
  */
-	function clear() {
+	public function clear() {
 		if (empty($this->params['noclear'])) {
 			if ( DS === '/') {
 				passthru('clear');
@@ -299,7 +299,7 @@ class ShellDispatcher {
  * @return boolean
  * @access public
  */
-	function dispatch() {
+	public function dispatch() {
 		$arg = $this->shiftArgs();
 
 		if (!$arg) {
@@ -311,7 +311,7 @@ class ShellDispatcher {
 			return true;
 		}
 		
-		list($plugin, $shell) = pluginSplit($arg);
+		[$plugin, $shell] = pluginSplit($arg);
 		$this->shell = $shell;
 		$this->shellName = Inflector::camelize($shell);
 		$this->shellClass = $this->shellName . 'Shell';
@@ -331,7 +331,7 @@ class ShellDispatcher {
 			return false;
 		}
 
-		$methods = array();
+		$methods = [];
 
 		if (is_a($Shell, 'Shell')) {
 			$Shell->initialize();
@@ -360,7 +360,7 @@ class ShellDispatcher {
 				}
 				return $Shell->{$task}->execute();
 			}
-			$methods = array_diff(get_class_methods('Shell'), array('help'));
+			$methods = array_diff(get_class_methods('Shell'), ['help']);
 		}
 		$methods = array_diff(get_class_methods($Shell), $methods);
 		$added = in_array(strtolower($arg), array_map('strtolower', $methods));
@@ -394,12 +394,12 @@ class ShellDispatcher {
  * @return mixed False if no shell could be found or an object on success
  * @access protected
  */
-	function _getShell($plugin = null) {
+	public function _getShell($plugin = null) {
 		foreach ($this->shellPaths as $path) {
 			$this->shellPath = $path . $this->shell . '.php';
 			$pluginShellPath =  DS . $plugin . DS . 'vendors' . DS . 'shells' . DS;
 
-			if ((strpos($path, $pluginShellPath) !== false || !$plugin) && file_exists($this->shellPath)) {
+			if ((str_contains($path, $pluginShellPath) || !$plugin) && file_exists($this->shellPath)) {
 				$loaded = true;
 				break;
 			}
@@ -431,7 +431,7 @@ class ShellDispatcher {
  * @return Either the default value, or the user-provided input.
  * @access public
  */
-	function getInput($prompt, $options = null, $default = null) {
+	public function getInput($prompt, $options = null, $default = null) {
 		if (!is_array($options)) {
 			$printOptions = '';
 		} else {
@@ -464,7 +464,7 @@ class ShellDispatcher {
  * @return integer Returns the number of bytes output to stdout.
  * @access public
  */
-	function stdout($string, $newline = true) {
+	public function stdout($string, $newline = true) {
 		if ($newline) {
 			return fwrite($this->stdout, $string . "\n");
 		} else {
@@ -477,7 +477,7 @@ class ShellDispatcher {
  * @param string $string Error text to output.
  * @access public
  */
-	function stderr($string) {
+	public function stderr($string) {
 		fwrite($this->stderr, $string);
 	}
 
@@ -487,13 +487,13 @@ class ShellDispatcher {
  * @param array $params Parameters to parse
  * @access public
  */
-	function parseParams($params) {
+	public function parseParams($params) {
 		$this->__parseParams($params);
-		$defaults = array('app' => 'app', 'root' => dirname(dirname(dirname(__FILE__))), 'working' => null, 'webroot' => 'webroot');
+		$defaults = ['app' => 'app', 'root' => dirname(__FILE__, 3), 'working' => null, 'webroot' => 'webroot'];
 		$params = array_merge($defaults, array_intersect_key($this->params, $defaults));
 		$isWin = false;
 		foreach ($defaults as $default => $value) {
-			if (strpos($params[$default], '\\') !== false) {
+			if (str_contains($params[$default], '\\')) {
 				$isWin = true;
 				break;
 			}
@@ -537,7 +537,7 @@ class ShellDispatcher {
  * @return array params
  * @access private
  */
-	function __parseParams($params) {
+	public function __parseParams($params) {
 		$count = count($params);
 		for ($i = 0; $i < $count; $i++) {
 			if (isset($params[$i])) {
@@ -569,7 +569,7 @@ class ShellDispatcher {
  * @return mixed Null if there are no arguments otherwise the shifted argument
  * @access public
  */
-	function shiftArgs() {
+	public function shiftArgs() {
 		return array_shift($this->args);
 	}
 
@@ -578,7 +578,7 @@ class ShellDispatcher {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->clear();
 		$this->stdout("\nWelcome to CakePHP v" . Configure::version() . " Console");
 		$this->stdout("---------------------------------------------------------------");
@@ -594,7 +594,7 @@ class ShellDispatcher {
 		$this->stdout("Example: -app relative/path/to/myapp or -app /absolute/path/to/myapp");
 
 		$this->stdout("\nAvailable Shells:");
-		$shellList = array();
+		$shellList = [];
 		foreach ($this->shellPaths as $path) {
 			if (!is_dir($path)) {
 				continue;
@@ -607,7 +607,7 @@ class ShellDispatcher {
 				$type = Inflector::camelize($matches[1]);
 			} elseif (preg_match('@([^\\\/]*)[\\\/]vendors[\\\/]@', $path, $matches)) {
 				$type = $matches[1];
-			} elseif (strpos($path, CAKE_CORE_INCLUDE_PATH . DS . 'cake') === 0) {
+			} elseif (str_starts_with($path, CAKE_CORE_INCLUDE_PATH . DS . 'cake')) {
 				$type = 'CORE';
 			} else {
 				$type = 'app';
@@ -632,7 +632,7 @@ class ShellDispatcher {
 
 			foreach ($shellList as $shell => $types) {
 				sort($types);
-				$shellList[$shell] = str_pad($shell . ' [' . implode ($types, ', ') . ']', $width / $columns);
+				$shellList[$shell] = str_pad($shell . ' [' . implode (', ', $types) . ']', $width / $columns);
 			}
 			$out = array_chunk($shellList, $rows);
 			for ($i = 0; $i < $rows; $i++) {
@@ -657,7 +657,7 @@ class ShellDispatcher {
  * @return void
  * @access protected
  */
-	function _stop($status = 0) {
+	public function _stop($status = 0) {
 		exit($status);
 	}
 }

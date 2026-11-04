@@ -18,10 +18,10 @@ class ExampleHelper extends AppHelper {
  * @var array
  * @access public
  */
-	public $helpers = array(
+	public $helpers = [
 		'Html',
 		'Layout',
-	);
+	];
 
 /**
  * Before render callback. Called before the view file is rendered.

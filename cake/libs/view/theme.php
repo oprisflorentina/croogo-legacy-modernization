@@ -38,7 +38,7 @@ class ThemeView extends View {
  * @param Controller $controller Controller object to be rendered.
  * @param boolean $register Should the view be registered in the registry.
  */
-	function __construct(&$controller, $register = true) {
+	public function __construct(&$controller, $register = true) {
 		parent::__construct($controller, $register);
 		$this->theme =& $controller->theme;
 	}
@@ -52,15 +52,15 @@ class ThemeView extends View {
  * @access protected
  * @todo Make theme path building respect $cached parameter.
  */
-	function _paths($plugin = null, $cached = true) {
+	public function _paths($plugin = null, $cached = true) {
 		$paths = parent::_paths($plugin, $cached);
-		$themePaths = array();
+		$themePaths = [];
 
 		if (!empty($this->theme)) {
 			$count = count($paths);
 			for ($i = 0; $i < $count; $i++) {
-				if (strpos($paths[$i], DS . 'plugins' . DS) === false
-					&& strpos($paths[$i], DS . 'libs' . DS . 'view') === false) {
+				if (!str_contains($paths[$i], DS . 'plugins' . DS)
+					&& !str_contains($paths[$i], DS . 'libs' . DS . 'view')) {
 						if ($plugin) {
 							$themePaths[] = $paths[$i] . 'themed'. DS . $this->theme . DS . 'plugins' . DS . $plugin . DS;
 						}

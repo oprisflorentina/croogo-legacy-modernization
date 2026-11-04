@@ -40,14 +40,14 @@ class View extends CakeObject {
  * @var string Base URL
  * @access public
  */
-	var $base = null;
+	public $base = null;
 
 /**
  * Stores the current URL (for links etc.)
  *
  * @var string Current URL
  */
-	var $here = null;
+	public $here = null;
 
 /**
  * Name of the plugin.
@@ -55,7 +55,7 @@ class View extends CakeObject {
  * @link          http://manual.cakephp.org/chapter/plugins
  * @var string
  */
-	var $plugin = null;
+	public $plugin = null;
 
 /**
  * Name of the controller.
@@ -63,7 +63,7 @@ class View extends CakeObject {
  * @var string Name of controller
  * @access public
  */
-	var $name = null;
+	public $name = null;
 
 /**
  * Action to be performed.
@@ -71,28 +71,28 @@ class View extends CakeObject {
  * @var string Name of action
  * @access public
  */
-	var $action = null;
+	public $action = null;
 
 /**
  * Array of parameter data
  *
  * @var array Parameter data
  */
-	var $params = array();
+	public $params = [];
 
 /**
  * Current passed params
  *
  * @var mixed
  */
-	var $passedArgs = array();
+	public $passedArgs = [];
 
 /**
  * Array of data
  *
  * @var array Parameter data
  */
-	var $data = array();
+	public $data = [];
 
 /**
  * An array of names of built-in helpers to include.
@@ -100,14 +100,14 @@ class View extends CakeObject {
  * @var mixed A single name as a string or a list of names as an array.
  * @access public
  */
-	var $helpers = array('Html');
+	public $helpers = ['Html'];
 
 /**
  * Path to View.
  *
  * @var string Path to View
  */
-	var $viewPath = null;
+	public $viewPath = null;
 
 /**
  * Variables for the view
@@ -115,7 +115,7 @@ class View extends CakeObject {
  * @var array
  * @access public
  */
-	var $viewVars = array();
+	public $viewVars = [];
 
 /**
  * Name of layout to use with this View.
@@ -123,14 +123,14 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $layout = 'default';
+	public $layout = 'default';
 
 /**
  * Path to Layout.
  *
  * @var string Path to Layout
  */
-	var $layoutPath = null;
+	public $layoutPath = null;
 
 /**
  * Turns on or off Cake's conventional mode of rendering views. On by default.
@@ -138,7 +138,7 @@ class View extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $autoRender = true;
+	public $autoRender = true;
 
 /**
  * Turns on or off Cake's conventional mode of finding layout files. On by default.
@@ -146,7 +146,7 @@ class View extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $autoLayout = true;
+	public $autoLayout = true;
 
 /**
  * File extension. Defaults to Cake's template ".ctp".
@@ -154,7 +154,7 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $ext = '.ctp';
+	public $ext = '.ctp';
 
 /**
  * Sub-directory for this view file.
@@ -162,7 +162,7 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $subDir = null;
+	public $subDir = null;
 
 /**
  * Theme name.
@@ -170,7 +170,7 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $theme = null;
+	public $theme = null;
 
 /**
  * Used to define methods a controller that will be cached.
@@ -179,7 +179,7 @@ class View extends CakeObject {
  * @var mixed
  * @access public
  */
-	var $cacheAction = false;
+	public $cacheAction = false;
 
 /**
  * holds current errors for the model validation
@@ -187,7 +187,7 @@ class View extends CakeObject {
  * @var array
  * @access public
  */
-	var $validationErrors = array();
+	public $validationErrors = [];
 
 /**
  * True when the view has been rendered.
@@ -195,7 +195,7 @@ class View extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $hasRendered = false;
+	public $hasRendered = false;
 
 /**
  * Array of loaded view helpers.
@@ -203,7 +203,7 @@ class View extends CakeObject {
  * @var array
  * @access public
  */
-	var $loaded = array();
+	public $loaded = [];
 
 /**
  * True if in scope of model-specific region
@@ -211,7 +211,7 @@ class View extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $modelScope = false;
+	public $modelScope = false;
 
 /**
  * Name of current model this view context is attached to
@@ -219,7 +219,7 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $model = null;
+	public $model = null;
 
 /**
  * Name of association model this view context is attached to
@@ -227,7 +227,7 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $association = null;
+	public $association = null;
 
 /**
  * Name of current model field this view context is attached to
@@ -235,7 +235,7 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $field = null;
+	public $field = null;
 
 /**
  * Suffix of current field this view context is attached to
@@ -243,7 +243,7 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $fieldSuffix = null;
+	public $fieldSuffix = null;
 
 /**
  * The current model ID this view context is attached to
@@ -251,7 +251,7 @@ class View extends CakeObject {
  * @var mixed
  * @access public
  */
-	var $modelId = null;
+	public $modelId = null;
 
 /**
  * List of generated DOM UUIDs
@@ -259,7 +259,7 @@ class View extends CakeObject {
  * @var array
  * @access public
  */
-	var $uuids = array();
+	public $uuids = [];
 
 /**
  * Holds View output.
@@ -267,7 +267,7 @@ class View extends CakeObject {
  * @var string
  * @access public
  */
-	var $output = false;
+	public $output = false;
 
 /**
  * List of variables to collect from the associated controller
@@ -275,11 +275,11 @@ class View extends CakeObject {
  * @var array
  * @access protected
  */
-	var $__passedVars = array(
+	public $__passedVars = [
 		'viewVars', 'action', 'autoLayout', 'autoRender', 'ext', 'base', 'webroot',
 		'helpers', 'here', 'layout', 'name', 'layoutPath', 'viewPath',
 		'params', 'data', 'plugin', 'passedArgs', 'cacheAction'
-	);
+	];
 
 /**
  * Scripts (and/or other <head /> tags) for the layout
@@ -287,7 +287,7 @@ class View extends CakeObject {
  * @var array
  * @access private
  */
-	var $__scripts = array();
+	public $__scripts = [];
 
 /**
  * Holds an array of paths.
@@ -295,7 +295,7 @@ class View extends CakeObject {
  * @var array
  * @access private
  */
-	var $__paths = array();
+	public $__paths = [];
 
 /**
  * Constructor
@@ -304,7 +304,7 @@ class View extends CakeObject {
  * @param boolean $register Should the View instance be registered in the ClassRegistry
  * @return View
  */
-	function __construct(&$controller, $register = true) {
+	public function __construct(&$controller, $register = true) {
 		if (is_object($controller)) {
 			$count = count($this->__passedVars);
 			for ($j = 0; $j < $count; $j++) {
@@ -340,7 +340,7 @@ class View extends CakeObject {
  * @return string Rendered Element
  * @access public
  */
-	function element($name, $params = array(), $loadHelpers = false) {
+	public function element($name, $params = [], $loadHelpers = false) {
 		$file = $plugin = $key = null;
 
 		if (isset($params['plugin'])) {
@@ -417,7 +417,7 @@ class View extends CakeObject {
  * @return string Rendered Element
  * @access public
  */
-	function render($action = null, $layout = null, $file = null) {
+	public function render($action = null, $layout = null, $file = null) {
 		if ($this->hasRendered) {
 			return true;
 		}
@@ -431,9 +431,7 @@ class View extends CakeObject {
 			$out = $this->_render($viewFileName, $this->viewVars);
 		}
 
-		if ($layout === null) {
-			$layout = $this->layout;
-		}
+		$layout ??= $this->layout;
 
 		if ($out !== false) {
 			if ($layout && $this->autoLayout) {
@@ -444,7 +442,7 @@ class View extends CakeObject {
 				);
 
 				if ($isCached) {
-					$replace = array('<cake:nocache>', '</cake:nocache>');
+					$replace = ['<cake:nocache>', '</cake:nocache>'];
 					$out = str_replace($replace, '', $out);
 				}
 			}
@@ -468,20 +466,18 @@ class View extends CakeObject {
  * @return mixed Rendered output, or false on error
  * @access public
  */
-	function renderLayout($content_for_layout, $layout = null) {
+	public function renderLayout($content_for_layout, $layout = null) {
 		$layoutFileName = $this->_getLayoutFileName($layout);
 		if (empty($layoutFileName)) {
 			return $this->output;
 		}
 
-		$dataForLayout = array_merge($this->viewVars, array(
+		$dataForLayout = array_merge($this->viewVars, [
 			'content_for_layout' => $content_for_layout,
 			'scripts_for_layout' => implode("\n\t", $this->__scripts),
-		));
+		]);
 
-		if (!isset($dataForLayout['title_for_layout'])) {
-			$dataForLayout['title_for_layout'] = Inflector::humanize($this->viewPath);
-		}
+		$dataForLayout['title_for_layout'] ??= Inflector::humanize($this->viewPath);
 
 		if (empty($this->loaded) && !empty($this->helpers)) {
 			$loadHelpers = true;
@@ -512,7 +508,7 @@ class View extends CakeObject {
  * @access protected
  * @return void
  */
-	function _triggerHelpers($callback) {
+	public function _triggerHelpers($callback) {
 		if (empty($this->loaded)) {
 			return false;
 		}
@@ -536,7 +532,7 @@ class View extends CakeObject {
  * @return boolean Success of rendering the cached file.
  * @access public
  */
-	function renderCache($filename, $timeStart) {
+	public function renderCache($filename, $timeStart) {
 		ob_start();
 		include ($filename);
 
@@ -567,7 +563,7 @@ class View extends CakeObject {
  * @return array Array of the set view variable names.
  * @access public
  */
-	function getVars() {
+	public function getVars() {
 		return array_keys($this->viewVars);
 	}
 
@@ -578,7 +574,7 @@ class View extends CakeObject {
  * @return mixed The content of the named var if its set, otherwise null.
  * @access public
  */
-	function getVar($var) {
+	public function getVar($var) {
 		if (!isset($this->viewVars[$var])) {
 			return null;
 		} else {
@@ -596,7 +592,7 @@ class View extends CakeObject {
  * @return void
  * @access public
  */
-	function addScript($name, $content = null) {
+	public function addScript($name, $content = null) {
 		if (empty($content)) {
 			if (!in_array($name, array_values($this->__scripts))) {
 				$this->__scripts[] = $name;
@@ -614,7 +610,7 @@ class View extends CakeObject {
  * @return string
  * @access public
  */
-	function uuid($object, $url) {
+	public function uuid($object, $url) {
 		$c = 1;
 		$url = Router::url($url);
 		$hash = $object . substr(md5($object . $url), 0, 10);
@@ -632,8 +628,8 @@ class View extends CakeObject {
  * @return array An array containing the identity elements of an entity
  * @access public
  */
-	function entity() {
-		$assoc = ($this->association) ? $this->association : $this->model;
+	public function entity() {
+		$assoc = $this->association ?: $this->model;
 		if (!empty($this->entityPath)) {
 			$path = explode('.', $this->entityPath);
 			$count = count($path);
@@ -649,7 +645,7 @@ class View extends CakeObject {
 			return Set::filter($path);
 		}
 		return array_values(Set::filter(
-			array($assoc, $this->modelId, $this->field, $this->fieldSuffix)
+			[$assoc, $this->modelId, $this->field, $this->fieldSuffix]
 		));
 	}
 
@@ -663,7 +659,7 @@ class View extends CakeObject {
  * @return void
  * @access public
  */
-	function set($one, $two = null) {
+	public function set($one, $two = null) {
 		$data = null;
 		if (is_array($one)) {
 			if (is_array($two)) {
@@ -672,7 +668,7 @@ class View extends CakeObject {
 				$data = $one;
 			}
 		} else {
-			$data = array($one => $two);
+			$data = [$one => $two];
 		}
 		if ($data == null) {
 			return false;
@@ -688,11 +684,11 @@ class View extends CakeObject {
  * @param string $message Error message as a web page
  * @access public
  */
-	function error($code, $name, $message) {
+	public function error($code, $name, $message) {
 		header ("HTTP/1.1 {$code} {$name}");
 		print ($this->_render(
 			$this->_getLayoutFileName('error'),
-			array('code' => $code, 'name' => $name, 'message' => $message)
+			['code' => $code, 'name' => $name, 'message' => $message]
 		));
 	}
 
@@ -707,13 +703,13 @@ class View extends CakeObject {
  * @return string Rendered output
  * @access protected
  */
-	function _render($___viewFn, $___dataForView, $loadHelpers = true, $cached = false) {
-		$loadedHelpers = array();
+	public function _render($___viewFn, $___dataForView, $loadHelpers = true, $cached = false) {
+		$loadedHelpers = [];
 
 		if ($this->helpers != false && $loadHelpers === true) {
 			$loadedHelpers = $this->_loadHelpers($loadedHelpers, $this->helpers);
 			$helpers = array_keys($loadedHelpers);
-			$helperNames = array_map(array('Inflector', 'variable'), $helpers);
+			$helperNames = array_map(['Inflector', 'variable'], $helpers);
 
 			for ($i = count($helpers) - 1; $i >= 0; $i--) {
 				$name = $helperNames[$i];
@@ -774,15 +770,15 @@ class View extends CakeObject {
  * @return array Array containing the loaded helpers.
  * @access protected
  */
-	function &_loadHelpers(&$loaded, $helpers, $parent = null) {
+	public function &_loadHelpers(&$loaded, $helpers, $parent = null) {
 		foreach ($helpers as $i => $helper) {
-			$options = array();
+			$options = [];
 
 			if (!is_int($i)) {
 				$options = $helper;
 				$helper = $i;
 			}
-			list($plugin, $helper) = pluginSplit($helper, true, $this->plugin);
+			[$plugin, $helper] = pluginSplit($helper, true, $this->plugin);
 			$helperCn = $helper . 'Helper';
 
 			if (!isset($loaded[$helper])) {
@@ -793,25 +789,25 @@ class View extends CakeObject {
 					}
 					if (!$isLoaded) {
 						if (!App::import('Helper', $helper)) {
-							$this->cakeError('missingHelperFile', array(array(
+							$this->cakeError('missingHelperFile', [[
 								'helper' => $helper,
 								'file' => Inflector::underscore($helper) . '.php',
 								'base' => $this->base
-							)));
+							]]);
 							return false;
 						}
 					}
 					if (!class_exists($helperCn)) {
-						$this->cakeError('missingHelperClass', array(array(
+						$this->cakeError('missingHelperClass', [[
 							'helper' => $helper,
 							'file' => Inflector::underscore($helper) . '.php',
 							'base' => $this->base
-						)));
+						]]);
 						return false;
 					}
 				}
 				$loaded[$helper] = new $helperCn($options);
-				$vars = array('base', 'webroot', 'here', 'params', 'action', 'data', 'theme', 'plugin');
+				$vars = ['base', 'webroot', 'here', 'params', 'action', 'data', 'theme', 'plugin'];
 				$c = count($vars);
 
 				for ($j = 0; $j < $c; $j++) {
@@ -841,21 +837,19 @@ class View extends CakeObject {
  * @return string Template filename
  * @access protected
  */
-	function _getViewFileName($name = null) {
+	public function _getViewFileName($name = null) {
 		$subDir = null;
 
 		if (!is_null($this->subDir)) {
 			$subDir = $this->subDir . DS;
 		}
 
-		if ($name === null) {
-			$name = $this->action;
-		}
+		$name ??= $this->action;
 		$name = str_replace('/', DS, $name);
 
-		if (strpos($name, DS) === false && $name[0] !== '.') {
+		if (!str_contains($name, DS) && $name[0] !== '.') {
 			$name = $this->viewPath . DS . $subDir . Inflector::underscore($name);
-		} elseif (strpos($name, DS) !== false) {
+		} elseif (str_contains($name, DS)) {
 			if ($name[0] === DS || $name[1] === ':') {
 				$name = trim($name, DS);
 			} else if ($name[0] === '.') {
@@ -879,7 +873,7 @@ class View extends CakeObject {
 		if ($this->plugin) {
 			$pluginPaths = App::path('plugins');
 			foreach ($paths as $path) {
-				if (strpos($path, $pluginPaths[0]) === 0) {
+				if (str_starts_with($path, $pluginPaths[0])) {
 					$defaultPath = $path;
 					break;
 				}
@@ -895,10 +889,8 @@ class View extends CakeObject {
  * @return string Filename for layout file (.ctp).
  * @access protected
  */
-	function _getLayoutFileName($name = null) {
-		if ($name === null) {
-			$name = $this->layout;
-		}
+	public function _getLayoutFileName($name = null) {
+		$name ??= $this->layout;
 		$subDir = null;
 
 		if (!is_null($this->layoutPath)) {
@@ -925,8 +917,8 @@ class View extends CakeObject {
  * @return array Array of extensions view files use.
  * @access protected
  */
-	function _getExtensions() {
-		$exts = array($this->ext);
+	public function _getExtensions() {
+		$exts = [$this->ext];
 		if ($this->ext !== '.ctp') {
 			array_push($exts, '.ctp');
 		}
@@ -940,21 +932,21 @@ class View extends CakeObject {
  * @return false
  * @access protected
  */
-	function _missingView($file, $error = 'missingView') {
+	public function _missingView($file, $error = 'missingView') {
 		if ($error === 'missingView') {
-			$this->cakeError('missingView', array(
+			$this->cakeError('missingView', [
 				'className' => $this->name,
 				'action' => $this->action,
 				'file' => $file,
 				'base' => $this->base
-			));
+			]);
 			return false;
 		} elseif ($error === 'missingLayout') {
-			$this->cakeError('missingLayout', array(
+			$this->cakeError('missingLayout', [
 				'layout' => $this->layout,
 				'file' => $file,
 				'base' => $this->base
-			));
+			]);
 			return false;
 		}
 	}
@@ -967,11 +959,11 @@ class View extends CakeObject {
  * @return array paths
  * @access protected
  */
-	function _paths($plugin = null, $cached = true) {
+	public function _paths($plugin = null, $cached = true) {
 		if ($plugin === null && $cached === true && !empty($this->__paths)) {
 			return $this->__paths;
 		}
-		$paths = array();
+		$paths = [];
 		$viewPaths = App::path('views');
 		$corePaths = array_flip(App::core('views'));
 

@@ -32,7 +32,7 @@ class DataSource extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $connected = false;
+	public $connected = false;
 
 /**
  * Print full query debug info?
@@ -40,7 +40,7 @@ class DataSource extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $fullDebug = false;
+	public $fullDebug = false;
 
 /**
  * Error description of last query
@@ -48,7 +48,7 @@ class DataSource extends CakeObject {
  * @var unknown_type
  * @access public
  */
-	var $error = null;
+	public $error = null;
 
 /**
  * String to hold how many rows were affected by the last SQL operation.
@@ -56,7 +56,7 @@ class DataSource extends CakeObject {
  * @var string
  * @access public
  */
-	var $affected = null;
+	public $affected = null;
 
 /**
  * Number of rows in current resultset
@@ -64,7 +64,7 @@ class DataSource extends CakeObject {
  * @var int
  * @access public
  */
-	var $numRows = null;
+	public $numRows = null;
 
 /**
  * Time the last query took
@@ -72,7 +72,7 @@ class DataSource extends CakeObject {
  * @var int
  * @access public
  */
-	var $took = null;
+	public $took = null;
 
 /**
  * The starting character that this DataSource uses for quoted identifiers.
@@ -80,7 +80,7 @@ class DataSource extends CakeObject {
  * @var string
  * @access public
  */
-	var $startQuote = null;
+	public $startQuote = null;
 
 /**
  * The ending character that this DataSource uses for quoted identifiers.
@@ -88,7 +88,7 @@ class DataSource extends CakeObject {
  * @var string
  * @access public
  */
-	var $endQuote = null;
+	public $endQuote = null;
 
 /**
  * Result
@@ -96,7 +96,7 @@ class DataSource extends CakeObject {
  * @var array
  * @access protected
  */
-	var $_result = null;
+	public $_result = null;
 
 /**
  * Queries count.
@@ -104,7 +104,7 @@ class DataSource extends CakeObject {
  * @var int
  * @access protected
  */
-	var $_queriesCnt = 0;
+	public $_queriesCnt = 0;
 
 /**
  * Total duration of all queries.
@@ -112,7 +112,7 @@ class DataSource extends CakeObject {
  * @var unknown_type
  * @access protected
  */
-	var $_queriesTime = null;
+	public $_queriesTime = null;
 
 /**
  * Log of queries executed by this DataSource
@@ -120,7 +120,7 @@ class DataSource extends CakeObject {
  * @var unknown_type
  * @access protected
  */
-	var $_queriesLog = array();
+	public $_queriesLog = [];
 
 /**
  * Maximum number of items in query log
@@ -130,7 +130,7 @@ class DataSource extends CakeObject {
  * @var int Maximum number of queries in the queries log.
  * @access protected
  */
-	var $_queriesLogMax = 200;
+	public $_queriesLogMax = 200;
 
 /**
  * Caches serialzed results of executed queries
@@ -138,7 +138,7 @@ class DataSource extends CakeObject {
  * @var array Maximum number of queries in the queries log.
  * @access protected
  */
-	var $_queryCache = array();
+	public $_queryCache = [];
 
 /**
  * The default configuration of a specific DataSource
@@ -146,7 +146,7 @@ class DataSource extends CakeObject {
  * @var array
  * @access protected
  */
-	var $_baseConfig = array();
+	public $_baseConfig = [];
 
 /**
  * Holds references to descriptions loaded by the DataSource
@@ -154,7 +154,7 @@ class DataSource extends CakeObject {
  * @var array
  * @access private
  */
-	var $__descriptions = array();
+	public $__descriptions = [];
 
 /**
  * Holds a list of sources (tables) contained in the DataSource
@@ -162,7 +162,7 @@ class DataSource extends CakeObject {
  * @var array
  * @access protected
  */
-	var $_sources = null;
+	public $_sources = null;
 
 /**
  * A reference to the physical connection of this DataSource
@@ -170,7 +170,7 @@ class DataSource extends CakeObject {
  * @var array
  * @access public
  */
-	var $connection = null;
+	public $connection = null;
 
 /**
  * The DataSource configuration
@@ -178,7 +178,7 @@ class DataSource extends CakeObject {
  * @var array
  * @access public
  */
-	var $config = array();
+	public $config = [];
 
 /**
  * The DataSource configuration key name
@@ -186,7 +186,7 @@ class DataSource extends CakeObject {
  * @var string
  * @access public
  */
-	var $configKeyName = null;
+	public $configKeyName = null;
 
 /**
  * Whether or not this DataSource is in the middle of a transaction
@@ -194,7 +194,7 @@ class DataSource extends CakeObject {
  * @var boolean
  * @access protected
  */
-	var $_transactionStarted = false;
+	public $_transactionStarted = false;
 
 /**
  * Whether or not source data like available tables and schema descriptions
@@ -203,7 +203,7 @@ class DataSource extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $cacheSources = true;
+	public $cacheSources = true;
 
 /**
  * Constructor.
@@ -211,7 +211,7 @@ class DataSource extends CakeObject {
  * @param array $config Array of configuration information for the datasource.
  * @return void.
  */
-	function __construct($config = array()) {
+	public function __construct($config = []) {
 		parent::__construct();
 		$this->setConfig($config);
 	}
@@ -223,7 +223,7 @@ class DataSource extends CakeObject {
  * @return array Array of sources available in this datasource.
  * @access public
  */
-	function listSources($data = null) {
+	public function listSources($data = null) {
 		if ($this->cacheSources === false) {
 			return null;
 		}
@@ -252,7 +252,7 @@ class DataSource extends CakeObject {
  * @return array Array of sources available in this datasource
  * @access public
  */
-	function sources($reset = false) {
+	public function sources($reset = false) {
 		if ($reset === true) {
 			$this->_sources = null;
 		}
@@ -266,7 +266,7 @@ class DataSource extends CakeObject {
  * @return array Array of Metadata for the $model
  * @access public
  */
-	function describe(&$model) {
+	public function describe(&$model) {
 		if ($this->cacheSources === false) {
 			return null;
 		}
@@ -290,7 +290,7 @@ class DataSource extends CakeObject {
  * @return boolean Returns true if a transaction is not in progress
  * @access public
  */
-	function begin(&$model) {
+	public function begin(&$model) {
 		return !$this->_transactionStarted;
 	}
 
@@ -300,7 +300,7 @@ class DataSource extends CakeObject {
  * @return boolean Returns true if a transaction is in progress
  * @access public
  */
-	function commit(&$model) {
+	public function commit(&$model) {
 		return $this->_transactionStarted;
 	}
 
@@ -310,7 +310,7 @@ class DataSource extends CakeObject {
  * @return boolean Returns true if a transaction is in progress
  * @access public
  */
-	function rollback(&$model) {
+	public function rollback(&$model) {
 		return $this->_transactionStarted;
 	}
 
@@ -321,7 +321,7 @@ class DataSource extends CakeObject {
  * @return string Abstract column type (i.e. "string")
  * @access public
  */
-	function column($real) {
+	public function column($real) {
 		return false;
 	}
 
@@ -336,7 +336,7 @@ class DataSource extends CakeObject {
  * @return boolean success
  * @access public
  */
-	function create(&$model, $fields = null, $values = null) {
+	public function create(&$model, $fields = null, $values = null) {
 		return false;
 	}
 
@@ -350,7 +350,7 @@ class DataSource extends CakeObject {
  * @return mixed
  * @access public
  */
-	function read(&$model, $queryData = array()) {
+	public function read(&$model, $queryData = []) {
 		return false;
 	}
 
@@ -365,7 +365,7 @@ class DataSource extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function update(&$model, $fields = null, $values = null) {
+	public function update(&$model, $fields = null, $values = null) {
 		return false;
 	}
 
@@ -378,7 +378,7 @@ class DataSource extends CakeObject {
  * @param mixed $conditions The conditions to use for deleting.
  * @access public
  */
-	function delete(&$model, $conditions = null) {
+	public function delete(&$model, $conditions = null) {
 		return false;
 	}
 
@@ -389,7 +389,7 @@ class DataSource extends CakeObject {
  * @return mixed Last ID key generated in previous INSERT
  * @access public
  */
-	function lastInsertId($source = null) {
+	public function lastInsertId($source = null) {
 		return false;
 	}
 
@@ -400,7 +400,7 @@ class DataSource extends CakeObject {
  * @return integer Number of rows returned by last operation
  * @access public
  */
-	function lastNumRows($source = null) {
+	public function lastNumRows($source = null) {
 		return false;
 	}
 
@@ -411,7 +411,7 @@ class DataSource extends CakeObject {
  * @return integer Number of rows affected by last query.
  * @access public
  */
-	function lastAffected($source = null) {
+	public function lastAffected($source = null) {
 		return false;
 	}
 
@@ -423,7 +423,7 @@ class DataSource extends CakeObject {
  * @return boolean Whether or not the Datasources conditions for use are met.
  * @access public
  */
-	function enabled() {
+	public function enabled() {
 		return true;
 	}
 
@@ -434,7 +434,7 @@ class DataSource extends CakeObject {
  * @return boolean True on success
  * @access public
  */
-	function isInterfaceSupported($interface) {
+	public function isInterfaceSupported($interface) {
 		static $methods = false;
 		if ($methods === false) {
 			$methods = array_map('strtolower', get_class_methods($this));
@@ -450,7 +450,7 @@ class DataSource extends CakeObject {
  * @return void
  * @access public
  */
-	function setConfig($config = array()) {
+	public function setConfig($config = []) {
 		$this->config = array_merge($this->_baseConfig, $this->config, $config);
 	}
 
@@ -462,7 +462,7 @@ class DataSource extends CakeObject {
  * @return mixed
  * @access private
  */
-	function __cacheDescription($object, $data = null) {
+	public function __cacheDescription($object, $data = null) {
 		if ($this->cacheSources === false) {
 			return null;
 		}
@@ -496,14 +496,14 @@ class DataSource extends CakeObject {
  * @access public
  * @todo Remove and refactor $assocData, ensure uses of the method have the param removed too.
  */
-	function insertQueryData($query, $data, $association, $assocData, &$model, &$linkModel, $stack) {
-		$keys = array('{$__cakeID__$}', '{$__cakeForeignKey__$}');
+	public function insertQueryData($query, $data, $association, $assocData, &$model, &$linkModel, $stack) {
+		$keys = ['{$__cakeID__$}', '{$__cakeForeignKey__$}'];
 
 		foreach ($keys as $key) {
 			$val = null;
 			$type = null;
 
-			if (strpos($query, $key) !== false) {
+			if (str_contains($query, $key)) {
 				switch ($key) {
 					case '{$__cakeID__$}':
 						if (isset($data[$model->alias]) || isset($data[$association])) {
@@ -577,7 +577,7 @@ class DataSource extends CakeObject {
  * @return string Key name for model.
  * @access public
  */
-	function resolveKey($model, $key) {
+	public function resolveKey($model, $key) {
 		return $model->alias . $key;
 	}
 
@@ -587,7 +587,7 @@ class DataSource extends CakeObject {
  * @return void
  * @access public
  */
-	function __destruct() {
+	public function __destruct() {
 		if ($this->_transactionStarted) {
 			$null = null;
 			$this->rollback($null);

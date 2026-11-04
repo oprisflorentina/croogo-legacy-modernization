@@ -26,7 +26,7 @@ class LanguagesController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Language');
+	public $uses = ['Language'];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Languages', true));
@@ -42,10 +42,10 @@ class LanguagesController extends AppController {
 		if (!empty($this->data)) {
 			$this->Language->create();
 			if ($this->Language->save($this->data)) {
-				$this->Session->setFlash(__('The Language has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Language has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Language could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Language could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 	}
@@ -54,15 +54,15 @@ class LanguagesController extends AppController {
 		$this->set('title_for_layout', __("Edit Language", true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Language', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Language', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Language->save($this->data)) {
-				$this->Session->setFlash(__('The Language has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Language has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Language could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Language could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -72,52 +72,52 @@ class LanguagesController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Language', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Language', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Language->delete($id)) {
-			$this->Session->setFlash(__('Language deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Language deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 
 	public function admin_moveup($id, $step = 1) {
 		if ($this->Language->moveup($id, $step)) {
-			$this->Session->setFlash(__('Moved up successfully', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Moved up successfully', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('Could not move up', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Could not move up', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	public function admin_movedown($id, $step = 1) {
 		if ($this->Language->movedown($id, $step)) {
-			$this->Session->setFlash(__('Moved down successfully', true), 'default', array('class' => 'success'));
+			$this->Session->setFlash(__('Moved down successfully', true), 'default', ['class' => 'success']);
 		} else {
-			$this->Session->setFlash(__('Could not move down', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Could not move down', true), 'default', ['class' => 'error']);
 		}
 
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	public function admin_select($id = null, $modelAlias = null) {
 		if ($id == null ||
 			$modelAlias == null) {
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		$this->set('title_for_layout', __('Select a language', true));
-		$languages = $this->Language->find('all', array(
-			'conditions' => array(
+		$languages = $this->Language->find('all', [
+			'conditions' => [
 				'Language.status' => 1,
-			),
+			],
 			'order' => 'Language.weight ASC',
-		));
+		]);
 		$this->set(compact('id', 'modelAlias', 'languages'));
 	}
 

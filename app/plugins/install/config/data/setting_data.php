@@ -3,8 +3,8 @@ class SettingData {
 
 	public $table = 'settings';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '6',
 			'key' => 'Site.title',
 			'value' => 'Croogo',
@@ -14,8 +14,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '1',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '7',
 			'key' => 'Site.tagline',
 			'value' => 'A CakePHP powered Content Management System.',
@@ -25,8 +25,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '2',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '8',
 			'key' => 'Site.email',
 			'value' => 'you@your-site.com',
@@ -36,8 +36,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '3',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '9',
 			'key' => 'Site.status',
 			'value' => '1',
@@ -47,8 +47,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '5',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '12',
 			'key' => 'Meta.robots',
 			'value' => 'index, follow',
@@ -58,8 +58,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '6',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '13',
 			'key' => 'Meta.keywords',
 			'value' => 'croogo, Croogo',
@@ -69,8 +69,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '7',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '14',
 			'key' => 'Meta.description',
 			'value' => 'Croogo - A CakePHP powered Content Management System',
@@ -80,8 +80,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '8',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '15',
 			'key' => 'Meta.generator',
 			'value' => 'Croogo - Content Management System',
@@ -91,8 +91,8 @@ class SettingData {
 			'editable' => '0',
 			'weight' => '9',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '16',
 			'key' => 'Service.akismet_key',
 			'value' => 'your-key',
@@ -102,8 +102,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '11',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '17',
 			'key' => 'Service.recaptcha_public_key',
 			'value' => 'your-public-key',
@@ -113,8 +113,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '12',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '18',
 			'key' => 'Service.recaptcha_private_key',
 			'value' => 'your-private-key',
@@ -124,8 +124,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '13',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '19',
 			'key' => 'Service.akismet_url',
 			'value' => 'http://your-blog.com',
@@ -135,8 +135,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '10',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '20',
 			'key' => 'Site.theme',
 			'value' => '',
@@ -146,8 +146,8 @@ class SettingData {
 			'editable' => '0',
 			'weight' => '14',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '21',
 			'key' => 'Site.feed_url',
 			'value' => '',
@@ -157,8 +157,8 @@ class SettingData {
 			'editable' => '0',
 			'weight' => '15',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '22',
 			'key' => 'Reading.nodes_per_page',
 			'value' => '5',
@@ -168,8 +168,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '16',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '23',
 			'key' => 'Writing.wysiwyg',
 			'value' => '1',
@@ -179,8 +179,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '17',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '24',
 			'key' => 'Comment.level',
 			'value' => '1',
@@ -190,8 +190,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '18',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '25',
 			'key' => 'Comment.feed_limit',
 			'value' => '10',
@@ -201,8 +201,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '19',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '26',
 			'key' => 'Site.locale',
 			'value' => 'eng',
@@ -212,8 +212,8 @@ class SettingData {
 			'editable' => '0',
 			'weight' => '20',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '27',
 			'key' => 'Reading.date_time_format',
 			'value' => 'D, M d Y H:i:s',
@@ -223,8 +223,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '21',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '28',
 			'key' => 'Comment.date_time_format',
 			'value' => 'M d, Y',
@@ -234,8 +234,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '22',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '29',
 			'key' => 'Site.timezone',
 			'value' => '0',
@@ -245,8 +245,8 @@ class SettingData {
 			'editable' => '1',
 			'weight' => '4',
 			'params' => ''
-		),
-		array(
+		],
+		[
 			'id' => '32',
 			'key' => 'Hook.bootstraps',
 			'value' => 'tinymce',
@@ -256,7 +256,7 @@ class SettingData {
 			'editable' => '0',
 			'weight' => '23',
 			'params' => ''
-		),
-	);
+		],
+	];
 
 }

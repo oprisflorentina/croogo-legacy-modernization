@@ -17,7 +17,7 @@ class AclFilterComponent extends CakeObject {
  * @param object $controller controller
  * @param array  $settings   settings
  */
-	public function initialize(&$controller, $settings = array()) {
+	public function initialize(&$controller, $settings = []) {
 		$this->controller =& $controller;
 	}
 
@@ -29,29 +29,29 @@ class AclFilterComponent extends CakeObject {
 	public function auth() {
 		//Configure AuthComponent
 		$this->controller->Auth->authorize = 'actions';
-		$this->controller->Auth->loginAction = array(
+		$this->controller->Auth->loginAction = [
 			'plugin' => null,
 			'controller' => 'users',
 			'action' => 'login',
-		);
-		$this->controller->Auth->logoutRedirect = array(
+		];
+		$this->controller->Auth->logoutRedirect = [
 			'plugin' => null,
 			'controller' => 'users',
 			'action' => 'login',
-		);
-		$this->controller->Auth->loginRedirect = array(
+		];
+		$this->controller->Auth->loginRedirect = [
 			'plugin' => null,
 			'controller' => 'users',
 			'action' => 'index',
-		);
-		$this->controller->Auth->userScope = array(
+		];
+		$this->controller->Auth->userScope = [
 			'User.status' => 1,
-		);
+		];
 		$this->controller->Auth->actionPath = 'controllers/';
 
 		if ($this->controller->Auth->user() && $this->controller->Auth->user('role_id') == 1) {
 			// Role: Admin
-			$this->controller->Auth->allowedActions = array('*');
+			$this->controller->Auth->allowedActions = ['*'];
 		} else {
 			if ($this->controller->Auth->user()) {
 				$roleId = $this->controller->Auth->user('role_id');
@@ -59,47 +59,47 @@ class AclFilterComponent extends CakeObject {
 				$roleId = 3; // Role: Public
 			}
 
-			$aro = $this->controller->Acl->Aro->find('first', array(
-				'conditions' => array(
+			$aro = $this->controller->Acl->Aro->find('first', [
+				'conditions' => [
 					'Aro.model' => 'Role',
 					'Aro.foreign_key' => $roleId,
-				),
+				],
 				'recursive' => -1,
-			));
+			]);
 			$aroId = $aro['Aro']['id'];
 			$thisControllerNode = $this->controller->Acl->Aco->node($this->controller->Auth->actionPath.$this->controller->name);
 			if ($thisControllerNode) {
 				$thisControllerNode = $thisControllerNode['0'];
-				$thisControllerActions = $this->controller->Acl->Aco->find('list', array(
-					'conditions' => array(
+				$thisControllerActions = $this->controller->Acl->Aco->find('list', [
+					'conditions' => [
 						'Aco.parent_id' => $thisControllerNode['Aco']['id'],
-					),
-					'fields' => array(
+					],
+					'fields' => [
 						'Aco.id',
 						'Aco.alias',
-					),
+					],
 					'recursive' => '-1',
-				));
+				]);
 				$thisControllerActionsIds = array_keys($thisControllerActions);
-				$allowedActions = $this->controller->Acl->Aco->Permission->find('list', array(
-					'conditions' => array(
+				$allowedActions = $this->controller->Acl->Aco->Permission->find('list', [
+					'conditions' => [
 						'Permission.aro_id' => $aroId,
 						'Permission.aco_id' => $thisControllerActionsIds,
 						'Permission._create' => 1,
 						'Permission._read' => 1,
 						'Permission._update' => 1,
 						'Permission._delete' => 1,
-					),
-					'fields' => array(
+					],
+					'fields' => [
 						'id',
 						'aco_id',
-					),
+					],
 					'recursive' => '-1',
-				));
+				]);
 				$allowedActionsIds = array_values($allowedActions);
 			}
 
-			$allow = array();
+			$allow = [];
 			if (isset($allowedActionsIds) &&
 				is_array($allowedActionsIds) &&
 				count($allowedActionsIds) > 0) {

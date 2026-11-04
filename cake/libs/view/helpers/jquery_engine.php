@@ -37,28 +37,28 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @var array
  * @access protected
  */
-	var $_optionMap = array(
-		'request' => array(
+	public $_optionMap = [
+		'request' => [
 			'type' => 'dataType',
 			'before' => 'beforeSend',
 			'method' => 'type',
-		),
-		'sortable' => array(
+		],
+		'sortable' => [
 			'complete' => 'stop',
-		),
-		'drag' => array(
+		],
+		'drag' => [
 			'snapGrid' => 'grid',
 			'container' => 'containment',
-		),
-		'drop' => array(
+		],
+		'drop' => [
 			'leave' => 'out',
 			'hover' => 'over'
-		),
-		'slider' => array(
+		],
+		'slider' => [
 			'complete' => 'stop',
 			'direction' => 'orientation'
-		)
-	);
+		]
+	];
 
 /**
  * Callback arguments lists
@@ -66,14 +66,14 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @var string
  * @access protected
  */
-	var $_callbackArguments = array(
-		'slider' => array(
+	public $_callbackArguments = [
+		'slider' => [
 			'start' => 'event, ui',
 			'slide' => 'event, ui',
 			'change' => 'event, ui',
 			'stop' => 'event, ui'
-		),
-		'sortable' => array(
+		],
+		'sortable' => [
 			'start' => 'event, ui',
 			'sort' => 'event, ui',
 			'change' => 'event, ui',
@@ -86,27 +86,27 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
 			'out' => 'event, ui',
 			'activate' => 'event, ui',
 			'deactivate' => 'event, ui'
-		),
-		'drag' => array(
+		],
+		'drag' => [
 			'start' => 'event, ui',
 			'drag' => 'event, ui',
 			'stop' => 'event, ui',
-		),
-		'drop' => array(
+		],
+		'drop' => [
 			'activate' => 'event, ui',
 			'deactivate' => 'event, ui',
 			'over' => 'event, ui',
 			'out' => 'event, ui',
 			'drop' => 'event, ui'
-		),
-		'request' => array(
+		],
+		'request' => [
 			'beforeSend' => 'XMLHttpRequest',
 			'error' => 'XMLHttpRequest, textStatus, errorThrown',
 			'success' => 'data, textStatus',
 			'complete' => 'XMLHttpRequest, textStatus',
 			'xhr' => ''
-		)
-	);
+		]
+	];
 
 /**
  * The variable name of the jQuery Object, useful
@@ -115,7 +115,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @var string
  * @access public
  */
-	 var $jQueryObject = '$';
+	 public $jQueryObject = '$';
 
 /**
  * Helper function to wrap repetitive simple method templating.
@@ -128,7 +128,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @return string Composed method string
  * @access public
  */
-	function _methodTemplate($method, $template, $options, $extraSafeKeys = array()) {
+	public function _methodTemplate($method, $template, $options, $extraSafeKeys = []) {
 		$options = $this->_mapOptions($method, $options);
 		$options = $this->_prepareCallbacks($method, $options);
 		$callbacks = array_keys($this->_callbackArguments[$method]);
@@ -146,7 +146,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @return object instance of $this. Allows chained methods.
  * @access public
  */
-	function get($selector) {
+	public function get($selector) {
 		if ($selector == 'window' || $selector == 'document') {
 			$this->selection = $this->jQueryObject . '(' . $selector .')';
 		} else {
@@ -169,8 +169,8 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @return string completed event handler
  * @access public
  */
-	function event($type, $callback, $options = array()) {
-		$defaults = array('wrap' => true, 'stop' => true);
+	public function event($type, $callback, $options = []) {
+		$defaults = ['wrap' => true, 'stop' => true];
 		$options = array_merge($defaults, $options);
 
 		$function = 'function (event) {%s}';
@@ -195,7 +195,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @return string completed domReady method
  * @access public
  */
-	function domReady($functionBody) {
+	public function domReady($functionBody) {
 		return $this->jQueryObject . '(document).ready(function () {' . $functionBody . '});';
 	}
 
@@ -207,7 +207,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @return string completed iteration
  * @access public
  */
-	function each($callback) {
+	public function each($callback) {
 		return $this->selection . '.each(function () {' . $callback . '});';
 	}
 
@@ -220,9 +220,9 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @access public
  * @see JsBaseEngineHelper::effect()
  */
-	function effect($name, $options = array()) {
+	public function effect($name, $options = []) {
 		$speed = null;
-		if (isset($options['speed']) && in_array($options['speed'], array('fast', 'slow'))) {
+		if (isset($options['speed']) && in_array($options['speed'], ['fast', 'slow'])) {
 			$speed = $this->value($options['speed']);
 		}
 		$effect = '';
@@ -253,7 +253,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @access public
  * @see JsBaseEngineHelper::request() for options list.
  */
-	function request($url, $options = array()) {
+	public function request($url, $options = []) {
 		$url = $this->url($url);
 		$options = $this->_mapOptions('request', $options);
 		if (isset($options['data']) && is_array($options['data'])) {
@@ -261,7 +261,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
 		}
 		$options['url'] = $url;
 		if (isset($options['update'])) {
-			$wrapCallbacks = isset($options['wrapCallbacks']) ? $options['wrapCallbacks'] : true;
+			$wrapCallbacks = $options['wrapCallbacks'] ?? true;
 			$success = '';
 			if(isset($options['success']) AND !empty($options['success'])) {
 				$success .= $options['success'];
@@ -274,7 +274,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
 			$options['success'] = $success;
 			unset($options['update']);
 		}
-		$callbacks = array('success', 'error', 'beforeSend', 'complete');
+		$callbacks = ['success', 'error', 'beforeSend', 'complete'];
 		if (!empty($options['dataExpression'])) {
 			$callbacks[] = 'data';
 			unset($options['dataExpression']);
@@ -294,7 +294,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @access public
  * @see JsBaseEngineHelper::sortable() for options list.
  */
-	function sortable($options = array()) {
+	public function sortable($options = []) {
 		$template = '%s.sortable({%s});';
 		return $this->_methodTemplate('sortable', $template, $options);
 	}
@@ -309,7 +309,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @access public
  * @see JsBaseEngineHelper::drag() for options list.
  */
-	function drag($options = array()) {
+	public function drag($options = []) {
 		$template = '%s.draggable({%s});';
 		return $this->_methodTemplate('drag', $template, $options);
 	}
@@ -324,7 +324,7 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @access public
  * @see JsBaseEngineHelper::drop() for options list.
  */
-	function drop($options = array()) {
+	public function drop($options = []) {
 		$template = '%s.droppable({%s});';
 		return $this->_methodTemplate('drop', $template, $options);
 	}
@@ -339,8 +339,8 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @access public
  * @see JsBaseEngineHelper::slider() for options list.
  */
-	function slider($options = array()) {
-		$callbacks = array('start', 'change', 'slide', 'stop');
+	public function slider($options = []) {
+		$callbacks = ['start', 'change', 'slide', 'stop'];
 		$template = '%s.slider({%s});';
 		return $this->_methodTemplate('slider', $template, $options, $callbacks);
 	}
@@ -354,8 +354,8 @@ class JqueryEngineHelper extends JsBaseEngineHelper {
  * @access public
  * @see JsBaseEngineHelper::serializeForm() for option list.
  */
-	function serializeForm($options = array()) {
-		$options = array_merge(array('isForm' => false, 'inline' => false), $options);
+	public function serializeForm($options = []) {
+		$options = array_merge(['isForm' => false, 'inline' => false], $options);
 		$selector = $this->selection;
 		if (!$options['isForm']) {
 			$selector = $this->selection . '.closest("form")';

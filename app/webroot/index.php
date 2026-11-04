@@ -36,14 +36,14 @@
  *
  */
 	if (!defined('ROOT')) {
-		define('ROOT', dirname(dirname(dirname(__FILE__))));
+		define('ROOT', dirname(__FILE__, 3));
 	}
 /**
  * The actual directory name for the "app".
  *
  */
 	if (!defined('APP_DIR')) {
-		define('APP_DIR', basename(dirname(dirname(__FILE__))));
+		define('APP_DIR', basename(dirname(__FILE__, 2)));
 	}
 /**
  * The absolute path to the "cake" directory, WITHOUT a trailing DS.
@@ -59,10 +59,10 @@
  *
  */
 	if (!defined('WEBROOT_DIR')) {
-		define('WEBROOT_DIR', basename(dirname(__FILE__)));
+		define('WEBROOT_DIR', basename(__DIR__));
 	}
 	if (!defined('WWW_ROOT')) {
-		define('WWW_ROOT', dirname(__FILE__) . DS);
+		define('WWW_ROOT', __DIR__ . DS);
 	}
 	if (!defined('CORE_PATH')) {
 		if (function_exists('ini_set') && ini_set('include_path', CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . ROOT . DS . APP_DIR . DS . PATH_SEPARATOR . ini_get('include_path'))) {

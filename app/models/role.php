@@ -26,11 +26,11 @@ class Role extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
-		'Acl' => array(
+	public $actsAs = [
+		'Acl' => [
 			'type' => 'requester',
-		),
-	);
+		],
+	];
 
 /**
  * Validation
@@ -38,37 +38,37 @@ class Role extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'title' => array(
-			'notEmpty' => array(
+	public $validate = [
+		'title' => [
+			'notEmpty' => [
 				'rule' => 'notEmpty',
 				'message' => 'Alias cannot be empty.',
 				'last' => true,
-			),
-			'validName' => array(
+			],
+			'validName' => [
 				'rule' => '_validName',
 				'message' => 'This field must be alphanumeric',
 				'last' => true,
-			),
-		),
-		'alias' => array(
-			'isUnique' => array(
+			],
+		],
+		'alias' => [
+			'isUnique' => [
 				'rule' => 'isUnique',
 				'message' => 'This alias has already been taken.',
 				'last' => true,
-			),
-			'notEmpty' => array(
+			],
+			'notEmpty' => [
 				'rule' => 'notEmpty',
 				'message' => 'Alias cannot be empty.',
 				'last' => true,
-			),
-			'validAlias' => array(
+			],
+			'validAlias' => [
 				'rule' => '_validAlias',
 				'message' => 'This field must be alphanumeric',
 				'last' => true,
-			),
-		),
-	);
+			],
+		],
+	];
 
 	public function parentNode() {
 		return null;

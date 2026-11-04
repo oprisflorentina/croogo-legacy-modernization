@@ -26,16 +26,16 @@ class Type extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
-		'Cached' => array(
-			'prefix' => array(
+	public $actsAs = [
+		'Cached' => [
+			'prefix' => [
 				'croogo_types_',
 				'types_',
 				'type_',
-			),
-		),
+			],
+		],
 		'Params',
-	);
+	];
 
 /**
  * Validation
@@ -43,22 +43,22 @@ class Type extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'title' => array(
-			'rule' => array('minLength', 1),
+	public $validate = [
+		'title' => [
+			'rule' => ['minLength', 1],
 			'message' => 'Title cannot be empty.',
-		),
-		'alias' => array(
-			'isUnique' => array(
+		],
+		'alias' => [
+			'isUnique' => [
 				'rule' => 'isUnique',
 				'message' => 'This alias has already been taken.',
-			),
-			'minLength' => array(
-				'rule' => array('minLength', 1),
+			],
+			'minLength' => [
+				'rule' => ['minLength', 1],
 				'message' => 'Alias cannot be empty.',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Model associations: hasAndBelongsToMany
@@ -66,8 +66,8 @@ class Type extends AppModel {
  * @var array
  * @access public
  */
-	public $hasAndBelongsToMany = array(
-		'Vocabulary' => array(
+	public $hasAndBelongsToMany = [
+		'Vocabulary' => [
 			'className' => 'Vocabulary',
 			'joinTable' => 'types_vocabularies',
 			'foreignKey' => 'type_id',
@@ -81,6 +81,6 @@ class Type extends AppModel {
 			'finderQuery' => '',
 			'deleteQuery' => '',
 			'insertQuery' => '',
-		),
-	);
+		],
+	];
 }

@@ -1,18 +1,18 @@
 <?php
 class AclArosAco extends AppModel {
 
-	var $name = 'AclArosAco';
-	var $useTable = 'aros_acos';
+	public $name = 'AclArosAco';
+	public $useTable = 'aros_acos';
 
-	var $belongsTo = array(
-		'AclAro' => array(
+	public $belongsTo = [
+		'AclAro' => [
 			'className' => 'Acl.AclAro',
 			'foreignKey' => 'aro_id',
-		),
-		'AclAco' => array(
+		],
+		'AclAco' => [
 			'className' => 'Acl.AclAco',
 			'foreignKey' => 'aco_id',
-		),
-	);
+		],
+	];
 
 }

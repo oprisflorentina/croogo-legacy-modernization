@@ -13,9 +13,9 @@
  */
 class EncoderBehavior extends ModelBehavior {
 
-	public function setup(&$model, $config = array()) {
+	public function setup(&$model, $config = []) {
 		if (is_string($config)) {
-			$config = array($config);
+			$config = [$config];
 		}
 
 		$this->settings[$model->alias] = $config;
@@ -31,17 +31,17 @@ class EncoderBehavior extends ModelBehavior {
  * @param array $options (optional)
  * @return string
  */
-	public function encodeData(&$model, $data, $options = array()) {
-		$_options = array(
+	public function encodeData(&$model, $data, $options = []) {
+		$_options = [
 			'json' => false,
 			'trim' => true,
-		);
+		];
 		$options = array_merge($_options, $options);
 
 		if (is_array($data) && count($data) > 0) {
 			// trim
 			if ($options['trim']) {
-				$elements = array();
+				$elements = [];
 				foreach($data AS $id => $d) {
 					$d = trim($d);
 					if ($d != '') {

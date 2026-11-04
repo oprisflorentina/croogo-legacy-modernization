@@ -26,20 +26,20 @@ class Node extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
+	public $actsAs = [
 		'Containable',
 		'Tree',
 		'Encoder',
 		'Meta',
 		'Url',
-		'Cached' => array(
-			'prefix' => array(
+		'Cached' => [
+			'prefix' => [
 				'node_',
 				'nodes_',
 				'croogo_nodes_',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Node type
@@ -65,22 +65,22 @@ class Node extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'title' => array(
+	public $validate = [
+		'title' => [
 			'rule' => 'notEmpty',
 			'message' => 'This field cannot be left blank.',
-		),
-		'slug' => array(
-			'isUniquePerType' => array(
+		],
+		'slug' => [
+			'isUniquePerType' => [
 				'rule' => 'isUniquePerType',
 				'message' => 'This slug has already been taken.',
-			),
-			'minLength' => array(
-				'rule' => array('minLength', 1),
+			],
+			'minLength' => [
+				'rule' => ['minLength', 1],
 				'message' => 'Slug cannot be empty.',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Model associations: belongsTo
@@ -88,15 +88,15 @@ class Node extends AppModel {
  * @var array
  * @access public
  */
-	public $belongsTo = array(
-		'User' => array(
+	public $belongsTo = [
+		'User' => [
 			'className' => 'User',
 			'foreignKey' => 'user_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
-		),
-	);
+		],
+	];
 
 /**
  * Model associations: hasMany
@@ -104,12 +104,12 @@ class Node extends AppModel {
  * @var array
  * @access public
  */
-	public $hasMany = array(
-		'Comment' => array(
+	public $hasMany = [
+		'Comment' => [
 			'className' => 'Comment',
 			'foreignKey' => 'node_id',
 			'dependent' => false,
-			'conditions' => array('Comment.status' => 1),
+			'conditions' => ['Comment.status' => 1],
 			'fields' => '',
 			'order' => '',
 			'limit' => '5',
@@ -117,12 +117,12 @@ class Node extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => '',
-		),
-		'Meta' => array(
+		],
+		'Meta' => [
 			'className' => 'Meta',
 			'foreignKey' => 'foreign_key',
 			'dependent' => false,
-			'conditions' => array('Meta.model' => 'Node'),
+			'conditions' => ['Meta.model' => 'Node'],
 			'fields' => '',
 			'order' => 'Meta.key ASC',
 			'limit' => '',
@@ -130,8 +130,8 @@ class Node extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => '',
-		),
-	);
+		],
+	];
 
 /**
  * Model associations: hasAndBelongsToMany
@@ -139,8 +139,8 @@ class Node extends AppModel {
  * @var array
  * @access public
  */
-	public $hasAndBelongsToMany = array(
-		'Taxonomy' => array(
+	public $hasAndBelongsToMany = [
+		'Taxonomy' => [
 			'className' => 'Taxonomy',
 			'with' => 'NodesTaxonomy',
 			'joinTable' => 'nodes_taxonomies',
@@ -155,8 +155,8 @@ class Node extends AppModel {
 			'finderQuery' => '',
 			'deleteQuery' => '',
 			'insertQuery' => '',
-		),
-	);
+		],
+	];
 
 /**
  * beforeFind callback
@@ -176,7 +176,7 @@ class Node extends AppModel {
  *
  * @return boolean
  */
-	public function beforeSave($options = array()) {
+	public function beforeSave($options = []) {
 		if ($this->type != null) {
 			$this->data['Node']['type'] = $this->type;
 		}
@@ -193,16 +193,16 @@ class Node extends AppModel {
 	public function __cacheTerms() {
 		if (isset($this->data['Taxonomy']['Taxonomy']) && count($this->data['Taxonomy']['Taxonomy']) > 0) {
 			$taxonomyIds = $this->data['Taxonomy']['Taxonomy'];
-			$taxonomies = $this->Taxonomy->find('all', array(
-				'conditions' => array(
+			$taxonomies = $this->Taxonomy->find('all', [
+				'conditions' => [
 					'Taxonomy.id' => $taxonomyIds,
-				),
-			));
+				],
+			]);
 			$terms = Set::combine($taxonomies, '{n}.Term.id', '{n}.Term.slug');
-			$this->data['Node']['terms'] = $this->encodeData($terms, array(
+			$this->data['Node']['terms'] = $this->encodeData($terms, [
 				'trim' => false,
 				'json' => true,
-			));
+			]);
 		}
 	}
 
@@ -214,7 +214,7 @@ class Node extends AppModel {
  * @return boolean False if any records matching any fields are found
  * @access public
  */
-	function isUniquePerType($fields, $or = true) {
+	public function isUniquePerType($fields, $or = true) {
 		if (!is_array($fields)) {
 			$fields = func_get_args();
 			if (is_bool($fields[count($fields) - 1])) {
@@ -235,13 +235,13 @@ class Node extends AppModel {
 				}
 			}
 
-			if (strpos($field, '.') === false) {
+			if (!str_contains($field, '.')) {
 				unset($fields[$field]);
 				$fields[$this->alias . '.' . $field] = $value;
 			}
 		}
 		if ($or) {
-			$fields = array('or' => $fields);
+			$fields = ['or' => $fields];
 		}
 		if (!empty($this->id)) {
 			$fields[$this->alias . '.' . $this->primaryKey . ' !='] = $this->id;
@@ -249,6 +249,6 @@ class Node extends AppModel {
 		if (!empty($this->type)) {
 			$fields[$this->alias . '.type'] = $this->type;
 		}
-		return ($this->find('count', array('conditions' => $fields, 'recursive' => -1)) == 0);
+		return ($this->find('count', ['conditions' => $fields, 'recursive' => -1]) == 0);
 	}
 }

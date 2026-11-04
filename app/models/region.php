@@ -26,16 +26,16 @@ class Region extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
-		'Cached' => array(
-			'prefix' => array(
+	public $actsAs = [
+		'Cached' => [
+			'prefix' => [
 				'region_',
 				'croogo_regions',
 				'block_',
 				'croogo_blocks_',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Validation
@@ -43,22 +43,22 @@ class Region extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'title' => array(
-			'rule' => array('minLength', 1),
+	public $validate = [
+		'title' => [
+			'rule' => ['minLength', 1],
 			'message' => 'Title cannot be empty.',
-		),
-		'alias' => array(
-			'isUnique' => array(
+		],
+		'alias' => [
+			'isUnique' => [
 				'rule' => 'isUnique',
 				'message' => 'This alias has already been taken.',
-			),
-			'minLength' => array(
-				'rule' => array('minLength', 1),
+			],
+			'minLength' => [
+				'rule' => ['minLength', 1],
 				'message' => 'Alias cannot be empty.',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Model associations: hasMany
@@ -66,8 +66,8 @@ class Region extends AppModel {
  * @var array
  * @access public
  */
-	public $hasMany = array(
-		'Block' => array(
+	public $hasMany = [
+		'Block' => [
 			'className' => 'Block',
 			'foreignKey' => 'region_id',
 			'dependent' => false,
@@ -79,6 +79,6 @@ class Region extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => '',
-		),
-	);
+		],
+	];
 }

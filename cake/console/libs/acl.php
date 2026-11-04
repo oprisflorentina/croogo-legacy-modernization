@@ -35,7 +35,7 @@ class AclShell extends Shell {
  * @var AclComponent
  * @access public
  */
-	var $Acl;
+	public $Acl;
 
 /**
  * Contains arguments parsed from the command line.
@@ -43,7 +43,7 @@ class AclShell extends Shell {
  * @var array
  * @access public
  */
-	var $args;
+	public $args;
 
 /**
  * Contains database source to use
@@ -51,7 +51,7 @@ class AclShell extends Shell {
  * @var string
  * @access public
  */
-	var $connection = 'default';
+	public $connection = 'default';
 
 /**
  * Contains tasks to load and instantiate
@@ -59,19 +59,19 @@ class AclShell extends Shell {
  * @var array
  * @access public
  */
-	var $tasks = array('DbConfig');
+	public $tasks = ['DbConfig'];
 
 /**
  * Override startup of the Shell
  *
  * @access public
  */
-	function startup() {
+	public function startup() {
 		if (isset($this->params['connection'])) {
 			$this->connection = $this->params['connection'];
 		}
 
-		if (!in_array(Configure::read('Acl.classname'), array('DbAcl', 'DB_ACL'))) {
+		if (!in_array(Configure::read('Acl.classname'), ['DbAcl', 'DB_ACL'])) {
 			$out = "--------------------------------------------------\n";
 			$out .= __("Error: Your current Cake configuration is set to", true) . "\n";
 			$out .= __("an ACL implementation other than DB. Please change", true) . "\n";
@@ -84,7 +84,7 @@ class AclShell extends Shell {
 			$this->_stop();
 		}
 
-		if ($this->command && !in_array($this->command, array('help'))) {
+		if ($this->command && !in_array($this->command, ['help'])) {
 			if (!config('database')) {
 				$this->out(__("Your database configuration was not found. Take a moment to create one.", true), true);
 				$this->args = null;
@@ -92,7 +92,7 @@ class AclShell extends Shell {
 			}
 			require_once (CONFIGS.'database.php');
 
-			if (!in_array($this->command, array('initdb'))) {
+			if (!in_array($this->command, ['initdb'])) {
 				$this->Acl = new AclComponent();
 				$controller = null;
 				$this->Acl->startup($controller);
@@ -105,7 +105,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function main() {
+	public function main() {
 		$out  = __("Available ACL commands:", true) . "\n";
 		$out .= "\t - create\n";
 		$out .= "\t - delete\n";
@@ -127,7 +127,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function create() {
+	public function create() {
 		$this->_checkArgs(3, 'create');
 		$this->checkNodeType();
 		extract($this->__dataVars());
@@ -143,7 +143,7 @@ class AclShell extends Shell {
 
 		$data = $this->parseIdentifier($this->args[2]);
 		if (is_string($data) && $data != '/') {
-			$data = array('alias' => $data);
+			$data = ['alias' => $data];
 		} elseif (is_string($data)) {
 			$this->error(__('/ can not be used as an alias!', true), __("\t/ is the root, please supply a sub alias", true));
 		}
@@ -162,7 +162,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function delete() {
+	public function delete() {
 		$this->_checkArgs(2, 'delete');
 		$this->checkNodeType();
 		extract($this->__dataVars());
@@ -181,19 +181,19 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function setParent() {
+	public function setParent() {
 		$this->_checkArgs(3, 'setParent');
 		$this->checkNodeType();
 		extract($this->__dataVars());
 		$target = $this->parseIdentifier($this->args[1]);
 		$parent = $this->parseIdentifier($this->args[2]);
 
-		$data = array(
-			$class => array(
+		$data = [
+			$class => [
 				'id' => $this->_getNodeId($class, $target),
 				'parent_id' => $this->_getNodeId($class, $parent)
-			)
-		);
+			]
+		];
 		$this->Acl->{$class}->create();
 		if (!$this->Acl->{$class}->save($data)) {
 			$this->out(__("Error in setting new parent. Please make sure the parent node exists, and is not a descendant of the node specified.", true), true);
@@ -207,7 +207,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function getPath() {
+	public function getPath() {
 		$this->_checkArgs(2, 'getPath');
 		$this->checkNodeType();
 		extract($this->__dataVars());
@@ -238,7 +238,7 @@ class AclShell extends Shell {
  * @return void
  * @access protected
  */
-	function _outputNode($class, $node, $indent) {
+	public function _outputNode($class, $node, $indent) {
 		$indent = str_repeat('  ', $indent);
 		$data = $node[$class];
 		if ($data['alias']) {
@@ -253,7 +253,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function check() {
+	public function check() {
 		$this->_checkArgs(3, 'check');
 		extract($this->__getParams());
 
@@ -269,7 +269,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function grant() {
+	public function grant() {
 		$this->_checkArgs(3, 'grant');
 		extract($this->__getParams());
 
@@ -285,7 +285,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function deny() {
+	public function deny() {
 		$this->_checkArgs(3, 'deny');
 		extract($this->__getParams());
 
@@ -301,7 +301,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function inherit() {
+	public function inherit() {
 		$this->_checkArgs(3, 'inherit');
 		extract($this->__getParams());
 
@@ -317,7 +317,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function view() {
+	public function view() {
 		$this->_checkArgs(1, 'view');
 		$this->checkNodeType();
 		extract($this->__dataVars());
@@ -325,19 +325,19 @@ class AclShell extends Shell {
 		if (isset($this->args[1])) {
 			$identity = $this->parseIdentifier($this->args[1]);
 
-			$topNode = $this->Acl->{$class}->find('first', array(
-				'conditions' => array($class . '.id' => $this->_getNodeId($class, $identity))
-			));
+			$topNode = $this->Acl->{$class}->find('first', [
+				'conditions' => [$class . '.id' => $this->_getNodeId($class, $identity)]
+			]);
 
-			$nodes = $this->Acl->{$class}->find('all', array(
-				'conditions' => array(
+			$nodes = $this->Acl->{$class}->find('all', [
+				'conditions' => [
 					$class . '.lft >=' => $topNode[$class]['lft'],
 					$class . '.lft <=' => $topNode[$class]['rght']
-				),
+				],
 				'order' => $class . '.lft ASC'
-			));
+			]);
 		} else {
-			$nodes = $this->Acl->{$class}->find('all', array('order' => $class . '.lft ASC'));
+			$nodes = $this->Acl->{$class}->find('all', ['order' => $class . '.lft ASC']);
 		}
 
 		if (empty($nodes)) {
@@ -350,7 +350,7 @@ class AclShell extends Shell {
 		$this->out($class . " tree:");
 		$this->hr();
 
-		$stack = array();
+		$stack = [];
 		$last  = null;
 
 		foreach ($nodes as $n) {
@@ -379,8 +379,8 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function initdb() {
-		$this->Dispatch->args = array('schema', 'create', 'DbAcl');
+	public function initdb() {
+		$this->Dispatch->args = ['schema', 'create', 'DbAcl'];
 		$this->Dispatch->dispatch();
 	}
 
@@ -389,13 +389,13 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$head = "-----------------------------------------------\n";
 		$head .= __("Usage: cake acl <command> <arg1> <arg2>...", true) . "\n";
 		$head .= "-----------------------------------------------\n";
 		$head .= __("Commands:", true) . "\n";
 
-		$commands = array(
+		$commands = [
 			'create' => "create aro|aco <parent> <node>\n" .
 				"\t" . __("Creates a new ACL object <node> under the parent", true) . "\n" .
 				"\t" . __("specified by <parent>, an id/alias.", true) . "\n" .
@@ -466,7 +466,7 @@ class AclShell extends Shell {
 
 			'help' => "help [<command>]\n" .
 				"\t" . __("Displays this help message, or a message on a specific command.", true)
-		);
+		];
 
 		$this->out($head);
 		if (!isset($this->args[0])) {
@@ -485,7 +485,7 @@ class AclShell extends Shell {
  *
  * @access public
  */
-	function checkNodeType() {
+	public function checkNodeType() {
 		if (!isset($this->args[0])) {
 			return false;
 		}
@@ -502,13 +502,13 @@ class AclShell extends Shell {
  * @return boolean Success
  * @access public
  */
-	function nodeExists() {
+	public function nodeExists() {
 		if (!$this->checkNodeType() && !isset($this->args[1])) {
 			return false;
 		}
 		extract($this->__dataVars($this->args[0]));
 		$key = is_numeric($this->args[1]) ? $secondary_id : 'alias';
-		$conditions = array($class . '.' . $key => $this->args[1]);
+		$conditions = [$class . '.' . $key => $this->args[1]];
 		$possibility = $this->Acl->{$class}->find('all', compact('conditions'));
 		if (empty($possibility)) {
 			$this->error(sprintf(__("%s not found", true), $this->args[1]), __("No tree returned.", true));
@@ -523,12 +523,12 @@ class AclShell extends Shell {
  * @param string $identifier Identifier to parse
  * @return mixed a string for aliases, and an array for model.foreignKey
  */
-	function parseIdentifier($identifier) {
+	public function parseIdentifier($identifier) {
 		if (preg_match('/^([\w]+)\.(.*)$/', $identifier, $matches)) {
-			return array(
+			return [
 				'model' => $matches[1],
 				'foreign_key' => $matches[2],
-			);
+			];
 		}
 		return $identifier;
 	}
@@ -541,7 +541,7 @@ class AclShell extends Shell {
  * @param mixed $identifier A mixed identifier for finding the node.
  * @return int Integer of NodeId. Will trigger an error if nothing is found.
  */
-	function _getNodeId($class, $identifier) {
+	public function _getNodeId($class, $identifier) {
 		$node = $this->Acl->{$class}->node($identifier);
 		if (empty($node)) {
 			if (is_array($identifier)) {
@@ -558,7 +558,7 @@ class AclShell extends Shell {
  * @return array aro, aco, action
  * @access private
  */
-	function __getParams() {
+	public function __getParams() {
 		$aro = is_numeric($this->args[0]) ? intval($this->args[0]) : $this->args[0];
 		$aco = is_numeric($this->args[1]) ? intval($this->args[1]) : $this->args[1];
 		$aroName = $aro;
@@ -587,11 +587,11 @@ class AclShell extends Shell {
  * @return array Variables
  * @access private
  */
-	function __dataVars($type = null) {
+	public function __dataVars($type = null) {
 		if ($type == null) {
 			$type = $this->args[0];
 		}
-		$vars = array();
+		$vars = [];
 		$class = ucwords($type);
 		$vars['secondary_id'] = (strtolower($class) == 'aro') ? 'foreign_key' : 'object_id';
 		$vars['data_name'] = $type;

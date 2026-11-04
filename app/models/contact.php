@@ -26,13 +26,13 @@ class Contact extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
-		'Cached' => array(
-			'prefix' => array(
+	public $actsAs = [
+		'Cached' => [
+			'prefix' => [
 				'contact_',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Validation
@@ -40,26 +40,26 @@ class Contact extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'title' => array(
+	public $validate = [
+		'title' => [
 			'rule' => 'notEmpty',
 			'message' => 'This field cannot be left blank.',
-		),
-		'alias' => array(
-			'isUnique' => array(
+		],
+		'alias' => [
+			'isUnique' => [
 				'rule' => 'isUnique',
 				'message' => 'This alias has already been taken.',
-			),
-			'minLength' => array(
-				'rule' => array('minLength', 1),
+			],
+			'minLength' => [
+				'rule' => ['minLength', 1],
 				'message' => 'Alias cannot be empty.',
-			),
-		),
-		'email' => array(
+			],
+		],
+		'email' => [
 			'rule' => 'email',
 			'message' => 'Please provide a valid email address.',
-		),
-	);
+		],
+	];
 
 /**
  * Model associations: hasMany
@@ -67,8 +67,8 @@ class Contact extends AppModel {
  * @var array
  * @access public
  */
-	public $hasMany = array(
-		'Message' => array(
+	public $hasMany = [
+		'Message' => [
 			'className' => 'Message',
 			'foreignKey' => 'contact_id',
 			'dependent' => false,
@@ -80,6 +80,6 @@ class Contact extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => '',
-		),
-	);
+		],
+	];
 }

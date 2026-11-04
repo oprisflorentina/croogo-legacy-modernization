@@ -37,7 +37,7 @@ class MagicDb extends CakeObject {
  *
  * @var array
  */
-	var $db = array();
+	public $db = [];
 
 /**
  * Reads a MagicDb from various formats
@@ -46,11 +46,11 @@ class MagicDb extends CakeObject {
  * @return boolean Returns false if reading / validation failed or true on success.
  * @author        Felix
  */
-	function read($magicDb = null) {
+	public function read($magicDb = null) {
 		if (!is_string($magicDb) && !is_array($magicDb)) {
 			return false;
 		}
-		if (is_array($magicDb) || strpos($magicDb, '# FILE_ID DB') === 0) {
+		if (is_array($magicDb) || str_starts_with($magicDb, '# FILE_ID DB')) {
 			$data = $magicDb;
 		} else {
 			$File = new File($magicDb);
@@ -80,7 +80,7 @@ class MagicDb extends CakeObject {
  * @return array A parsed MagicDb array or an empty array if the $data param was invalid. Returns the db property if $data is not set.
  * @access public
  */
-	function toArray($data = null) {
+	public function toArray($data = null) {
 		if (is_array($data)) {
 			return $data;
 		}
@@ -88,12 +88,12 @@ class MagicDb extends CakeObject {
 			return $this->db;
 		}
 
-		if (strpos($data, '# FILE_ID DB') !== 0) {
-			return array();
+		if (!str_starts_with($data, '# FILE_ID DB')) {
+			return [];
 		}
 
 		$lines = explode("\r\n", $data);
-		$db = array();
+		$db = [];
 
 		$validHeader = count($lines) > 3
 					&& preg_match('/^# Date:([0-9]{4}-[0-9]{2}-[0-9]{2})$/', $lines[1], $date)
@@ -103,10 +103,10 @@ class MagicDb extends CakeObject {
 			return $db;
 		}
 
-		$db = array('header' => array('Date' => $date[1], 'Source' => $source[1]), 'database' => array());
+		$db = ['header' => ['Date' => $date[1], 'Source' => $source[1]], 'database' => []];
 		$lines = array_splice($lines, 3);
 
-		$format = array();
+		$format = [];
 		while (!empty($lines)) {
 			$line = array_shift($lines);
 			if (isset($line[0]) && $line[0] == '#' || empty($line)) {
@@ -114,13 +114,13 @@ class MagicDb extends CakeObject {
 			}
 
 			$columns = explode("\t", $line);
-			if (in_array($columns[0][0], array('>', '&'))) {
+			if (in_array($columns[0][0], ['>', '&'])) {
 				$format[] = $columns;
 			} elseif (!empty($format)) {
 				$db['database'][] = $format;
-				$format = array($columns);
+				$format = [$columns];
 			} else {
-				$format = array($columns);
+				$format = [$columns];
 			}
 		}
 
@@ -134,7 +134,7 @@ class MagicDb extends CakeObject {
  * @return boolean True if the $magicDb / instance db validates, false if not
  * @access public
  */
-	function validates($magicDb = null) {
+	public function validates($magicDb = null) {
 		if (is_null($magicDb)) {
 			$magicDb = $this->db;
 		} elseif (!is_array($magicDb)) {
@@ -152,12 +152,12 @@ class MagicDb extends CakeObject {
  * @return mixed
  * @access public
  */
-	function analyze($file, $options = array()) {
+	public function analyze($file, $options = []) {
 		if (!is_string($file)) {
 			return false;
 		}
 
-		$matches = array();
+		$matches = [];
 		$MagicFileResource = new MagicFileResource($file);
 		foreach ($this->db['database'] as $format) {
 			$magic = $format[0];
@@ -186,7 +186,7 @@ class MagicFileResource extends CakeObject{
  * @var unknown
  * @access public
  */
-	var $resource = null;
+	public $resource = null;
 
 /**
  * undocumented variable
@@ -194,7 +194,7 @@ class MagicFileResource extends CakeObject{
  * @var unknown
  * @access public
  */
-	var $offset = 0;
+	public $offset = 0;
 
 /**
  * undocumented function
@@ -203,7 +203,7 @@ class MagicFileResource extends CakeObject{
  * @return void
  * @access public
  */
-	function __construct($file) {
+	public function __construct($file) {
 		if (file_exists($file)) {
 			$this->resource = new File($file);
 		} else {
@@ -218,7 +218,7 @@ class MagicFileResource extends CakeObject{
  * @return void
  * @access public
  */
-	function test($magic) {
+	public function test($magic) {
 		$offset = null;
 		$type = null;
 		$expected = null;
@@ -247,7 +247,7 @@ class MagicFileResource extends CakeObject{
  * @return void
  * @access public
  */
-	function read($length = null) {
+	public function read($length = null) {
 		if (!is_object($this->resource)) {
 			return substr($this->resource, $this->offset, $length);
 		}
@@ -262,7 +262,7 @@ class MagicFileResource extends CakeObject{
  * @return void
  * @access public
  */
-	function extract($offset, $type, $expected) {
+	public function extract($offset, $type, $expected) {
 		switch ($type) {
 			case 'string':
 				$this->offset($offset);
@@ -282,7 +282,7 @@ class MagicFileResource extends CakeObject{
  * @return void
  * @access public
  */
-	function offset($offset = null) {
+	public function offset($offset = null) {
 		if (is_null($offset)) {
 			if (!is_object($this->resource)) {
 				return $this->offset;

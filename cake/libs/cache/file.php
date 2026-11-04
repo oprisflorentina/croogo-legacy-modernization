@@ -37,7 +37,7 @@ class FileEngine extends CacheEngine {
  * @var File
  * @access protected
  */
-	var $_File = null;
+	public $_File = null;
 
 /**
  * Settings
@@ -51,7 +51,7 @@ class FileEngine extends CacheEngine {
  * @see CacheEngine::__defaults
  * @access public
  */
-	var $settings = array();
+	public $settings = [];
 
 /**
  * True unless FileEngine::__active(); fails
@@ -59,7 +59,7 @@ class FileEngine extends CacheEngine {
  * @var boolean
  * @access protected
  */
-	var $_init = true;
+	public $_init = true;
 
 /**
  * Initialize the Cache Engine
@@ -71,12 +71,12 @@ class FileEngine extends CacheEngine {
  * @return boolean True if the engine has been successfully initialized, false if not
  * @access public
  */
-	function init($settings = array()) {
+	public function init($settings = []) {
 		parent::init(array_merge(
-			array(
+			[
 				'engine' => 'File', 'path' => CACHE, 'prefix'=> 'cake_', 'lock'=> false,
 				'serialize'=> true, 'isWindows' => false
-			),
+			],
 			$settings
 		));
 		if (!isset($this->_File)) {
@@ -100,7 +100,7 @@ class FileEngine extends CacheEngine {
  * @return boolean True if garbage collection was succesful, false on failure
  * @access public
  */
-	function gc() {
+	public function gc() {
 		return $this->clear(true);
 	}
 
@@ -113,7 +113,7 @@ class FileEngine extends CacheEngine {
  * @return boolean True if the data was succesfully cached, false on failure
  * @access public
  */
-	function write($key, &$data, $duration) {
+	public function write($key, &$data, $duration) {
 		if ($data === '' || !$this->_init) {
 			return false;
 		}
@@ -167,7 +167,7 @@ class FileEngine extends CacheEngine {
  * @return mixed The cached data, or false if the data doesn't exist, has expired, or if there was an error fetching it
  * @access public
  */
-	function read($key) {
+	public function read($key) {
 		if ($this->_setKey($key) === false || !$this->_init || !$this->_File->exists()) {
 			return false;
 		}
@@ -200,7 +200,7 @@ class FileEngine extends CacheEngine {
  * @return boolean True if the value was successfully deleted, false if it didn't exist or couldn't be removed
  * @access public
  */
-	function delete($key) {
+	public function delete($key) {
 		if ($this->_setKey($key) === false || !$this->_init) {
 			return false;
 		}
@@ -214,7 +214,7 @@ class FileEngine extends CacheEngine {
  * @return boolean True if the cache was succesfully cleared, false otherwise
  * @access public
  */
-	function clear($check) {
+	public function clear($check) {
 		if (!$this->_init) {
 			return false;
 		}
@@ -258,7 +258,7 @@ class FileEngine extends CacheEngine {
  * @return mixed Absolute cache file for the given key or false if erroneous
  * @access private
  */
-	function _setKey($key) {
+	public function _setKey($key) {
 		$this->_File->Folder->cd($this->settings['path']);
 		if ($key !== $this->_File->name) {
 			$this->_File->name = $key;
@@ -275,7 +275,7 @@ class FileEngine extends CacheEngine {
  * @return boolean
  * @access private
  */
-	function __active() {
+	public function __active() {
 		if ($this->_init && !is_writable($this->settings['path'])) {
 			$this->_init = false;
 			trigger_error(sprintf(__('%s is not writable', true), $this->settings['path']), E_USER_WARNING);

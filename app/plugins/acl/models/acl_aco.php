@@ -5,6 +5,6 @@ class AclAco extends AppModel {
 
 	public $useTable = 'acos';
 
-	public $actsAs = array('Tree');
+	public $actsAs = ['Tree'];
 
 }

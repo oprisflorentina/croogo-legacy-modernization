@@ -19,9 +19,9 @@ class ParamsBehavior extends ModelBehavior {
  * @param array  $config
  * @return void
  */
-	public function setup(&$model, $config = array()) {
+	public function setup(&$model, $config = []) {
 		if (is_string($config)) {
-			$config = array($config);
+			$config = [$config];
 		}
 
 		$this->settings[$model->alias] = $config;
@@ -35,17 +35,17 @@ class ParamsBehavior extends ModelBehavior {
  * @param boolean $primary
  * @return array
  */
-	public function afterFind(&$model, $results = array(), $primary = false) {
+	public function afterFind(&$model, $results = [], $primary = false) {
 		if ($primary && isset($results[0][$model->alias])) {
 			foreach ($results AS $i => $result) {
-				$params = array();
+				$params = [];
 				if (isset($result[$model->alias]['params']) && strlen($result[$model->alias]['params']) > 0) {
 					$params = $this->paramsToArray($model, $result[$model->alias]['params']);
 				}
 				$results[$i]['Params'] = $params;
 			}
 		} elseif (isset($results[$model->alias])) {
-			$params = array();
+			$params = [];
 			if (isset($results[$model->alias]['params']) && strlen($results[$model->alias]['params']) > 0) {
 				$params = $this->paramsToArray($model, $results[$model->alias]['params']);
 			}
@@ -67,7 +67,7 @@ class ParamsBehavior extends ModelBehavior {
  * @return array
  */
 	public function paramsToArray(&$model, $params) {
-		$output = array();
+		$output = [];
 		$params = explode("\n", $params);
 		foreach ($params AS $param) {
 			if (strlen($param) == 0) {

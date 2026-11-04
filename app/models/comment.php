@@ -26,17 +26,17 @@ class Comment extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
+	public $actsAs = [
 		'Tree',
 		'Containable',
-		'Cached' => array(
-			'prefix' => array(
+		'Cached' => [
+			'prefix' => [
 				'comment_',
 				'nodes_',
 				'node_',
-			),
-		),
-	);
+			],
+		],
+	];
 
 /**
  * Validation
@@ -44,21 +44,21 @@ class Comment extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'body' => array(
+	public $validate = [
+		'body' => [
 			'rule' => 'notEmpty',
 			'message' => 'This field cannot be left blank.',
-		),
-		'name' => array(
+		],
+		'name' => [
 			'rule' => 'notEmpty',
 			'message' => 'This field cannot be left blank.',
-		),
-		'email' => array(
+		],
+		'email' => [
 			'rule' => 'email',
 			'required' => true,
 			'message' => 'Please enter a valid email address.',
-		),
-	);
+		],
+	];
 
 /**
  * Model associations: belongsTo
@@ -66,12 +66,12 @@ class Comment extends AppModel {
  * @var array
  * @access public
  */
-	public $belongsTo = array(
-		'Node' => array(
+	public $belongsTo = [
+		'Node' => [
 			'counterCache' => true,
-			'counterScope' => array('Comment.status' => 1),
-		),
+			'counterScope' => ['Comment.status' => 1],
+		],
 		'User',
-	);
+	];
 
 }

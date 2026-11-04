@@ -12,11 +12,11 @@
 /**
  * Cache configuration
  */
-	$cacheConfig = array(
+	$cacheConfig = [
 		'duration' => '+1 hour',
 		'path' => CACHE.'queries',
 		'engine' => 'File',
-	);
+	];
 
 	// models
 	Cache::config('setting_write_configuration', $cacheConfig);
@@ -42,9 +42,9 @@
  */
 	Configure::write('User.failed_login_limit', 5);
 	Configure::write('User.failed_login_duration', 300);
-	Cache::config('users_login', array_merge($cacheConfig, array(
+	Cache::config('users_login', array_merge($cacheConfig, [
 		'duration' => '+' . Configure::read('User.failed_login_duration') . ' seconds',
-	)));
+	]));
 
 /**
  * Libraries

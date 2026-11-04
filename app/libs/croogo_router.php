@@ -27,13 +27,13 @@ class CroogoRouter {
  * @param array $params			An array matching the named elements in the route to regular expressions which that element should match.
  * @return void
  */
-	public static function connect($route, $default = array(), $params = array()) {
+	public static function connect($route, $default = [], $params = []) {
 		Router::connect($route, $default, $params);
 		if ($route == '/') {
 			$route = '';
 		}
 		if (Configure::read('Translate')) {
-			Router::connect('/:locale' . $route, $default, array_merge(array('locale' => '[a-z]{3}'), $params));
+			Router::connect('/:locale' . $route, $default, array_merge(['locale' => '[a-z]{3}'], $params));
 		}
 	}
 
@@ -45,7 +45,7 @@ class CroogoRouter {
  */
 	public static function localize() {
 		if (Configure::read('Translate')) {
-			Router::connect('/:locale/:controller/:action/*', array(), array('locale' => '[a-z]{3}'));
+			Router::connect('/:locale/:controller/:action/*', [], ['locale' => '[a-z]{3}']);
 		}
 	}
 

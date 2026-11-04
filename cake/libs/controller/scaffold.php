@@ -39,7 +39,7 @@ class Scaffold extends CakeObject {
  * @var Controller
  * @access public
  */
-	var $controller = null;
+	public $controller = null;
 
 /**
  * Name of the controller to scaffold
@@ -47,7 +47,7 @@ class Scaffold extends CakeObject {
  * @var string
  * @access public
  */
-	var $name = null;
+	public $name = null;
 
 /**
  * Action to be performed.
@@ -55,7 +55,7 @@ class Scaffold extends CakeObject {
  * @var string
  * @access public
  */
-	var $action = null;
+	public $action = null;
 
 /**
  * Name of current model this view context is attached to
@@ -63,7 +63,7 @@ class Scaffold extends CakeObject {
  * @var string
  * @access public
  */
-	var $model = null;
+	public $model = null;
 
 /**
  * Path to View.
@@ -71,7 +71,7 @@ class Scaffold extends CakeObject {
  * @var string
  * @access public
  */
-	var $viewPath;
+	public $viewPath;
 
 /**
  * Path parts for creating links in views.
@@ -79,7 +79,7 @@ class Scaffold extends CakeObject {
  * @var string Base URL
  * @access public
  */
-	var $base = null;
+	public $base = null;
 
 /**
  * Name of layout to use with this View.
@@ -87,7 +87,7 @@ class Scaffold extends CakeObject {
  * @var string
  * @access public
  */
-	var $layout = 'default';
+	public $layout = 'default';
 
 /**
  * Array of parameter data
@@ -95,7 +95,7 @@ class Scaffold extends CakeObject {
  * @var array
  * @access public
  */
-	var $params;
+	public $params;
 
 /**
  * File extension. Defaults to Cake's template ".ctp".
@@ -103,7 +103,7 @@ class Scaffold extends CakeObject {
  * @var array
  * @access public
  */
-	var $ext = '.ctp';
+	public $ext = '.ctp';
 
 /**
  * Sub-directory for this view file.
@@ -111,7 +111,7 @@ class Scaffold extends CakeObject {
  * @var string
  * @access public
  */
-	var $subDir = null;
+	public $subDir = null;
 
 /**
  * Plugin name.
@@ -119,7 +119,7 @@ class Scaffold extends CakeObject {
  * @var string
  * @access public
  */
-	var $plugin = null;
+	public $plugin = null;
 
 /**
  * valid session.
@@ -127,7 +127,7 @@ class Scaffold extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $_validSession = null;
+	public $_validSession = null;
 
 /**
  * List of variables to collect from the associated controller
@@ -135,10 +135,10 @@ class Scaffold extends CakeObject {
  * @var array
  * @access private
  */
-	var $__passedVars = array(
+	public $__passedVars = [
 		'action', 'base', 'webroot', 'layout', 'name',
 		'viewPath', 'ext', 'params', 'data', 'plugin', 'cacheAction'
-	);
+	];
 
 /**
  * Title HTML element for current scaffolded view
@@ -146,7 +146,7 @@ class Scaffold extends CakeObject {
  * @var string
  * @access public
  */
-	var $scaffoldTitle = null;
+	public $scaffoldTitle = null;
 
 /**
  * Construct and set up given controller with given parameters.
@@ -154,7 +154,7 @@ class Scaffold extends CakeObject {
  * @param string $controller_class Name of controller
  * @param array $params Parameters for scaffolding
  */
-	function __construct(&$controller, $params) {
+	public function __construct(&$controller, $params) {
 		$this->controller =& $controller;
 
 		$count = count($this->__passedVars);
@@ -163,15 +163,15 @@ class Scaffold extends CakeObject {
 			$this->{$var} = $controller->{$var};
 		}
 
-		$this->redirect = array('action' => 'index');
+		$this->redirect = ['action' => 'index'];
 
 		$this->modelClass = $controller->modelClass;
 		$this->modelKey = $controller->modelKey;
 
 		if (!is_object($this->controller->{$this->modelClass})) {
-			return $this->cakeError('missingModel', array(array(
+			return $this->cakeError('missingModel', [[
 				'className' => $this->modelClass, 'webroot' => '', 'base' => $controller->base
-			)));
+			]]);
 		}
 
 		$this->ScaffoldModel =& $this->controller->{$this->modelClass};
@@ -208,7 +208,7 @@ class Scaffold extends CakeObject {
  * @return void
  * @access protected
  */
-	function _output() {
+	public function _output() {
 		$this->controller->afterFilter();
 		echo($this->controller->output);
 	}
@@ -220,7 +220,7 @@ class Scaffold extends CakeObject {
  * @return mixed A rendered view of a row from Models database table
  * @access private
  */
-	function __scaffoldView($params) {
+	public function __scaffoldView($params) {
 		if ($this->controller->_beforeScaffold('view')) {
 
 			$message = sprintf(__("No id set for %s::view()", true), Inflector::humanize($this->modelKey));
@@ -251,7 +251,7 @@ class Scaffold extends CakeObject {
  * @return mixed A rendered view listing rows from Models database table
  * @access private
  */
-	function __scaffoldIndex($params) {
+	public function __scaffoldIndex($params) {
 		if ($this->controller->_beforeScaffold('index')) {
 			$this->ScaffoldModel->recursive = 0;
 			$this->controller->set(
@@ -271,7 +271,7 @@ class Scaffold extends CakeObject {
  * @return mixed A rendered view with a form to edit or add a record in the Models database table
  * @access private
  */
-	function __scaffoldForm($action = 'edit') {
+	public function __scaffoldForm($action = 'edit') {
 		$this->controller->viewVars['scaffoldFields'] = array_merge(
 			$this->controller->viewVars['scaffoldFields'],
 			array_keys($this->ScaffoldModel->hasAndBelongsToMany)
@@ -288,7 +288,7 @@ class Scaffold extends CakeObject {
  * @return mixed Success on save/update, add/edit form if data is empty or error if save or update fails
  * @access private
  */
-	function __scaffoldSave($params = array(), $action = 'edit') {
+	public function __scaffoldSave($params = [], $action = 'edit') {
 		$formAction = 'edit';
 		$success = __('updated', true);
 		if ($action === 'add') {
@@ -375,7 +375,7 @@ class Scaffold extends CakeObject {
  * @return mixed Success on delete, error if delete fails
  * @access private
  */
-	function __scaffoldDelete($params = array()) {
+	public function __scaffoldDelete($params = []) {
 		if ($this->controller->_beforeScaffold('delete')) {
 			$message = sprintf(
 				__("No id set for %s::delete()", true),
@@ -427,7 +427,7 @@ class Scaffold extends CakeObject {
  * @return mixed A rendered view showing the error
  * @access private
  */
-	function __scaffoldError() {
+	public function __scaffoldError() {
 		return $this->controller->render('error', $this->layout);
 		$this->_output();
 	}
@@ -441,18 +441,18 @@ class Scaffold extends CakeObject {
  * @return mixed A rendered view of scaffold action, or showing the error
  * @access private
  */
-	function __scaffold($params) {
+	public function __scaffold($params) {
 		$db = &ConnectionManager::getDataSource($this->ScaffoldModel->useDbConfig);
 		$prefixes = Configure::read('Routing.prefixes');
 		$scaffoldPrefix = $this->scaffoldActions;
 
 		if (isset($db)) {
 			if (empty($this->scaffoldActions)) {
-				$this->scaffoldActions = array(
+				$this->scaffoldActions = [
 					'index', 'list', 'view', 'add', 'create', 'edit', 'update', 'delete'
-				);
+				];
 			} elseif (!empty($prefixes) && in_array($scaffoldPrefix, $prefixes)) {
-				$this->scaffoldActions = array(
+				$this->scaffoldActions = [
 					$scaffoldPrefix . '_index',
 					$scaffoldPrefix . '_list',
 					$scaffoldPrefix . '_view',
@@ -461,7 +461,7 @@ class Scaffold extends CakeObject {
 					$scaffoldPrefix . '_edit',
 					$scaffoldPrefix . '_update',
 					$scaffoldPrefix . '_delete'
-				);
+				];
 			}
 
 			if (in_array($params['action'], $this->scaffoldActions)) {
@@ -489,17 +489,17 @@ class Scaffold extends CakeObject {
 					break;
 				}
 			} else {
-				return $this->cakeError('missingAction', array(array(
+				return $this->cakeError('missingAction', [[
 					'className' => $this->controller->name . "Controller",
 					'base' => $this->controller->base,
 					'action' => $this->action,
 					'webroot' => $this->controller->webroot
-				)));
+				]]);
 			}
 		} else {
-			return $this->cakeError('missingDatabase', array(array(
+			return $this->cakeError('missingDatabase', [[
 				'webroot' => $this->controller->webroot
-			)));
+			]]);
 		}
 	}
 
@@ -509,9 +509,9 @@ class Scaffold extends CakeObject {
  * @return array Associations for model
  * @access private
  */
-	function __associations() {
-		$keys = array('belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany');
-		$associations = array();
+	public function __associations() {
+		$keys = ['belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany'];
+		$associations = [];
 
 		foreach ($keys as $key => $type) {
 			foreach ($this->ScaffoldModel->{$type} as $assocKey => $assocData) {
@@ -561,16 +561,14 @@ class ScaffoldView extends ThemeView {
  * @return string action
  * @access protected
  */
-	function _getViewFileName($name = null) {
-		if ($name === null) {
-			$name = $this->action;
-		}
+	public function _getViewFileName($name = null) {
+		$name ??= $this->action;
 		$name = Inflector::underscore($name);
 		$prefixes = Configure::read('Routing.prefixes');
 
 		if (!empty($prefixes)) {
 			foreach ($prefixes as $prefix) {
-				if (strpos($name, $prefix . '_') !== false) {
+				if (str_contains($name, $prefix . '_')) {
 					$name = substr($name, strlen($prefix) + 1);
 					break;
 				}
@@ -593,7 +591,7 @@ class ScaffoldView extends ThemeView {
 		$names[] = 'scaffolds' . DS . $subDir . $name;
 
 		$paths = $this->_paths($this->plugin);
-		$exts = array($this->ext);
+		$exts = [$this->ext];
 		if ($this->ext !== '.ctp') {
 			array_push($exts, '.ctp');
 		}

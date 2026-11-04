@@ -36,7 +36,7 @@ class AjaxHelper extends AppHelper {
  *
  * @var array
  */
-	var $helpers = array('Html', 'Javascript', 'Form');
+	public $helpers = ['Html', 'Javascript', 'Form'];
 
 /**
  * HtmlHelper instance
@@ -44,7 +44,7 @@ class AjaxHelper extends AppHelper {
  * @var HtmlHelper
  * @access public
  */
-	var $Html = null;
+	public $Html = null;
 
 /**
  * JavaScriptHelper instance
@@ -52,100 +52,100 @@ class AjaxHelper extends AppHelper {
  * @var JavaScriptHelper
  * @access public
  */
-	var $Javascript = null;
+	public $Javascript = null;
 
 /**
  * Names of Javascript callback functions.
  *
  * @var array
  */
-	var $callbacks = array(
+	public $callbacks = [
 		'complete', 'create', 'exception', 'failure', 'interactive', 'loading',
 		'loaded', 'success', 'uninitialized'
-	);
+	];
 
 /**
  * Names of AJAX options.
  *
  * @var array
  */
-	var $ajaxOptions = array(
+	public $ajaxOptions = [
 		'after', 'asynchronous', 'before', 'confirm', 'condition', 'contentType', 'encoding',
 		'evalScripts', 'failure', 'fallback', 'form', 'indicator', 'insertion', 'interactive',
 		'loaded', 'loading', 'method', 'onCreate', 'onComplete', 'onException', 'onFailure',
 		'onInteractive', 'onLoaded', 'onLoading', 'onSuccess', 'onUninitialized', 'parameters',
 		'position', 'postBody', 'requestHeaders', 'success', 'type', 'update', 'with'
-	);
+	];
 
 /**
  * Options for draggable.
  *
  * @var array
  */
-	var $dragOptions = array(
+	public $dragOptions = [
 		'handle', 'revert', 'snap', 'zindex', 'constraint', 'change', 'ghosting',
 		'starteffect', 'reverteffect', 'endeffect', 'scroll', 'scrollSensitivity',
 		'onStart', 'onDrag', 'onEnd'
-	);
+	];
 
 /**
  * Options for droppable.
  *
  * @var array
  */
-	var $dropOptions = array(
+	public $dropOptions = [
 		'accept', 'containment', 'greedy', 'hoverclass', 'onHover', 'onDrop', 'overlap'
-	);
+	];
 
 /**
  * Options for sortable.
  *
  * @var array
  */
-	var $sortOptions = array(
+	public $sortOptions = [
 		'constraint', 'containment', 'dropOnEmpty', 'ghosting', 'handle', 'hoverclass', 'onUpdate',
 		'onChange', 'only', 'overlap', 'scroll', 'scrollSensitivity', 'scrollSpeed', 'tag', 'tree',
 		'treeTag', 'update'
-	);
+	];
 
 /**
  * Options for slider.
  *
  * @var array
  */
-	var $sliderOptions = array(
+	public $sliderOptions = [
 		'alignX', 'alignY', 'axis', 'disabled', 'handleDisabled', 'handleImage', 'increment',
 		'maximum', 'minimum', 'onChange', 'onSlide', 'range', 'sliderValue', 'values'
-	);
+	];
 
 /**
  * Options for in-place editor.
  *
  * @var array
  */
-	var $editorOptions = array(
+	public $editorOptions = [
 		'okText', 'cancelText', 'savingText', 'formId', 'externalControl', 'rows', 'cols', 'size',
 		'highlightcolor', 'highlightendcolor', 'savingClassName', 'formClassName', 'loadTextURL',
 		'loadingText', 'callback', 'ajaxOptions', 'clickToEditText', 'collection', 'okControl',
 		'cancelControl', 'submitOnBlur'
-	);
+	];
 
 /**
  * Options for auto-complete editor.
  *
  * @var array
  */
-	var $autoCompleteOptions = array(
+	public $autoCompleteOptions = [
 		'afterUpdateElement', 'callback', 'frequency', 'indicator', 'minChars', 'onShow', 'onHide',
 		'parameters', 'paramName', 'tokens', 'updateElement'
-	);
+	];
 
 /**
  * Output buffer for Ajax update content
  *
  * @var array
  */
-	var $__ajaxBuffer = array();
+	public $__ajaxBuffer = [];
 
 /**
  * Returns link to remote action
@@ -210,26 +210,22 @@ class AjaxHelper extends AppHelper {
  * @return string HTML code for link to remote action
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#link
  */
-	function link($title, $url = null, $options = array(), $confirm = null) {
-		if (!isset($url)) {
-			$url = $title;
-		}
-		if (!isset($options['url'])) {
-			$options['url'] = $url;
-		}
+	public function link($title, $url = null, $options = [], $confirm = null) {
+		$url ??= $title;
+		$options['url'] ??= $url;
 
 		if (!empty($confirm)) {
 			$options['confirm'] = $confirm;
 			unset($confirm);
 		}
-		$htmlOptions = $this->__getHtmlOptions($options, array('url'));
-		$options += array('safe' => true);
+		$htmlOptions = $this->__getHtmlOptions($options, ['url']);
+		$options += ['safe' => true];
 
 		unset($options['escape']);
 		if (empty($options['fallback']) || !isset($options['fallback'])) {
 			$options['fallback'] = $url;
 		}
-		$htmlDefaults = array('id' => 'link' . intval(mt_rand()), 'onclick' => '');
+		$htmlDefaults = ['id' => 'link' . intval(mt_rand()), 'onclick' => ''];
 		$htmlOptions = array_merge($htmlDefaults, $htmlOptions);
 
 		$htmlOptions['onclick'] .= ' event.returnValue = false; return false;';
@@ -254,16 +250,14 @@ class AjaxHelper extends AppHelper {
  * @see AjaxHelper::link() for docs on options parameter.
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#remoteFunction
  */
-	function remoteFunction($options) {
+	public function remoteFunction($options) {
 		if (isset($options['update'])) {
 			if (!is_array($options['update'])) {
 				$func = "new Ajax.Updater('{$options['update']}',";
 			} else {
 				$func = "new Ajax.Updater(document.createElement('div'),";
 			}
-			if (!isset($options['requestHeaders'])) {
-				$options['requestHeaders'] = array();
-			}
+			$options['requestHeaders'] ??= [];
 			if (is_array($options['update'])) {
 				$options['update'] = implode(' ', $options['update']);
 			}
@@ -272,7 +266,7 @@ class AjaxHelper extends AppHelper {
 			$func = "new Ajax.Request(";
 		}
 
-		$url = isset($options['url']) ? $options['url'] : "";
+		$url = $options['url'] ?? "";
 		if (empty($options['safe'])) {
 			$url = $this->url($url);
 		} else {
@@ -312,8 +306,8 @@ class AjaxHelper extends AppHelper {
  * @see AjaxHelper::link()
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#remoteTimer
  */
-	function remoteTimer($options = null) {
-		$frequency = (isset($options['frequency'])) ? $options['frequency'] : 10;
+	public function remoteTimer($options = null) {
+		$frequency = $options['frequency'] ?? 10;
 		$callback = $this->remoteFunction($options);
 		$code = "new PeriodicalExecuter(function(pe) {{$callback}}, $frequency)";
 		return $this->Javascript->codeBlock($code);
@@ -339,25 +333,25 @@ class AjaxHelper extends AppHelper {
  * @see AjaxHelper::link()
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#form
  */
-	function form($params = null, $type = 'post', $options = array()) {
+	public function form($params = null, $type = 'post', $options = []) {
 		$model = false;
 		if (is_array($params)) {
 			extract($params, EXTR_OVERWRITE);
 		}
 
 		if (empty($options['url'])) {
-			$options['url'] = array('action' => $params);
+			$options['url'] = ['action' => $params];
 		}
 
-		$htmlDefaults = array(
+		$htmlDefaults = [
 			'id' => 'form' . intval(mt_rand()),
 			'onsubmit'	=> "event.returnValue = false; return false;",
 			'type' => $type
-		);
-		$htmlOptions = $this->__getHtmlOptions($options, array('model', 'with'));
+		];
+		$htmlOptions = $this->__getHtmlOptions($options, ['model', 'with']);
 		$htmlOptions = array_merge($htmlDefaults, $htmlOptions);
 
-		$defaults = array('model' => $model, 'with' => "Form.serialize('{$htmlOptions['id']}')");
+		$defaults = ['model' => $model, 'with' => "Form.serialize('{$htmlOptions['id']}')"];
 		$options = array_merge($defaults, $options);
 		$callback = $this->remoteFunction($options);
 
@@ -379,16 +373,12 @@ class AjaxHelper extends AppHelper {
  * @see AjaxHelper::form()
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#submit
  */
-	function submit($title = 'Submit', $options = array()) {
+	public function submit($title = 'Submit', $options = []) {
 		$htmlOptions = $this->__getHtmlOptions($options);
 		$htmlOptions['value'] = $title;
 
-		if (!isset($options['with'])) {
-			$options['with'] = 'Form.serialize(Event.element(event).form)';
-		}
-		if (!isset($htmlOptions['id'])) {
-			$htmlOptions['id'] = 'submit' . intval(mt_rand());
-		}
+		$options['with'] ??= 'Form.serialize(Event.element(event).form)';
+		$htmlOptions['id'] ??= 'submit' . intval(mt_rand());
 
 		$htmlOptions['onclick'] = "event.returnValue = false; return false;";
 		$callback = $this->remoteFunction($options);
@@ -427,10 +417,8 @@ class AjaxHelper extends AppHelper {
  * @return string ajax script
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#observeField
  */
-	function observeField($field, $options = array()) {
-		if (!isset($options['with'])) {
-			$options['with'] = 'Form.Element.serialize(\'' . $field . '\')';
-		}
+	public function observeField($field, $options = []) {
+		$options['with'] ??= 'Form.Element.serialize(\'' . $field . '\')';
 		$observer = 'Observer';
 		if (!isset($options['frequency']) || intval($options['frequency']) == 0) {
 			$observer = 'EventObserver';
@@ -453,10 +441,8 @@ class AjaxHelper extends AppHelper {
  * @return string ajax script
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#observeForm
  */
-	function observeForm($form, $options = array()) {
-		if (!isset($options['with'])) {
-			$options['with'] = 'Form.serialize(\'' . $form . '\')';
-		}
+	public function observeForm($form, $options = []) {
+		$options['with'] ??= 'Form.serialize(\'' . $form . '\')';
 		$observer = 'Observer';
 		if (!isset($options['frequency']) || intval($options['frequency']) == 0) {
 			$observer = 'EventObserver';
@@ -480,21 +466,19 @@ class AjaxHelper extends AppHelper {
  * @return string Ajax script
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#autoComplete
  */
-	function autoComplete($field, $url = "", $options = array()) {
+	public function autoComplete($field, $url = "", $options = []) {
 		$var = '';
 		if (isset($options['var'])) {
 			$var = 'var ' . $options['var'] . ' = ';
 			unset($options['var']);
 		}
 
-		if (!isset($options['id'])) {
-			$options['id'] = Inflector::camelize(str_replace(".", "_", $field));
-		}
+		$options['id'] ??= Inflector::camelize(str_replace(".", "_", $field));
 
-		$divOptions = array(
+		$divOptions = [
 			'id' => $options['id'] . "_autoComplete",
-			'class' => isset($options['class']) ? $options['class'] : 'auto_complete'
-		);
+			'class' => $options['class'] ?? 'auto_complete'
+		];
 
 		if (isset($options['div_id'])) {
 			$divOptions['id'] = $options['div_id'];
@@ -516,7 +500,7 @@ class AjaxHelper extends AppHelper {
 			}
 		}
 
-		$options = $this->_optionsToString($options, array('paramName', 'indicator'));
+		$options = $this->_optionsToString($options, ['paramName', 'indicator']);
 		$options = $this->_buildOptions($options, $this->autoCompleteOptions);
 
 		$text = $this->Form->text($field, $htmlOptions);
@@ -533,7 +517,7 @@ class AjaxHelper extends AppHelper {
  * @param string $id options for javascript
  * @return string HTML code
  */
-	function div($id, $options = array()) {
+	public function div($id, $options = []) {
 		if (env('HTTP_X_UPDATE') != null) {
 			$this->Javascript->enabled = false;
 			$divs = explode(' ', env('HTTP_X_UPDATE'));
@@ -544,7 +528,7 @@ class AjaxHelper extends AppHelper {
 				return '';
 			}
 		}
-		$attr = $this->_parseAttributes(array_merge($options, array('id' => $id)));
+		$attr = $this->_parseAttributes(array_merge($options, ['id' => $id]));
 		return sprintf($this->Html->tags['blockstart'], $attr);
 	}
 
@@ -554,7 +538,7 @@ class AjaxHelper extends AppHelper {
  * @param string $id The DOM ID of the element
  * @return string HTML code
  */
-	function divEnd($id) {
+	public function divEnd($id) {
 		if (env('HTTP_X_UPDATE') != null) {
 			$divs = explode(' ', env('HTTP_X_UPDATE'));
 			if (in_array($id, $divs)) {
@@ -573,7 +557,7 @@ class AjaxHelper extends AppHelper {
  * @return boolean True if the current request is a Prototype Ajax update call
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#isAjax
  */
-	function isAjax() {
+	public function isAjax() {
 		return (isset($this->params['isAjax']) && $this->params['isAjax'] === true);
 	}
 
@@ -586,14 +570,14 @@ class AjaxHelper extends AppHelper {
  * @return unknown
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#drag-drop
  */
-	function drag($id, $options = array()) {
+	public function drag($id, $options = []) {
 		$var = '';
 		if (isset($options['var'])) {
 			$var = 'var ' . $options['var'] . ' = ';
 			unset($options['var']);
 		}
 		$options = $this->_buildOptions(
-			$this->_optionsToString($options, array('handle', 'constraint')), $this->dragOptions
+			$this->_optionsToString($options, ['handle', 'constraint']), $this->dragOptions
 		);
 		return $this->Javascript->codeBlock("{$var}new Draggable('$id', " .$options . ");");
 	}
@@ -607,8 +591,8 @@ class AjaxHelper extends AppHelper {
  * @return string
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#drag-drop
  */
-	function drop($id, $options = array()) {
-		$optionsString = array('overlap', 'hoverclass');
+	public function drop($id, $options = []) {
+		$optionsString = ['overlap', 'hoverclass'];
 		if (!isset($options['accept']) || !is_array($options['accept'])) {
 			$optionsString[] = 'accept';
 		} else if (isset($options['accept'])) {
@@ -632,10 +616,10 @@ class AjaxHelper extends AppHelper {
  * @param array $ajaxOptions
  * @return string JavaScript block to create a droppable element
  */
-	function dropRemote($id, $options = array(), $ajaxOptions = array()) {
+	public function dropRemote($id, $options = [], $ajaxOptions = []) {
 		$callback = $this->remoteFunction($ajaxOptions);
 		$options['onDrop'] = "function(element, droppable, event) {{$callback}}";
-		$optionsString = array('overlap', 'hoverclass');
+		$optionsString = ['overlap', 'hoverclass'];
 
 		if (!isset($options['accept']) || !is_array($options['accept'])) {
 			$optionsString[] = 'accept';
@@ -659,7 +643,7 @@ class AjaxHelper extends AppHelper {
  * @link          http://github.com/madrobby/scriptaculous/wikis/slider
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#slider
  */
-	function slider($id, $trackId, $options = array()) {
+	public function slider($id, $trackId, $options = []) {
 		if (isset($options['var'])) {
 			$var = 'var ' . $options['var'] . ' = ';
 			unset($options['var']);
@@ -667,10 +651,10 @@ class AjaxHelper extends AppHelper {
 			$var = 'var ' . $id . ' = ';
 		}
 
-		$options = $this->_optionsToString($options, array(
+		$options = $this->_optionsToString($options, [
 			'axis', 'handleImage', 'handleDisabled'
-		));
-		$callbacks = array('change', 'slide');
+		]);
+		$callbacks = ['change', 'slide'];
 
 		foreach ($callbacks as $callback) {
 			if (isset($options[$callback])) {
@@ -698,7 +682,7 @@ class AjaxHelper extends AppHelper {
  * @link          http://github.com/madrobby/scriptaculous/wikis/ajax-inplaceeditor
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#editor
  */
-	function editor($id, $url, $options = array()) {
+	public function editor($id, $url, $options = []) {
 		$url = $this->url($url);
 		$options['ajaxOptions'] = $this->__optionsForAjax($options);
 
@@ -724,11 +708,11 @@ class AjaxHelper extends AppHelper {
 			unset($options['var']);
 		}
 
-		$options = $this->_optionsToString($options, array(
+		$options = $this->_optionsToString($options, [
 			'okText', 'cancelText', 'savingText', 'formId', 'externalControl', 'highlightcolor',
 			'highlightendcolor', 'savingClassName', 'formClassName', 'loadTextURL', 'loadingText',
 			'clickToEditText', 'okControl', 'cancelControl'
-		));
+		]);
 		$options = $this->_buildOptions($options, $this->editorOptions);
 		$script = "{$var}new Ajax.{$type}('{$id}', '{$url}', {$options});";
 		return $this->Javascript->codeBlock($script);
@@ -742,7 +726,7 @@ class AjaxHelper extends AppHelper {
  * @link          http://github.com/madrobby/scriptaculous/wikis/sortable
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/AJAX.html#sortable
  */
-	function sortable($id, $options = array()) {
+	public function sortable($id, $options = []) {
 		if (!empty($options['url'])) {
 			if (empty($options['with'])) {
 				$options['with'] = "Sortable.serialize('$id')";
@@ -755,14 +739,14 @@ class AjaxHelper extends AppHelper {
 			$block = $options['block'];
 			unset($options['block']);
 		}
-		$strings = array(
+		$strings = [
 			'tag', 'constraint', 'only', 'handle', 'hoverclass', 'tree',
 			'treeTag', 'update', 'overlap'
-		);
+		];
 		$scrollIsObject = (
 			isset($options['scroll']) &&
 			$options['scroll'] != 'window' &&
-			strpos($options['scroll'], '$(') !== 0
+			!str_starts_with($options['scroll'], '$(')
 		);
 
 		if ($scrollIsObject) {
@@ -786,12 +770,12 @@ class AjaxHelper extends AppHelper {
  * @param array $options Set of options
  * @access private
  */
-	function __optionsForAjax($options) {
+	public function __optionsForAjax($options) {
 		if (isset($options['indicator'])) {
 			if (isset($options['loading'])) {
 				$loading = $options['loading'];
 
-				if (!empty($loading) && substr(trim($loading), -1, 1) != ';') {
+				if (!empty($loading) && !str_ends_with(trim($loading), ';')) {
 					$options['loading'] .= '; ';
 				}
 				$options['loading'] .= "Element.show('{$options['indicator']}');";
@@ -801,7 +785,7 @@ class AjaxHelper extends AppHelper {
 			if (isset($options['complete'])) {
 				$complete = $options['complete'];
 
-				if (!empty($complete) && substr(trim($complete), -1, 1) != ';') {
+				if (!empty($complete) && !str_ends_with(trim($complete), ';')) {
 					$options['complete'] .= '; ';
 				}
 				$options['complete'] .= "Element.hide('{$options['indicator']}');";
@@ -812,16 +796,16 @@ class AjaxHelper extends AppHelper {
 		}
 
 		$jsOptions = array_merge(
-			array('asynchronous' => 'true', 'evalScripts'  => 'true'),
+			['asynchronous' => 'true', 'evalScripts'  => 'true'],
 			$this->_buildCallbacks($options)
 		);
 
-		$options = $this->_optionsToString($options, array(
+		$options = $this->_optionsToString($options, [
 			'contentType', 'encoding', 'fallback', 'method', 'postBody', 'update', 'url'
-		));
-		$jsOptions = array_merge($jsOptions, array_intersect_key($options, array_flip(array(
+		]);
+		$jsOptions = array_merge($jsOptions, array_intersect_key($options, array_flip([
 			'contentType', 'encoding', 'method', 'postBody'
-		))));
+		])));
 
 		foreach ($options as $key => $value) {
 			switch ($key) {
@@ -842,7 +826,7 @@ class AjaxHelper extends AppHelper {
 					$jsOptions['parameters'] = 'Form.serialize(this)';
 				break;
 				case 'requestHeaders':
-					$keys = array();
+					$keys = [];
 					foreach ($value as $key => $val) {
 						$keys[] = "'" . $key . "'";
 						$keys[] = "'" . $val . "'";
@@ -863,7 +847,7 @@ class AjaxHelper extends AppHelper {
  * @return array Array of html options
  * @access private
  */
-	function __getHtmlOptions($options, $extra = array()) {
+	public function __getHtmlOptions($options, $extra = []) {
 		foreach (array_merge($this->ajaxOptions, $this->callbacks, $extra) as $key) {
 			if (isset($options[$key])) {
 				unset($options[$key]);
@@ -879,9 +863,9 @@ class AjaxHelper extends AppHelper {
  * @param array $acceptable	Array of legal keys in this options context
  * @return string	String of Javascript array definition
  */
-	function _buildOptions($options, $acceptable) {
+	public function _buildOptions($options, $acceptable) {
 		if (is_array($options)) {
-			$out = array();
+			$out = [];
 
 			foreach ($options as $k => $v) {
 				if (in_array($k, $acceptable)) {
@@ -892,7 +876,7 @@ class AjaxHelper extends AppHelper {
 					}
 					$out[] = "$k:$v";
 				} elseif ($k === 'with' && in_array('parameters', $acceptable)) {
-					$out[] = "parameters:${v}";
+					$out[] = "parameters:{$v}";
 				}
 			}
 
@@ -912,7 +896,7 @@ class AjaxHelper extends AppHelper {
  * @param array $options	Ajax options
  * @return string Formatted JavaScript
  */
-	function _buildObserver($klass, $name, $options = null) {
+	public function _buildObserver($klass, $name, $options = null) {
 		if (!isset($options['with']) && isset($options['update'])) {
 			$options['with'] = 'value';
 		}
@@ -931,8 +915,8 @@ class AjaxHelper extends AppHelper {
  * @return array Options with their callbacks properly set
  * @access protected
  */
-	function _buildCallbacks($options) {
-		$callbacks = array();
+	public function _buildCallbacks($options) {
+		$callbacks = [];
 
 		foreach ($this->callbacks as $callback) {
 			if (isset($options[$callback])) {
@@ -957,7 +941,7 @@ class AjaxHelper extends AppHelper {
 
 					$hasBinding = (
 						(is_array($bind) && in_array($callback, $bind)) ||
-						(is_string($bind) && strpos($bind, $callback) !== false)
+						(is_string($bind) && str_contains($bind, $callback))
 					);
 
 					if ($hasBinding) {
@@ -977,7 +961,7 @@ class AjaxHelper extends AppHelper {
  * @access private
  * @return array
  */
-	function _optionsToString($options, $stringOpts = array()) {
+	public function _optionsToString($options, $stringOpts = []) {
 		foreach ($stringOpts as $option) {
 			$hasOption = (
 				isset($options[$option]) && !empty($options[$option]) &&
@@ -1003,11 +987,11 @@ class AjaxHelper extends AppHelper {
  *
  * @access public
  */
-	function afterRender() {
+	public function afterRender() {
 		if (env('HTTP_X_UPDATE') != null && !empty($this->__ajaxBuffer)) {
 			@ob_end_clean();
 
-			$data = array();
+			$data = [];
 			$divs = explode(' ', env('HTTP_X_UPDATE'));
 			$keys = array_keys($this->__ajaxBuffer);
 

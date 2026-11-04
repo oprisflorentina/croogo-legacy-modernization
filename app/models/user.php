@@ -34,9 +34,9 @@ class User extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
-		'Acl' => array('type' => 'requester'),
-	);
+	public $actsAs = [
+		'Acl' => ['type' => 'requester'],
+	];
 
 /**
  * Model associations: belongsTo
@@ -44,7 +44,7 @@ class User extends AppModel {
  * @var array
  * @access public
  */
-	public $belongsTo = array('Role');
+	public $belongsTo = ['Role'];
 
 /**
  * Validation
@@ -52,60 +52,60 @@ class User extends AppModel {
  * @var array
  * @access public
  */
-	public $validate = array(
-		'username' => array(
-			'isUnique' => array(
+	public $validate = [
+		'username' => [
+			'isUnique' => [
 				'rule' => 'isUnique',
 				'message' => 'The username has already been taken.',
 				'last' => true,
-			),
-			'notEmpty' => array(
+			],
+			'notEmpty' => [
 				'rule' => 'notEmpty',
 				'message' => 'This field cannot be left blank.',
 				'last' => true,
-			),
-			'validAlias' => array(
+			],
+			'validAlias' => [
 				'rule' => '_validAlias',
 				'message' => 'This field must be alphanumeric',
 				'last' => true,
-			),
-		),
-		'email' => array(
-			'email' => array(
+			],
+		],
+		'email' => [
+			'email' => [
 				'rule' => 'email',
 				'message' => 'Please provide a valid email address.',
 				'last' => true,
-			),
-			'isUnique' => array(
+			],
+			'isUnique' => [
 				'rule' => 'isUnique',
 				'message' => 'Email address already in use.',
 				'last' => true,
-			),
-		),
-		'password' => array(
-			'rule' => array('minLength', 6),
+			],
+		],
+		'password' => [
+			'rule' => ['minLength', 6],
 			'message' => 'Passwords must be at least 6 characters long.',
-		),
-		'name' => array(
-			'notEmpty' => array(
+		],
+		'name' => [
+			'notEmpty' => [
 				'rule' => 'notEmpty',
 				'message' => 'This field cannot be left blank.',
 				'last' => true,
-			),
-			'validName' => array(
+			],
+			'validName' => [
 				'rule' => '_validName',
 				'message' => 'This field must be alphanumeric',
 				'last' => true,
-			),
-		),
-		'website' => array(
-			'url' => array(
+			],
+		],
+		'website' => [
+			'url' => [
 				'rule' => 'url',
 				'message' => 'This field must be a valid URL',
 				'allowEmpty' => true,
-			),
-		),
-	);
+			],
+		],
+	];
 
 	public function parentNode() {
 		if (!$this->id && empty($this->data)) {
@@ -118,7 +118,7 @@ class User extends AppModel {
 		if (!isset($data['User']['role_id']) || !$data['User']['role_id']) {
 			return null;
 		} else {
-			return array('Role' => array('id' => $data['User']['role_id']));
+			return ['Role' => ['id' => $data['User']['role_id']]];
 		}
 	}
 

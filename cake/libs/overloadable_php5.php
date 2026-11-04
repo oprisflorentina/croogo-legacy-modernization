@@ -33,7 +33,7 @@ class Overloadable extends CakeObject {
  *
  * @access public
  */
-	static function overload() { }
+	public static function overload() { }
 
 /**
  * Magic method handler.
@@ -43,9 +43,9 @@ class Overloadable extends CakeObject {
  * @return mixed Return value from method
  * @access private
  */
-	function __call($method, $params) {
+	public function __call($method, $params) {
 		if (!method_exists($this, 'call__')) {
-			trigger_error(sprintf(__('Magic method handler call__ not defined in %s', true), get_class($this)), E_USER_ERROR);
+			trigger_error(sprintf(__('Magic method handler call__ not defined in %s', true), static::class), E_USER_ERROR);
 		}
 		return $this->call__($method, $params);
 	}
@@ -65,7 +65,7 @@ class Overloadable2 extends CakeObject {
  *
  * @access public
  */
-	function overload() { }
+	public function overload() { }
 
 /**
  * Magic method handler.
@@ -75,9 +75,9 @@ class Overloadable2 extends CakeObject {
  * @return mixed Return value from method
  * @access private
  */
-	function __call($method, $params) {
+	public function __call($method, $params) {
 		if (!method_exists($this, 'call__')) {
-			trigger_error(sprintf(__('Magic method handler call__ not defined in %s', true), get_class($this)), E_USER_ERROR);
+			trigger_error(sprintf(__('Magic method handler call__ not defined in %s', true), static::class), E_USER_ERROR);
 		}
 		return $this->call__($method, $params);
 	}
@@ -90,7 +90,7 @@ class Overloadable2 extends CakeObject {
  * @return boolean Success
  * @access private
  */
-	function __get($name) {
+	public function __get($name) {
 		return $this->get__($name);
 	}
 
@@ -102,7 +102,7 @@ class Overloadable2 extends CakeObject {
  * @return boolean Success
  * @access private
  */
-	function __set($name, $value) {
+	public function __set($name, $value) {
 		return $this->set__($name, $value);
 	}
 }

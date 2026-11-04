@@ -19,9 +19,9 @@ class MetaBehavior extends ModelBehavior {
  * @param array  $config
  * @return void
  */
-	public function setup(&$model, $config = array()) {
+	public function setup(&$model, $config = []) {
 		if (is_string($config)) {
-			$config = array($config);
+			$config = [$config];
 		}
 
 		$this->settings[$model->alias] = $config;
@@ -35,17 +35,17 @@ class MetaBehavior extends ModelBehavior {
  * @param boolean $primary
  * @return array
  */
-	public function afterFind(&$model, $results = array(), $primary = false) {
+	public function afterFind(&$model, $results = [], $primary = false) {
 		if ($primary && isset($results[0][$model->alias])) {
 			foreach ($results AS $i => $result) {
-				$customFields = array();
+				$customFields = [];
 				if (isset($result['Meta']) && count($result['Meta']) > 0) {
 					$customFields = Set::combine($result, 'Meta.{n}.key', 'Meta.{n}.value');
 				}
 				$results[$i]['CustomFields'] = $customFields;
 			}
 		} elseif (isset($results[$model->alias])) {
-			$customFields = array();
+			$customFields = [];
 			if (isset($results['Meta']) && count($results['Meta']) > 0) {
 				$customFields = Set::combine($results, 'Meta.{n}.key', 'Meta.{n}.value');
 			}
@@ -79,7 +79,7 @@ class MetaBehavior extends ModelBehavior {
 			count($data['Meta']) > 0 &&
 			!Set::numeric(array_keys($data['Meta']))) {
 			$meta = $data['Meta'];
-			$data['Meta'] = array();
+			$data['Meta'] = [];
 			$i = 0;
 			foreach ($meta AS $metaUuid => $metaArray) {
 				$data['Meta'][$i] = $metaArray;
@@ -98,7 +98,7 @@ class MetaBehavior extends ModelBehavior {
  * @param array  $options
  * @return void
  */
-	public function saveWithMeta(&$model, $data, $options = array()) {
+	public function saveWithMeta(&$model, $data, $options = []) {
 		$data = $this->__prepareMeta($data);
 		return $model->saveAll($data, $options);
 	}

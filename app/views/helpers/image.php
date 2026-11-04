@@ -5,7 +5,7 @@
  * @author Jorge Orpinel <jop@levogiro.net> (changes)
  */
 class ImageHelper extends Helper {
-	public $helpers = array('Html');
+	public $helpers = ['Html'];
 	public $cacheDir = 'resized'; // relative to 'img'.DS
 
 	/**
@@ -20,8 +20,8 @@ class ImageHelper extends Helper {
 	 * @return mixed	Either string or echos the value, depends on AUTO_OUTPUT and $return.
 	 * @access public
 	 */
-	public function resize($path, $width, $height, $aspect = true, $htmlAttributes = array(), $return = false) {
-		$types = array(1 => "gif", "jpeg", "png", "swf", "psd", "wbmp"); // used to determine image type
+	public function resize($path, $width, $height, $aspect = true, $htmlAttributes = [], $return = false) {
+		$types = [1 => "gif", "jpeg", "png", "swf", "psd", "wbmp"]; // used to determine image type
 		if(empty($htmlAttributes['alt'])) $htmlAttributes['alt'] = 'thumb';  // Ponemos alt default
 
 		$uploadsDir = 'uploads';

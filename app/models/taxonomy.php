@@ -26,19 +26,19 @@ class Taxonomy extends AppModel {
  * @var array
  * @access public
  */
-	public $actsAs = array(
+	public $actsAs = [
 		'Tree',
-		'Cached' => array(
-			'prefix' => array(
+		'Cached' => [
+			'prefix' => [
 				'node_',
 				'nodes_',
 				'nodes_taxonomy_',
 				'croogo_nodes_',
 				'croogo_vocabulary_',
-			),
-		),
+			],
+		],
 		'Containable',
-	);
+	];
 
 /**
  * Model associations: belongsTo
@@ -46,22 +46,22 @@ class Taxonomy extends AppModel {
  * @var array
  * @access public
  */
-	public $belongsTo = array(
-		'Term' => array(
+	public $belongsTo = [
+		'Term' => [
 			'className' => 'Term',
 			'foreignKey' => 'term_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
-		),
-		'Vocabulary' => array(
+		],
+		'Vocabulary' => [
 			'className' => 'Vocabulary',
 			'foreignKey' => 'vocabulary_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
-		),
-	);
+		],
+	];
 
 /**
  * Generates a tree of terms for a vocabulary
@@ -70,13 +70,13 @@ class Taxonomy extends AppModel {
  * @param  array  $options
  * @return array
  */
-	public function getTree($alias, $options = array()) {
-		$_options = array(
+	public function getTree($alias, $options = []) {
+		$_options = [
 			'key' => 'slug',		// Term.slug
 			'value' => 'title',	 // Term.title
 			'taxonomyId' => false,
 			'cache' => false,
-		);
+		];
 		$options = array_merge($_options, $options);
 
 		// Check if cached
@@ -100,28 +100,28 @@ class Taxonomy extends AppModel {
 		if (!isset($vocabulary['Vocabulary']['id'])) {
 			return false;
 		}
-		$this->Behaviors->attach('Tree', array(
-			'scope' => array(
+		$this->Behaviors->attach('Tree', [
+			'scope' => [
 				'Taxonomy.vocabulary_id' => $vocabulary['Vocabulary']['id'],
-			),
-		));
-		$treeConditions = array(
+			],
+		]);
+		$treeConditions = [
 			'Taxonomy.vocabulary_id' => $vocabulary['Vocabulary']['id'],
-		);
+		];
 		$tree = $this->generatetreelist($treeConditions, '{n}.Taxonomy.term_id', '{n}.Taxonomy.id');
 		$termsIds = array_keys($tree);
-		$terms = $this->Term->find('list', array(
-			'conditions' => array(
+		$terms = $this->Term->find('list', [
+			'conditions' => [
 				'Term.id' => $termsIds,
-			),
-			'fields' => array(
+			],
+			'fields' => [
 				$options['key'],
 				$options['value'],
 				'id',
-			),
-		));
+			],
+		]);
 
-		$termsTree = array();
+		$termsTree = [];
 		foreach ($tree AS $termId => $tvId) {
 			if (isset($terms[$termId])) {
 				$term = $terms[$termId];
@@ -161,15 +161,12 @@ class Taxonomy extends AppModel {
  * @return boolean
  */
 	public function termInVocabulary($termId, $vocabularyId) {
-		$taxonomy = $this->find('first', array(
-			'conditions' => array(
+		$taxonomy = $this->find('first', [
+			'conditions' => [
 				'Taxonomy.term_id' => $termId,
 				'Taxonomy.vocabulary_id' => $vocabularyId,
-			),
-		));
-		if (isset($taxonomy['Taxonomy']['id'])) {
-			return $taxonomy['Taxonomy']['id'];
-		}
-		return false;
+			],
+		]);
+		return $taxonomy['Taxonomy']['id'] ?? false;
 	}
 }

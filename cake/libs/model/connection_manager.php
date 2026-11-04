@@ -36,7 +36,7 @@ class ConnectionManager extends CakeObject {
  * @var DATABASE_CONFIG
  * @access public
  */
-	var $config = null;
+	public $config = null;
 
 /**
  * Holds instances DataSource objects
@@ -44,7 +44,7 @@ class ConnectionManager extends CakeObject {
  * @var array
  * @access protected
  */
-	var $_dataSources = array();
+	public $_dataSources = [];
 
 /**
  * Contains a list of all file and class names used in Connection settings
@@ -52,13 +52,13 @@ class ConnectionManager extends CakeObject {
  * @var array
  * @access protected
  */
-	var $_connectionsEnum = array();
+	public $_connectionsEnum = [];
 
 /**
  * Constructor.
  *
  */
-	function __construct() {
+	public function __construct() {
 		if (class_exists('DATABASE_CONFIG')) {
 			$this->config = new DATABASE_CONFIG();
 			$this->_getConnectionObjects();
@@ -72,8 +72,8 @@ class ConnectionManager extends CakeObject {
  * @access public
  * @static
  */
-	static function &getInstance() {
-		static $instance = array();
+	public static function &getInstance() {
+		static $instance = [];
 
 		if (!$instance) {
 			$instance[0] = new ConnectionManager();
@@ -90,7 +90,7 @@ class ConnectionManager extends CakeObject {
  * @access public
  * @static
  */
-	static function &getDataSource($name) {
+	public static function &getDataSource($name) {
 		$_this =& ConnectionManager::getInstance();
 
 		if (!empty($_this->_dataSources[$name])) {
@@ -125,7 +125,7 @@ class ConnectionManager extends CakeObject {
  * @access public
  * @static
  */
-	static function sourceList() {
+	public static function sourceList() {
 		$_this =& ConnectionManager::getInstance();
 		return array_keys($_this->_dataSources);
 	}
@@ -141,7 +141,7 @@ class ConnectionManager extends CakeObject {
  * @access public
  * @static
  */
-	static function getSourceName(&$source) {
+	public static function getSourceName(&$source) {
 		$_this =& ConnectionManager::getInstance();
 		foreach ($_this->_dataSources as $name => $ds) {
 			if ($ds == $source) {
@@ -161,7 +161,7 @@ class ConnectionManager extends CakeObject {
  * @access public
  * @static
  */
-	function loadDataSource($connName) {
+	public function loadDataSource($connName) {
 		$_this =& ConnectionManager::getInstance();
 
 		if (is_array($connName)) {
@@ -178,7 +178,7 @@ class ConnectionManager extends CakeObject {
 			$_this->loadDataSource($conn['parent']);
 		}
 
-		$conn = array_merge(array('plugin' => null, 'classname' => null, 'parent' => null), $conn);
+		$conn = array_merge(['plugin' => null, 'classname' => null, 'parent' => null], $conn);
 		$class = "{$conn['plugin']}.{$conn['classname']}";
 
 		if (!App::import('Datasource', $class, !is_null($conn['plugin']))) {
@@ -196,7 +196,7 @@ class ConnectionManager extends CakeObject {
  * @access public
  * @static
  */
-	function enumConnectionObjects() {
+	public function enumConnectionObjects() {
 		$_this =& ConnectionManager::getInstance();
 
 		return $_this->_connectionsEnum;
@@ -211,7 +211,7 @@ class ConnectionManager extends CakeObject {
  * @access public
  * @static
  */
-	static function &create($name = '', $config = array()) {
+	public static function &create($name = '', $config = []) {
 		$_this =& ConnectionManager::getInstance();
 
 		if (empty($name) || empty($config) || array_key_exists($name, $_this->_connectionsEnum)) {
@@ -231,7 +231,7 @@ class ConnectionManager extends CakeObject {
  * @access protected
  * @static
  */
-	function _getConnectionObjects() {
+	public function _getConnectionObjects() {
 		$connections = get_object_vars($this->config);
 
 		if ($connections != null) {
@@ -239,7 +239,7 @@ class ConnectionManager extends CakeObject {
 				$this->_connectionsEnum[$name] = $this->__connectionData($config);
 			}
 		} else {
-			$this->cakeError('missingConnection', array(array('code' => 500, 'className' => 'ConnectionManager')));
+			$this->cakeError('missingConnection', [['code' => 500, 'className' => 'ConnectionManager']]);
 		}
 	}
 
@@ -249,17 +249,15 @@ class ConnectionManager extends CakeObject {
  * @return array An indexed array with: filename, classname, plugin and parent
  * @access private
  */
-	function __connectionData($config) {
-		if (!isset($config['datasource'])) {
-			$config['datasource'] = 'dbo';
-		}
+	public function __connectionData($config) {
+		$config['datasource'] ??= 'dbo';
 		$filename = $classname = $parent = $plugin = null;
 
 		if (!empty($config['driver'])) {
-			$parent = $this->__connectionData(array('datasource' => $config['datasource']));
+			$parent = $this->__connectionData(['datasource' => $config['datasource']]);
 			$parentSource = preg_replace('/_source$/', '', $parent['filename']);
 
-			list($plugin, $classname) = pluginSplit($config['driver']);
+			[$plugin, $classname] = pluginSplit($config['driver']);
 			if ($plugin) {
 				$source = Inflector::underscore($classname);
 			} else {
@@ -268,13 +266,13 @@ class ConnectionManager extends CakeObject {
 			}
 			$filename = $parentSource . DS . $source;
 		} else {
-			list($plugin, $classname) = pluginSplit($config['datasource']);
+			[$plugin, $classname] = pluginSplit($config['datasource']);
 			if ($plugin) {
 				$filename = Inflector::underscore($classname);
 			} else {
 				$filename = Inflector::underscore($config['datasource']);
 			}
-			if (substr($filename, -7) != '_source') {
+			if (!str_ends_with($filename, '_source')) {
 				$filename .= '_source';
 			}
 			$classname = Inflector::camelize(strtolower($filename));
@@ -287,7 +285,7 @@ class ConnectionManager extends CakeObject {
  *
  * @access private
  */
-	function __destruct() {
+	public function __destruct() {
 		if (Configure::read('Session.save') == 'database' && function_exists('session_write_close')) {
 			session_write_close();
 		}

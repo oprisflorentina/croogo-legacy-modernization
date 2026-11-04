@@ -21,7 +21,7 @@
 /**
  * Included libraries.
  */
-App::import('Core', array('l10n', 'Multibyte'));
+App::import('Core', ['l10n', 'Multibyte']);
 
 /**
  * I18n handles translation of Text and time format strings.
@@ -37,7 +37,7 @@ class I18n extends CakeObject {
  * @var I10n
  * @access public
  */
-	var $l10n = null;
+	public $l10n = null;
 
 /**
  * Current domain of translation
@@ -45,7 +45,7 @@ class I18n extends CakeObject {
  * @var string
  * @access public
  */
-	var $domain = null;
+	public $domain = null;
 
 /**
  * Current category of translation
@@ -53,7 +53,7 @@ class I18n extends CakeObject {
  * @var string
  * @access public
  */
-	var $category = 'LC_MESSAGES';
+	public $category = 'LC_MESSAGES';
 
 /**
  * Current language used for translations
@@ -61,7 +61,7 @@ class I18n extends CakeObject {
  * @var string
  * @access private
  */
-	var $__lang = null;
+	public $__lang = null;
 
 /**
  * Translation strings for a specific domain read from the .mo or .po files
@@ -69,7 +69,7 @@ class I18n extends CakeObject {
  * @var array
  * @access private
  */
-	var $__domains = array();
+	public $__domains = [];
 
 /**
  * Set to true when I18N::__bindTextDomain() is called for the first time.
@@ -78,7 +78,7 @@ class I18n extends CakeObject {
  * @var boolean
  * @access private
  */
-	var $__noLocale = false;
+	public $__noLocale = false;
 
 /**
  * Set to true when I18N::__bindTextDomain() is called for the first time.
@@ -87,9 +87,9 @@ class I18n extends CakeObject {
  * @var array
  * @access private
  */
-	var $__categories = array(
+	public $__categories = [
 		 'LC_ALL', 'LC_COLLATE', 'LC_CTYPE', 'LC_MONETARY', 'LC_NUMERIC', 'LC_TIME', 'LC_MESSAGES'
-	);
+	];
 
 /**
  * Return a static instance of the I18n class
@@ -97,8 +97,8 @@ class I18n extends CakeObject {
  * @return object I18n
  * @access public
  */
-	static function &getInstance() {
-		static $instance = array();
+	public static function &getInstance() {
+		static $instance = [];
 		if (!$instance) {
 			$instance[0] = new I18n();
 			$instance[0]->l10n = new L10n();
@@ -118,13 +118,13 @@ class I18n extends CakeObject {
  * @return string translated string.
  * @access public
  */
-	static function translate($singular, $plural = null, $domain = null, $category = 6, $count = null) {
+	public static function translate($singular, $plural = null, $domain = null, $category = 6, $count = null) {
 		$_this =& I18n::getInstance();
 		
-		if (strpos($singular, "\r\n") !== false) {
+		if (str_contains($singular, "\r\n")) {
 			$singular = str_replace("\r\n", "\n", $singular);
 		}
-		if ($plural !== null && strpos($plural, "\r\n") !== false) {
+		if ($plural !== null && str_contains($plural, "\r\n")) {
 			$plural = str_replace("\r\n", "\n", $plural);
 		}
 
@@ -142,15 +142,11 @@ class I18n extends CakeObject {
 			$_this->__lang = $lang;
 		}
 
-		if (is_null($domain)) {
-			$domain = 'default';
-		}
+		$domain ??= 'default';
 
 		$_this->domain = $domain . '_' . $_this->l10n->lang;
 
-		if (!isset($_this->__domains[$domain][$_this->__lang])) {
-			$_this->__domains[$domain][$_this->__lang] = Cache::read($_this->domain, '_cake_core_');
-		}
+		$_this->__domains[$domain][$_this->__lang] ??= Cache::read($_this->domain, '_cake_core_');
 
 		if (!isset($_this->__domains[$domain][$_this->__lang][$_this->category])) {
 			$_this->__bindTextDomain($domain);
@@ -198,9 +194,9 @@ class I18n extends CakeObject {
  *
  * @return void
  */
-	function clear() {
+	public function clear() {
 		$self =& I18n::getInstance();
-		$self->__domains = array();
+		$self->__domains = [];
 	}
 
 /**
@@ -211,7 +207,7 @@ class I18n extends CakeObject {
  * @return integer plural match
  * @access private
  */
-	function __pluralGuess($header, $n) {
+	public function __pluralGuess($header, $n) {
 		if (!is_string($header) || $header === "nplurals=1;plural=0;" || !isset($header[0])) {
 			return 0;
 		}
@@ -260,10 +256,10 @@ class I18n extends CakeObject {
  * @return string Domain binded
  * @access private
  */
-	function __bindTextDomain($domain) {
+	public function __bindTextDomain($domain) {
 		$this->__noLocale = true;
 		$core = true;
-		$merge = array();
+		$merge = [];
 		$searchPaths = App::path('locales');
 		$plugins = App::objects('plugin');
 
@@ -318,7 +314,7 @@ class I18n extends CakeObject {
 		}
 
 		if (empty($this->__domains[$domain][$this->__lang][$this->category])) {
-			$this->__domains[$domain][$this->__lang][$this->category] = array();
+			$this->__domains[$domain][$this->__lang][$this->category] = [];
 			return $domain;
 		}
 		
@@ -352,7 +348,7 @@ class I18n extends CakeObject {
  * @param string $domain Domain where to load file in
  * @access private
  */
-	function __loadMo($file, $domain) {
+	public function __loadMo($file, $domain) {
 		$data = file_get_contents($file);
 
 		if ($data) {
@@ -367,7 +363,7 @@ class I18n extends CakeObject {
 					unset($msgid_plural);
 
 					if (strpos($msgid, "\000")) {
-						list($msgid, $msgid_plural) = explode("\000", $msgid);
+						[$msgid, $msgid_plural] = explode("\000", $msgid);
 					}
 					$r = unpack("L1len/L1offs", substr($data, $o_trn + $n * 8, 8));
 					$msgstr = substr($data, $r["offs"], $r["len"]);
@@ -393,9 +389,9 @@ class I18n extends CakeObject {
  * @return array Binded domain elements
  * @access private
  */
-	function __loadPo($file, $domain) {
+	public function __loadPo($file, $domain) {
 		$type = 0;
-		$translations = array();
+		$translations = [];
 		$translationKey = "";
 		$plural = 0;
 		$header = "";
@@ -464,7 +460,7 @@ class I18n extends CakeObject {
  * @return void
  * @access private
  */
-	function __loadLocaleDefinition($file, $domain = null) {
+	public function __loadLocaleDefinition($file, $domain = null) {
 		$comment = '#';
 		$escape = '\\';
 		$currentToken = false;
@@ -499,14 +495,14 @@ class I18n extends CakeObject {
 				continue;
 			}
 
-			$mustEscape = array($escape . ',' , $escape . ';', $escape . '<', $escape . '>', $escape . $escape);
+			$mustEscape = [$escape . ',' , $escape . ';', $escape . '<', $escape . '>', $escape . $escape];
 			$replacements = array_map('crc32', $mustEscape);
 			$value = str_replace($mustEscape, $replacements, $value);
 			$value = explode(';', $value);
 			$this->__escape = $escape;
 			foreach ($value as $i => $val) {
 				$val = trim($val, '"');
-				$val = preg_replace_callback('/(?:<)?(.[^>]*)(?:>)?/', array(&$this, '__parseLiteralValue'), $val);
+				$val = preg_replace_callback('/(?:<)?(.[^>]*)(?:>)?/', [&$this, '__parseLiteralValue'], $val);
 				$val = str_replace($replacements, $mustEscape, $val);
 				$value[$i] = $val;
 			}
@@ -525,7 +521,7 @@ class I18n extends CakeObject {
  * @return string parsed symbol
  * @access private
  */
-	function __parseLiteralValue($string) {
+	public function __parseLiteralValue($string) {
 		$string = $string[1];
 		if (substr($string, 0, 2) === $this->__escape . 'x') {
 			$delimiter = $this->__escape . 'x';
@@ -539,12 +535,12 @@ class I18n extends CakeObject {
 			$delimiter = $this->__escape;
 			return join('', array_map('chr', array_filter(explode($delimiter, $string))));
 		}
-		if (substr($string, 0, 3) === 'U00') {
+		if (str_starts_with($string, 'U00')) {
 			$delimiter = 'U00';
 			return join('', array_map('chr', array_map('hexdec', array_filter(explode($delimiter, $string)))));
 		}
 		if (preg_match('/U([0-9a-fA-F]{4})/', $string, $match)) {
-			return Multibyte::ascii(array(hexdec($match[1])));
+			return Multibyte::ascii([hexdec($match[1])]);
 		}
 		return $string;
 	}
@@ -557,7 +553,7 @@ class I18n extends CakeObject {
  * @return mixed translated format string if only value or array of translated strings for corresponding format.
  * @access private
  */
-	function __translateTime($format, $domain) {
+	public function __translateTime($format, $domain) {
 		if (!empty($this->__domains[$domain][$this->__lang]['LC_TIME'][$format])) {
 			if (($trans = $this->__domains[$domain][$this->__lang][$this->category][$format])) {
 				return $trans;

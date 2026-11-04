@@ -3,8 +3,8 @@ class LinkData {
 
 	public $table = 'links';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '5',
 			'parent_id' => '',
 			'menu_id' => '4',
@@ -21,8 +21,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-10-06 23:14:21',
 			'created' => '2009-08-19 12:23:33'
-		),
-		array(
+		],
+		[
 			'id' => '6',
 			'parent_id' => '',
 			'menu_id' => '4',
@@ -39,8 +39,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-10-06 23:14:45',
 			'created' => '2009-08-19 12:34:56'
-		),
-		array(
+		],
+		[
 			'id' => '7',
 			'parent_id' => '',
 			'menu_id' => '3',
@@ -57,8 +57,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-10-06 21:17:06',
 			'created' => '2009-09-06 21:32:54'
-		),
-		array(
+		],
+		[
 			'id' => '8',
 			'parent_id' => '',
 			'menu_id' => '3',
@@ -75,8 +75,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-09-12 03:45:53',
 			'created' => '2009-09-06 21:34:57'
-		),
-		array(
+		],
+		[
 			'id' => '9',
 			'parent_id' => '8',
 			'menu_id' => '3',
@@ -93,8 +93,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-10-06 23:13:06',
 			'created' => '2009-09-12 03:52:23'
-		),
-		array(
+		],
+		[
 			'id' => '10',
 			'parent_id' => '',
 			'menu_id' => '5',
@@ -111,8 +111,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-09-12 06:34:09',
 			'created' => '2009-09-12 06:34:09'
-		),
-		array(
+		],
+		[
 			'id' => '11',
 			'parent_id' => '',
 			'menu_id' => '5',
@@ -129,8 +129,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-09-12 06:35:22',
 			'created' => '2009-09-12 06:34:41'
-		),
-		array(
+		],
+		[
 			'id' => '12',
 			'parent_id' => '',
 			'menu_id' => '6',
@@ -147,8 +147,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-09-12 23:31:59',
 			'created' => '2009-09-12 23:31:59'
-		),
-		array(
+		],
+		[
 			'id' => '14',
 			'parent_id' => '',
 			'menu_id' => '6',
@@ -165,8 +165,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-10-07 03:25:25',
 			'created' => '2009-09-12 23:38:43'
-		),
-		array(
+		],
+		[
 			'id' => '15',
 			'parent_id' => '',
 			'menu_id' => '3',
@@ -183,8 +183,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-09-16 07:54:13',
 			'created' => '2009-09-16 07:53:33'
-		),
-		array(
+		],
+		[
 			'id' => '16',
 			'parent_id' => '',
 			'menu_id' => '5',
@@ -201,8 +201,8 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-10-27 17:46:22',
 			'created' => '2009-10-27 17:46:22'
-		),
-		array(
+		],
+		[
 			'id' => '17',
 			'parent_id' => '',
 			'menu_id' => '5',
@@ -219,7 +219,7 @@ class LinkData {
 			'params' => '',
 			'updated' => '2009-10-27 17:46:54',
 			'created' => '2009-10-27 17:46:54'
-		),
-	);
+		],
+	];
 
 }

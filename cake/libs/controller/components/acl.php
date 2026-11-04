@@ -39,17 +39,17 @@ class AclComponent extends CakeObject {
  * @var object
  * @access protected
  */
-	var $_Instance = null;
+	public $_Instance = null;
 
 /**
  * Constructor. Will return an instance of the correct ACL class as defined in `Configure::read('Acl.classname')`
  *
  */
-	function __construct() {
+	public function __construct() {
 		$name = Inflector::camelize(strtolower(Configure::read('Acl.classname')));
 		if (!class_exists($name)) {
 			if (App::import('Component', $name)) {
-				list($plugin, $name) = pluginSplit($name);
+				[$plugin, $name] = pluginSplit($name);
 				$name .= 'Component';
 			} else {
 				trigger_error(sprintf(__('Could not find %s.', true), $name), E_USER_WARNING);
@@ -66,7 +66,7 @@ class AclComponent extends CakeObject {
  * @return boolean Proceed with component usage (true), or fail (false)
  * @access public
  */
-	function startup(&$controller) {
+	public function startup(&$controller) {
 		return true;
 	}
 
@@ -75,7 +75,7 @@ class AclComponent extends CakeObject {
  *
  * @access protected
  */
-	function _initACL() {
+	public function _initACL() {
 	}
 
 /**
@@ -88,7 +88,7 @@ class AclComponent extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function check($aro, $aco, $action = "*") {
+	public function check($aro, $aco, $action = "*") {
 		return $this->_Instance->check($aro, $aco, $action);
 	}
 
@@ -102,7 +102,7 @@ class AclComponent extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function allow($aro, $aco, $action = "*") {
+	public function allow($aro, $aco, $action = "*") {
 		return $this->_Instance->allow($aro, $aco, $action);
 	}
 
@@ -116,7 +116,7 @@ class AclComponent extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function deny($aro, $aco, $action = "*") {
+	public function deny($aro, $aco, $action = "*") {
 		return $this->_Instance->deny($aro, $aco, $action);
 	}
 
@@ -130,7 +130,7 @@ class AclComponent extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function inherit($aro, $aco, $action = "*") {
+	public function inherit($aro, $aco, $action = "*") {
 		return $this->_Instance->inherit($aro, $aco, $action);
 	}
 
@@ -143,7 +143,7 @@ class AclComponent extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function grant($aro, $aco, $action = "*") {
+	public function grant($aro, $aco, $action = "*") {
 		return $this->_Instance->grant($aro, $aco, $action);
 	}
 
@@ -156,7 +156,7 @@ class AclComponent extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function revoke($aro, $aco, $action = "*") {
+	public function revoke($aro, $aco, $action = "*") {
 		return $this->_Instance->revoke($aro, $aco, $action);
 	}
 }
@@ -175,8 +175,8 @@ class AclBase extends CakeObject {
  * This class should never be instantiated, just subclassed.
  *
  */
-	function __construct() {
-		if (strcasecmp(get_class($this), "AclBase") == 0 || !is_subclass_of($this, "AclBase")) {
+	public function __construct() {
+		if (strcasecmp(static::class, "AclBase") == 0 || !is_subclass_of($this, "AclBase")) {
 			trigger_error(__("[acl_base] The AclBase class constructor has been called, or the class was instantiated. This class must remain abstract. Please refer to the Cake docs for ACL configuration.", true), E_USER_ERROR);
 			return NULL;
 		}
@@ -190,7 +190,7 @@ class AclBase extends CakeObject {
  * @param string $action Action (defaults to *)
  * @access public
  */
-	function check($aro, $aco, $action = "*") {
+	public function check($aro, $aco, $action = "*") {
 	}
 
 /**
@@ -199,7 +199,7 @@ class AclBase extends CakeObject {
  * @param object $component Component
  * @access public
  */
-	function initialize(&$component) {
+	public function initialize(&$component) {
 	}
 }
 
@@ -229,13 +229,13 @@ class DbAcl extends AclBase {
  * Constructor
  *
  */
-	function __construct() {
+	public function __construct() {
 		parent::__construct();
 		if (!class_exists('AclNode')) {
 			require LIBS . 'model' . DS . 'db_acl.php';
 		}
-		$this->Aro =& ClassRegistry::init(array('class' => 'Aro', 'alias' => 'Aro'));
-		$this->Aco =& ClassRegistry::init(array('class' => 'Aco', 'alias' => 'Aco'));
+		$this->Aro =& ClassRegistry::init(['class' => 'Aro', 'alias' => 'Aro']);
+		$this->Aco =& ClassRegistry::init(['class' => 'Aco', 'alias' => 'Aco']);
 	}
 
 /**
@@ -245,7 +245,7 @@ class DbAcl extends AclBase {
  * @return void
  * @access public
  */
-	function initialize(&$component) {
+	public function initialize(&$component) {
 		$component->Aro =& $this->Aro;
 		$component->Aco =& $this->Aco;
 	}
@@ -260,7 +260,7 @@ class DbAcl extends AclBase {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Components/Access-Control-Lists.html#checking-permissions-the-acl-component
  */
-	function check($aro, $aco, $action = "*") {
+	public function check($aro, $aco, $action = "*") {
 		if ($aro == null || $aco == null) {
 			return false;
 		}
@@ -274,7 +274,7 @@ class DbAcl extends AclBase {
 			return false;
 		}
 
-		if ($acoPath == null || $acoPath == array()) {
+		if ($acoPath == null || $acoPath == []) {
 			trigger_error(__("DbAcl::check() - Failed ACO node lookup in permissions check.  Node references:\nAro: ", true) . print_r($aro, true) . "\nAco: " . print_r($aco, true), E_USER_WARNING);
 			return false;
 		}
@@ -287,21 +287,21 @@ class DbAcl extends AclBase {
 			return false;
 		}
 
-		$inherited = array();
+		$inherited = [];
 		$acoIDs = Set::extract($acoPath, '{n}.' . $this->Aco->alias . '.id');
 
 		$count = count($aroPath);
 		for ($i = 0 ; $i < $count; $i++) {
 			$permAlias = $this->Aro->Permission->alias;
 
-			$perms = $this->Aro->Permission->find('all', array(
-				'conditions' => array(
+			$perms = $this->Aro->Permission->find('all', [
+				'conditions' => [
 					"{$permAlias}.aro_id" => $aroPath[$i][$this->Aro->alias]['id'],
 					"{$permAlias}.aco_id" => $acoIDs
-				),
-				'order' => array($this->Aco->alias . '.lft' => 'desc'),
+				],
+				'order' => [$this->Aco->alias . '.lft' => 'desc'],
 				'recursive' => 0
-			));
+			]);
 
 			if (empty($perms)) {
 				continue;
@@ -351,10 +351,10 @@ class DbAcl extends AclBase {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Components/Access-Control-Lists.html#assigning-permissions
  */
-	function allow($aro, $aco, $actions = "*", $value = 1) {
+	public function allow($aro, $aco, $actions = "*", $value = 1) {
 		$perms = $this->getAclLink($aro, $aco);
 		$permKeys = $this->_getAcoKeys($this->Aro->Permission->schema());
-		$save = array();
+		$save = [];
 
 		if ($perms == false) {
 			trigger_error(__('DbAcl::allow() - Invalid node', true), E_USER_WARNING);
@@ -366,10 +366,10 @@ class DbAcl extends AclBase {
 
 		if ($actions == "*") {
 			$permKeys = $this->_getAcoKeys($this->Aro->Permission->schema());
-			$save = array_combine($permKeys, array_pad(array(), count($permKeys), $value));
+			$save = array_combine($permKeys, array_pad([], count($permKeys), $value));
 		} else {
 			if (!is_array($actions)) {
-				$actions = array('_' . $actions);
+				$actions = ['_' . $actions];
 			}
 			if (is_array($actions)) {
 				foreach ($actions as $action) {
@@ -382,7 +382,7 @@ class DbAcl extends AclBase {
 				}
 			}
 		}
-		list($save['aro_id'], $save['aco_id']) = array($perms['aro'], $perms['aco']);
+		[$save['aro_id'], $save['aco_id']] = [$perms['aro'], $perms['aco']];
 
 		if ($perms['link'] != null && !empty($perms['link'])) {
 			$save['id'] = $perms['link'][0][$this->Aro->Permission->alias]['id'];
@@ -403,7 +403,7 @@ class DbAcl extends AclBase {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Components/Access-Control-Lists.html#assigning-permissions
  */
-	function deny($aro, $aco, $action = "*") {
+	public function deny($aro, $aco, $action = "*") {
 		return $this->allow($aro, $aco, $action, -1);
 	}
 
@@ -416,7 +416,7 @@ class DbAcl extends AclBase {
  * @return boolean Success
  * @access public
  */
-	function inherit($aro, $aco, $action = "*") {
+	public function inherit($aro, $aco, $action = "*") {
 		return $this->allow($aro, $aco, $action, 0);
 	}
 
@@ -430,7 +430,7 @@ class DbAcl extends AclBase {
  * @see allow()
  * @access public
  */
-	function grant($aro, $aco, $action = "*") {
+	public function grant($aro, $aco, $action = "*") {
 		return $this->allow($aro, $aco, $action);
 	}
 
@@ -444,7 +444,7 @@ class DbAcl extends AclBase {
  * @see deny()
  * @access public
  */
-	function revoke($aro, $aco, $action = "*") {
+	public function revoke($aro, $aco, $action = "*") {
 		return $this->deny($aro, $aco, $action);
 	}
 
@@ -456,8 +456,8 @@ class DbAcl extends AclBase {
  * @return array Indexed array with: 'aro', 'aco' and 'link'
  * @access public
  */
-	function getAclLink($aro, $aco) {
-		$obj = array();
+	public function getAclLink($aro, $aco) {
+		$obj = [];
 		$obj['Aro'] = $this->Aro->node($aro);
 		$obj['Aco'] = $this->Aco->node($aco);
 
@@ -465,14 +465,14 @@ class DbAcl extends AclBase {
 			return false;
 		}
 
-		return array(
+		return [
 			'aro' => Set::extract($obj, 'Aro.0.'.$this->Aro->alias.'.id'),
 			'aco'  => Set::extract($obj, 'Aco.0.'.$this->Aco->alias.'.id'),
-			'link' => $this->Aro->Permission->find('all', array('conditions' => array(
+			'link' => $this->Aro->Permission->find('all', ['conditions' => [
 				$this->Aro->Permission->alias . '.aro_id' => Set::extract($obj, 'Aro.0.'.$this->Aro->alias.'.id'),
 				$this->Aro->Permission->alias . '.aco_id' => Set::extract($obj, 'Aco.0.'.$this->Aco->alias.'.id')
-			)))
-		);
+			]])
+		];
 	}
 
 /**
@@ -482,11 +482,11 @@ class DbAcl extends AclBase {
  * @return array ACO keys
  * @access protected
  */
-	function _getAcoKeys($keys) {
-		$newKeys = array();
+	public function _getAcoKeys($keys) {
+		$newKeys = [];
 		$keys = array_keys($keys);
 		foreach ($keys as $key) {
-			if (!in_array($key, array('id', 'aro_id', 'aco_id'))) {
+			if (!in_array($key, ['id', 'aro_id', 'aco_id'])) {
 				$newKeys[] = $key;
 			}
 		}
@@ -509,13 +509,13 @@ class IniAcl extends AclBase {
  * @var array
  * @access public
  */
-	var $config = null;
+	public $config = null;
 
 /**
  * The constructor must be overridden, as AclBase is abstract.
  *
  */
-	function __construct() {
+	public function __construct() {
 	}
 
 /**
@@ -529,7 +529,7 @@ class IniAcl extends AclBase {
  * @return boolean Success
  * @access public
  */
-	function check($aro, $aco, $aco_action = null) {
+	public function check($aro, $aco, $aco_action = null) {
 		if ($this->config == null) {
 			$this->config = $this->readConfigFile(CONFIGS . 'acl.ini.php');
 		}
@@ -584,7 +584,7 @@ class IniAcl extends AclBase {
  * @return array INI section structure
  * @access public
  */
-	function readConfigFile($fileName) {
+	public function readConfigFile($fileName) {
 		$fileLineArray = file($fileName);
 
 		foreach ($fileLineArray as $fileLine) {
@@ -592,7 +592,7 @@ class IniAcl extends AclBase {
 			$firstChar = substr($dataLine, 0, 1);
 
 			if ($firstChar != ';' && $dataLine != '') {
-				if ($firstChar == '[' && substr($dataLine, -1, 1) == ']') {
+				if ($firstChar == '[' && str_ends_with($dataLine, ']')) {
 					$sectionName = preg_replace('/[\[\]]/', '', $dataLine);
 				} else {
 					$delimiter = strpos($dataLine, '=');
@@ -601,15 +601,13 @@ class IniAcl extends AclBase {
 						$key = strtolower(trim(substr($dataLine, 0, $delimiter)));
 						$value = trim(substr($dataLine, $delimiter + 1));
 
-						if (substr($value, 0, 1) == '"' && substr($value, -1) == '"') {
+						if (str_starts_with($value, '"') && str_ends_with($value, '"')) {
 							$value = substr($value, 1, -1);
 						}
 
 						$iniSetting[$sectionName][$key]=stripcslashes($value);
 					} else {
-						if (!isset($sectionName)) {
-							$sectionName = '';
-						}
+						$sectionName ??= '';
 
 						$iniSetting[$sectionName][strtolower(trim($dataLine))]='';
 					}
@@ -627,7 +625,7 @@ class IniAcl extends AclBase {
  * @return array Trimmed array
  * @access public
  */
-	function arrayTrim($array) {
+	public function arrayTrim($array) {
 		foreach ($array as $key => $value) {
 			$array[$key] = trim($value);
 		}

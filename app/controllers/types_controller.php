@@ -26,12 +26,12 @@ class TypesController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Type');
+	public $uses = ['Type'];
 
 	public function beforeFilter() {
 		parent::beforeFilter();
 		if ($this->action == 'admin_edit') {
-			$this->Security->disabledFields = array('alias');
+			$this->Security->disabledFields = ['alias'];
 		}
 	}
 
@@ -49,10 +49,10 @@ class TypesController extends AppController {
 		if (!empty($this->data)) {
 			$this->Type->create();
 			if ($this->Type->save($this->data)) {
-				$this->Session->setFlash(__('The Type has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Type has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Type could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Type could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 
@@ -64,15 +64,15 @@ class TypesController extends AppController {
 		$this->set('title_for_layout', __('Edit Type', true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Type', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Type', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Type->save($this->data)) {
-				$this->Session->setFlash(__('The Type has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Type has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Type could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Type could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -85,16 +85,16 @@ class TypesController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Type', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Type', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Type->delete($id)) {
-			$this->Session->setFlash(__('Type deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Type deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 }

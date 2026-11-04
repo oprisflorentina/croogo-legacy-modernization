@@ -18,7 +18,7 @@ class FilemanagerHelper extends AppHelper {
  * @var array
  * @access public
  */
-	public $helpers = array('Html');
+	public $helpers = ['Html'];
 
 /**
  * Get extension from a file name.
@@ -48,7 +48,7 @@ class FilemanagerHelper extends AppHelper {
 	public function ext2icon($ext) {
 		$ext = strtolower($ext);
 
-		$ext2icon = array(
+		$ext2icon = [
 			'css' => 'css.png',
 			'htm' => 'html.png',
 			'html' => 'html.png',
@@ -63,7 +63,7 @@ class FilemanagerHelper extends AppHelper {
 			'jpg' => 'picture.png',
 			'jpeg' => 'picture.png',
 			'png' => 'picture.png',
-		);
+		];
 
 		if (isset($ext2icon[$ext])) {
 			$output = $ext2icon[$ext];
@@ -94,7 +94,7 @@ class FilemanagerHelper extends AppHelper {
 	public function breadcrumb($path) {
 		$path_e = explode(DS, $path);
 
-		$output = array();
+		$output = [];
 		if (DS == '/') {
 			$current_path = DS;
 		} else {
@@ -136,7 +136,7 @@ class FilemanagerHelper extends AppHelper {
  * @return string
  */
 	public function linkDirectory($title, $path) {
-		$output = $this->link($title, array('controller' => 'filemanager', 'action' => 'browse'), $path);
+		$output = $this->link($title, ['controller' => 'filemanager', 'action' => 'browse'], $path);
 		return $output;
 	}
 
@@ -148,7 +148,7 @@ class FilemanagerHelper extends AppHelper {
  * @return string
  */
 	public function linkFile($title, $path) {
-		$output = "<a href='" . $this->Html->url(array('controller' => 'filemanager', 'action' => 'editfile')) . "?path=" . urlencode($path) . "'>{$title}</a>";
+		$output = "<a href='" . $this->Html->url(['controller' => 'filemanager', 'action' => 'editfile']) . "?path=" . urlencode($path) . "'>{$title}</a>";
 		return $output;
 	}
 
@@ -160,7 +160,7 @@ class FilemanagerHelper extends AppHelper {
  * @return string
  */
 	public function linkUpload($title, $path) {
-		$output = $this->link($title, array('controller' => 'filemanager', 'action' => 'upload'), $path);
+		$output = $this->link($title, ['controller' => 'filemanager', 'action' => 'upload'], $path);
 		return $output;
 	}
 
@@ -172,7 +172,7 @@ class FilemanagerHelper extends AppHelper {
  * @return string
  */
 	public function linkCreateDirectory($title, $path) {
-		$output = $this->link($title, array('controller' => 'filemanager', 'action' => 'new'), $path);
+		$output = $this->link($title, ['controller' => 'filemanager', 'action' => 'new'], $path);
 		return $output;
 	}
 
@@ -186,7 +186,7 @@ class FilemanagerHelper extends AppHelper {
 		$mime = explode('/', $mimeType);
 		$mime = $mime['0'];
 
-		$mimeToImages = array();
+		$mimeToImages = [];
 		$mimeToImages['text'] = 'page_white.png';
 
 		if (isset($mimeToImages[$mime])) {
@@ -207,7 +207,7 @@ class FilemanagerHelper extends AppHelper {
  */
 	public function inPath($paths, $search) {
 		foreach ($paths AS $path) {
-			if (strpos($search, $path) !== false) {
+			if (str_contains($search, $path)) {
 				return true;
 			}
 		}

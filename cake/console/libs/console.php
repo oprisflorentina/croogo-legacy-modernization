@@ -30,7 +30,7 @@ class ConsoleShell extends Shell {
  * @var array
  * @access public
  */
-	var $associations = array('hasOne', 'hasMany', 'belongsTo', 'hasAndBelongsToMany');
+	public $associations = ['hasOne', 'hasMany', 'belongsTo', 'hasAndBelongsToMany'];
 
 /**
  * Chars that describe invalid commands
@@ -38,7 +38,7 @@ class ConsoleShell extends Shell {
  * @var array
  * @access public
  */
-	var $badCommandChars = array('$', ';');
+	public $badCommandChars = ['$', ';'];
 
 /**
  * Available models
@@ -46,14 +46,14 @@ class ConsoleShell extends Shell {
  * @var array
  * @access public
  */
-	var $models = array();
+	public $models = [];
 
 /**
  * Override intialize of the Shell
  *
  * @access public
  */
-	function initialize() {
+	public function initialize() {
 		require_once CAKE . 'dispatcher.php';
 		$this->Dispatcher = new Dispatcher();
 		$this->models = App::objects('model');
@@ -78,7 +78,7 @@ class ConsoleShell extends Shell {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$out  = 'Console help:';
 		$out .= '-------------';
 		$out .= 'The interactive console is a tool for testing parts of your app before you';
@@ -141,7 +141,7 @@ class ConsoleShell extends Shell {
  *
  * @access public
  */
-	function main($command = null) {
+	public function main($command = null) {
 		while (true) {
 			if (empty($command)) {
 				$command = trim($this->in(''));
@@ -173,7 +173,7 @@ class ConsoleShell extends Shell {
 					$modelB = $tmp[3];
 
 					if ($this->_isValidModel($modelA) && $this->_isValidModel($modelB) && in_array($association, $this->associations)) {
-						$this->{$modelA}->bindModel(array($association => array($modelB => array('className' => $modelB))), false);
+						$this->{$modelA}->bindModel([$association => [$modelB => ['className' => $modelB]]], false);
 						$this->out("Created $association association between $modelA and $modelB");
 					} else {
 						$this->out("Please verify you are using valid models and association types");
@@ -200,7 +200,7 @@ class ConsoleShell extends Shell {
 					}
 
 					if ($this->_isValidModel($modelA) && $this->_isValidModel($modelB) && in_array($association, $this->associations) && $validCurrentAssociation) {
-						$this->{$modelA}->unbindModel(array($association => array($modelB)));
+						$this->{$modelA}->unbindModel([$association => [$modelB]]);
 						$this->out("Removed $association association between $modelA and $modelB");
 					} else {
 						$this->out("Please verify you are using valid models, valid current association, and valid association types");
@@ -212,7 +212,7 @@ class ConsoleShell extends Shell {
 					$command = str_replace($this->badCommandChars, "", $command);
 
 					// Do we have a valid model?
-					list($modelToCheck, $tmp) = explode('->', $command);
+					[$modelToCheck, $tmp] = explode('->', $command);
 
 					if ($this->_isValidModel($modelToCheck)) {
 						$findCommand = "\$data = \$this->$command;";
@@ -264,11 +264,11 @@ class ConsoleShell extends Shell {
 					// Validate the model we're trying to save here
 					$command = strip_tags($command);
 					$command = str_replace($this->badCommandChars, "", $command);
-					list($modelToSave, $tmp) = explode("->", $command);
+					[$modelToSave, $tmp] = explode("->", $command);
 
 					if ($this->_isValidModel($modelToSave)) {
 						// Extract the array of data we are trying to build
-						list($foo, $data) = explode("->save", $command);
+						[$foo, $data] = explode("->save", $command);
 						$data = preg_replace('/^\(*(array)?\(*(.+?)\)*$/i', '\\2', $data);
 						$saveCommand = "\$this->{$modelToSave}->save(array('{$modelToSave}' => array({$data})));";
 						@eval($saveCommand);
@@ -328,7 +328,7 @@ class ConsoleShell extends Shell {
  * @return boolean true if is an available model, false otherwise
  * @access protected
  */
-	function _isValidModel($modelToCheck) {
+	public function _isValidModel($modelToCheck) {
 		return in_array($modelToCheck, $this->models);
 	}
 
@@ -339,7 +339,7 @@ class ConsoleShell extends Shell {
  * @return boolean True if config reload was a success, otherwise false
  * @access protected
  */
-	function _loadRoutes() {
+	public function _loadRoutes() {
 		$router =& Router::getInstance();
 
 		$router->reload();

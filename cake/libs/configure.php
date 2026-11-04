@@ -34,7 +34,7 @@ class Configure extends CakeObject {
  * @var integer
  * @access public
  */
-	var $debug = 0;
+	public $debug = 0;
 
 /**
  * Returns a singleton instance of the Configure class.
@@ -42,8 +42,8 @@ class Configure extends CakeObject {
  * @return Configure instance
  * @access public
  */
-	static function &getInstance($boot = true) {
-		static $instance = array();
+	public static function &getInstance($boot = true) {
+		static $instance = [];
 		if (!$instance) {
 			if (!class_exists('Set')) {
 				require LIBS . 'set.php';
@@ -79,15 +79,15 @@ class Configure extends CakeObject {
  * @return boolean True if write was successful
  * @access public
  */
-	static function write($config, $value = null) {
+	public static function write($config, $value = null) {
 		$_this =& Configure::getInstance();
 
 		if (!is_array($config)) {
-			$config = array($config => $value);
+			$config = [$config => $value];
 		}
 
 		foreach ($config as $name => $value) {
-			if (strpos($name, '.') === false) {
+			if (!str_contains($name, '.')) {
 				$_this->{$name} = $value;
 			} else {
 				$names = explode('.', $name, 4);
@@ -100,9 +100,7 @@ class Configure extends CakeObject {
 						break;
 					case 4:
 						$names = explode('.', $name, 2);
-						if (!isset($_this->{$names[0]})) {
-							$_this->{$names[0]} = array();
-						}
+						$_this->{$names[0]} ??= [];
 						$_this->{$names[0]} = Set::insert($_this->{$names[0]}, $names[1], $value);
 					break;
 				}
@@ -119,7 +117,7 @@ class Configure extends CakeObject {
 				if (function_exists('ini_set')) {
 					ini_set('display_errors', 1);
 				}
-				$callback = array('Debugger', 'getInstance');
+				$callback = ['Debugger', 'getInstance'];
 			} elseif (function_exists('ini_set')) {
 				ini_set('display_errors', 0);
 			}
@@ -135,7 +133,7 @@ class Configure extends CakeObject {
 					require LIBS . 'cake_log.php';
 				}
 				if (empty($callback)) {
-					$callback = array('CakeLog', 'getInstance');
+					$callback = ['CakeLog', 'getInstance'];
 				}
 			}
 			if (!empty($callback) && !defined('DISABLE_DEFAULT_ERROR_HANDLING') && class_exists('Debugger')) {
@@ -160,14 +158,14 @@ class Configure extends CakeObject {
  * @return string value of Configure::$var
  * @access public
  */
-	static function read($var = 'debug') {
+	public static function read($var = 'debug') {
 		$_this =& Configure::getInstance();
 
 		if ($var === 'debug') {
 			return $_this->debug;
 		}
 
-		if (strpos($var, '.') !== false) {
+		if (str_contains($var, '.')) {
 			$names = explode('.', $var, 3);
 			$var = $names[0];
 		}
@@ -210,10 +208,10 @@ class Configure extends CakeObject {
  * @return void
  * @access public
  */
-	static function delete($var = null) {
+	public static function delete($var = null) {
 		$_this =& Configure::getInstance();
 
-		if (strpos($var, '.') === false) {
+		if (!str_contains($var, '.')) {
 			unset($_this->{$var});
 			return;
 		}
@@ -238,9 +236,9 @@ class Configure extends CakeObject {
  * @return mixed false if file not found, void if load successful
  * @access public
  */
-	static function load($fileName) {
+	public static function load($fileName) {
 		$found = $plugin = $pluginPath = false;
-		list($plugin, $fileName) = pluginSplit($fileName);
+		[$plugin, $fileName] = pluginSplit($fileName);
 		if ($plugin) {
 			$pluginPath = App::pluginPath($plugin);
 		}
@@ -287,7 +285,7 @@ class Configure extends CakeObject {
  * @return string Current version of CakePHP
  * @access public
  */
-	static function version() {
+	public static function version() {
 		$_this =& Configure::getInstance();
 
 		if (!isset($_this->Cake['version'])) {
@@ -312,7 +310,7 @@ class Configure extends CakeObject {
  * @return void
  * @access public
  */
-	function store($type, $name, $data = array()) {
+	public function store($type, $name, $data = []) {
 		$write = true;
 		$content = '';
 
@@ -335,7 +333,7 @@ class Configure extends CakeObject {
  * @return void
  * @access private
  */
-	static function __writeConfig($content, $name, $write = true) {
+	public static function __writeConfig($content, $name, $write = true) {
 		$file = CACHE . 'persistent' . DS . $name . '.php';
 
 		if (Configure::read() > 0) {
@@ -365,7 +363,7 @@ class Configure extends CakeObject {
  * @deprecated
  * @see App::objects()
  */
-	function listObjects($type, $path = null, $cache = true) {
+	public function listObjects($type, $path = null, $cache = true) {
 		return App::objects($type, $path, $cache);
 	}
 
@@ -373,7 +371,7 @@ class Configure extends CakeObject {
  * @deprecated
  * @see App::core()
  */
-	function corePaths($type = null) {
+	public function corePaths($type = null) {
 		return App::core($type);
 	}
 
@@ -381,7 +379,7 @@ class Configure extends CakeObject {
  * @deprecated
  * @see App::build()
  */
-	function buildPaths($paths) {
+	public function buildPaths($paths) {
 		return App::build($paths);
 	}
 
@@ -394,9 +392,9 @@ class Configure extends CakeObject {
  * @return void
  * @access private
  */
-	function __loadBootstrap($boot) {
+	public function __loadBootstrap($boot) {
 		if ($boot) {
-			Configure::write('App', array('base' => false, 'baseUrl' => false, 'dir' => APP_DIR, 'webroot' => WEBROOT_DIR, 'www_root' => WWW_ROOT));
+			Configure::write('App', ['base' => false, 'baseUrl' => false, 'dir' => APP_DIR, 'webroot' => WEBROOT_DIR, 'www_root' => WWW_ROOT]);
 
 			if (!include(CONFIGS . 'core.php')) {
 				trigger_error(sprintf(__("Can't find application core file. Please create %score.php, and make sure it is readable by PHP.", true), CONFIGS), E_USER_ERROR);
@@ -407,7 +405,7 @@ class Configure extends CakeObject {
 
 				if (empty($cache['settings'])) {
 					trigger_error(__('Cache not configured properly. Please check Cache::config(); in APP/config/core.php', true), E_USER_WARNING);
-					$cache = Cache::config('default', array('engine' => 'File'));
+					$cache = Cache::config('default', ['engine' => 'File']);
 				}
 				$path = $prefix = $duration = null;
 
@@ -424,17 +422,17 @@ class Configure extends CakeObject {
 				}
 
 				if (Cache::config('_cake_core_') === false) {
-					Cache::config('_cake_core_', array_merge((array)$cache['settings'], array(
+					Cache::config('_cake_core_', array_merge((array)$cache['settings'], [
 						'prefix' => $prefix . 'cake_core_', 'path' => $path . DS . 'persistent' . DS,
 						'serialize' => true, 'duration' => $duration
-					)));
+					]));
 				}
 
 				if (Cache::config('_cake_model_') === false) {
-					Cache::config('_cake_model_', array_merge((array)$cache['settings'], array(
+					Cache::config('_cake_model_', array_merge((array)$cache['settings'], [
 						'prefix' => $prefix . 'cake_model_', 'path' => $path . DS . 'models' . DS,
 						'serialize' => true, 'duration' => $duration
-					)));
+					]));
 				}
 				Cache::config('default');
 			}
@@ -462,20 +460,20 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $types = array(
-		'class' => array('suffix' => '.php', 'extends' => null, 'core' => true),
-		'file' => array('suffix' => '.php', 'extends' => null, 'core' => true),
-		'model' => array('suffix' => '.php', 'extends' => 'AppModel', 'core' => false),
-		'behavior' => array('suffix' => '.php', 'extends' => 'ModelBehavior', 'core' => true),
-		'controller' => array('suffix' => '_controller.php', 'extends' => 'AppController', 'core' => true),
-		'component' => array('suffix' => '.php', 'extends' => null, 'core' => true),
-		'lib' => array('suffix' => '.php', 'extends' => null, 'core' => true),
-		'view' => array('suffix' => '.php', 'extends' => null, 'core' => true),
-		'helper' => array('suffix' => '.php', 'extends' => 'AppHelper', 'core' => true),
-		'vendor' => array('suffix' => '', 'extends' => null, 'core' => true),
-		'shell' => array('suffix' => '.php', 'extends' => 'Shell', 'core' => true),
-		'plugin' => array('suffix' => '', 'extends' => null, 'core' => true)
-	);
+	public $types = [
+		'class' => ['suffix' => '.php', 'extends' => null, 'core' => true],
+		'file' => ['suffix' => '.php', 'extends' => null, 'core' => true],
+		'model' => ['suffix' => '.php', 'extends' => 'AppModel', 'core' => false],
+		'behavior' => ['suffix' => '.php', 'extends' => 'ModelBehavior', 'core' => true],
+		'controller' => ['suffix' => '_controller.php', 'extends' => 'AppController', 'core' => true],
+		'component' => ['suffix' => '.php', 'extends' => null, 'core' => true],
+		'lib' => ['suffix' => '.php', 'extends' => null, 'core' => true],
+		'view' => ['suffix' => '.php', 'extends' => null, 'core' => true],
+		'helper' => ['suffix' => '.php', 'extends' => 'AppHelper', 'core' => true],
+		'vendor' => ['suffix' => '', 'extends' => null, 'core' => true],
+		'shell' => ['suffix' => '.php', 'extends' => 'Shell', 'core' => true],
+		'plugin' => ['suffix' => '', 'extends' => null, 'core' => true]
+	];
 
 /**
  * List of additional path(s) where model files reside.
@@ -483,7 +481,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $models = array();
+	public $models = [];
 
 /**
  * List of additional path(s) where behavior files reside.
@@ -491,7 +489,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $behaviors = array();
+	public $behaviors = [];
 
 /**
  * List of additional path(s) where controller files reside.
@@ -499,7 +497,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $controllers = array();
+	public $controllers = [];
 
 /**
  * List of additional path(s) where component files reside.
@@ -507,7 +505,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $components = array();
+	public $components = [];
 
 /**
  * List of additional path(s) where datasource files reside.
@@ -515,7 +513,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $datasources = array();
+	public $datasources = [];
 
 /**
  * List of additional path(s) where libs files reside.
@@ -523,14 +521,14 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $libs = array();
+	public $libs = [];
 /**
  * List of additional path(s) where view files reside.
  *
  * @var array
  * @access public
  */
-	var $views = array();
+	public $views = [];
 
 /**
  * List of additional path(s) where helper files reside.
@@ -538,7 +536,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $helpers = array();
+	public $helpers = [];
 
 /**
  * List of additional path(s) where plugins reside.
@@ -546,7 +544,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $plugins = array();
+	public $plugins = [];
 
 /**
  * List of additional path(s) where vendor packages reside.
@@ -554,7 +552,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $vendors = array();
+	public $vendors = [];
 
 /**
  * List of additional path(s) where locale files reside.
@@ -562,7 +560,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $locales = array();
+	public $locales = [];
 
 /**
  * List of additional path(s) where console shell files reside.
@@ -570,7 +568,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $shells = array();
+	public $shells = [];
 
 /**
  * Paths to search for files.
@@ -578,7 +576,7 @@ class App extends CakeObject {
  * @var array
  * @access public
  */
-	var $search = array();
+	public $search = [];
 
 /**
  * Whether or not to return the file that is loaded.
@@ -586,7 +584,7 @@ class App extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $return = false;
+	public $return = false;
 
 /**
  * Holds key/value pairs of $type => file path.
@@ -594,7 +592,7 @@ class App extends CakeObject {
  * @var array
  * @access private
  */
-	var $__map = array();
+	public $__map = [];
 
 /**
  * Holds paths for deep searching of files.
@@ -602,7 +600,7 @@ class App extends CakeObject {
  * @var array
  * @access private
  */
-	var $__paths = array();
+	public $__paths = [];
 
 /**
  * Holds loaded files.
@@ -610,7 +608,7 @@ class App extends CakeObject {
  * @var array
  * @access private
  */
-	var $__loaded = array();
+	public $__loaded = [];
 
 /**
  * Holds and key => value array of object types.
@@ -618,7 +616,7 @@ class App extends CakeObject {
  * @var array
  * @access private
  */
-	var $__objects = array();
+	public $__objects = [];
 
 /**
  * Used to read information stored path
@@ -631,10 +629,10 @@ class App extends CakeObject {
  * @return string array
  * @access public
  */
-	static function path($type) {
+	public static function path($type) {
 		$_this =& App::getInstance();
 		if (!isset($_this->{$type})) {
-			return array();
+			return [];
 		}
 		return $_this->{$type};
 	}
@@ -648,22 +646,22 @@ class App extends CakeObject {
  * @return void
  * @access public
  */
-	static function build($paths = array(), $reset = false) {
+	public static function build($paths = [], $reset = false) {
 		$_this =& App::getInstance();
-		$defaults = array(
-			'models' => array(MODELS),
-			'behaviors' => array(BEHAVIORS),
-			'datasources' => array(MODELS . 'datasources'),
-			'controllers' => array(CONTROLLERS),
-			'components' => array(COMPONENTS),
-			'libs' => array(APPLIBS),
-			'views' => array(VIEWS),
-			'helpers' => array(HELPERS),
-			'locales' => array(APP . 'locale' . DS),
-			'shells' => array(APP . 'vendors' . DS . 'shells' . DS, VENDORS . 'shells' . DS),
-			'vendors' => array(APP . 'vendors' . DS, VENDORS),
-			'plugins' => array(APP . 'plugins' . DS)
-		);
+		$defaults = [
+			'models' => [MODELS],
+			'behaviors' => [BEHAVIORS],
+			'datasources' => [MODELS . 'datasources'],
+			'controllers' => [CONTROLLERS],
+			'components' => [COMPONENTS],
+			'libs' => [APPLIBS],
+			'views' => [VIEWS],
+			'helpers' => [HELPERS],
+			'locales' => [APP . 'locale' . DS],
+			'shells' => [APP . 'vendors' . DS . 'shells' . DS, VENDORS . 'shells' . DS],
+			'vendors' => [APP . 'vendors' . DS, VENDORS],
+			'plugins' => [APP . 'plugins' . DS]
+		];
 
 		if ($reset == true) {
 			foreach ($paths as $type => $new) {
@@ -673,13 +671,13 @@ class App extends CakeObject {
 		}
 
 		$core = $_this->core();
-		$app = array('models' => true, 'controllers' => true, 'helpers' => true);
+		$app = ['models' => true, 'controllers' => true, 'helpers' => true];
 
 		foreach ($defaults as $type => $default) {
-			$merge = array();
+			$merge = [];
 
 			if (isset($app[$type])) {
-				$merge = array(APP);
+				$merge = [APP];
 			}
 			if (isset($core[$type])) {
 				$merge = array_merge($merge, (array)$core[$type]);
@@ -707,7 +705,7 @@ class App extends CakeObject {
  * @param string $plugin CamelCased/lower_cased plugin name to find the path of.
  * @return string full path to the plugin.
  */
-	static function pluginPath($plugin) {
+	public static function pluginPath($plugin) {
 		$_this =& App::getInstance();
 		$pluginDir = Inflector::underscore($plugin);
 		for ($i = 0, $length = count($_this->plugins); $i < $length; $i++) {
@@ -724,7 +722,7 @@ class App extends CakeObject {
  * @param string $theme lower_cased theme name to find the path of.
  * @return string full path to the theme.
  */
-	static function themePath($theme) {
+	public static function themePath($theme) {
 		$_this =& App::getInstance();
 		$themeDir = 'themed' . DS . Inflector::underscore($theme);
 		for ($i = 0, $length = count($_this->views); $i < $length; $i++) {
@@ -744,14 +742,14 @@ class App extends CakeObject {
  * @return array numeric keyed array of core lib paths
  * @access public
  */
-	static function core($type = null) {
+	public static function core($type = null) {
 		static $paths = false;
 		if ($paths === false) {
 			$paths = Cache::read('core_paths', '_cake_core_');
 		}
 		if (!$paths) {
-			$paths = array();
-			$libs = dirname(__FILE__) . DS;
+			$paths = [];
+			$libs = __DIR__ . DS;
 			$cake = dirname($libs) . DS;
 			$path = dirname($cake) . DS;
 
@@ -790,8 +788,8 @@ class App extends CakeObject {
  * @return mixed Either false on incorrect / miss.  Or an array of found objects.
  * @access public
  */
-	static function objects($type, $path = null, $cache = true) {
-		$objects = array();
+	public static function objects($type, $path = null, $cache = true) {
+		$objects = [];
 		$extension = false;
 		$name = $type;
 
@@ -813,7 +811,7 @@ class App extends CakeObject {
 			if (!isset($types[$type])) {
 				return false;
 			}
-			$objects = array();
+			$objects = [];
 
 			if (empty($path)) {
 				$path = $_this->{"{$type}s"};
@@ -821,7 +819,7 @@ class App extends CakeObject {
 					array_pop($path);
 				}
 			}
-			$items = array();
+			$items = [];
 
 			foreach ((array)$path as $dir) {
 				if ($dir != APP) {
@@ -864,7 +862,7 @@ class App extends CakeObject {
  * @return boolean true if Class is already in memory or if file is found and loaded, false if not
  * @access public
  */
-	static function import($type = null, $name = null, $parent = true, $search = array(), $file = null, $return = false) {
+	public static function import($type = null, $name = null, $parent = true, $search = [], $file = null, $return = false) {
 		$plugin = $directory = null;
 
 		if (is_array($type)) {
@@ -887,7 +885,7 @@ class App extends CakeObject {
 				$tempType = $type;
 				$plugin = null;
 
-				if (strpos($class, '.') !== false) {
+				if (str_contains($class, '.')) {
 					$value = explode('.', $class);
 					$count = count($value);
 
@@ -911,8 +909,8 @@ class App extends CakeObject {
 			return true;
 		}
 
-		if ($name != null && strpos($name, '.') !== false) {
-			list($plugin, $name) = explode('.', $name);
+		if ($name != null && str_contains($name, '.')) {
+			[$plugin, $name] = explode('.', $name);
 			$plugin = Inflector::camelize($plugin);
 		}
 		$_this =& App::getInstance();
@@ -984,8 +982,8 @@ class App extends CakeObject {
  * @return object
  * @access public
  */
-	static function &getInstance() {
-		static $instance = array();
+	public static function &getInstance() {
+		static $instance = [];
 		if (!$instance) {
 			$instance[0] = new App();
 			$instance[0]->__map = (array)Cache::read('file_map', '_cake_core_');
@@ -1001,13 +999,13 @@ class App extends CakeObject {
  * @return mixed boolean on fail, $file directory path on success
  * @access private
  */
-	function __find($file, $recursive = true) {
+	public function __find($file, $recursive = true) {
 		static $appPath = false;
 
 		if (empty($this->search)) {
 			return null;
 		} elseif (is_string($this->search)) {
-			$this->search = array($this->search);
+			$this->search = [$this->search];
 		}
 
 		if (empty($this->__paths)) {
@@ -1035,7 +1033,7 @@ class App extends CakeObject {
 					require LIBS . 'folder.php';
 				}
 				$Folder = new Folder();
-				$ignorePaths = array('.svn', '.git', 'CVS', 'tests', 'templates', 'node_modules');
+				$ignorePaths = ['.svn', '.git', 'CVS', 'tests', 'templates', 'node_modules'];
 				$directories = $Folder->tree($path, $ignorePaths, 'dir');
 				sort($directories);
 				$this->__paths[$path] = $directories;
@@ -1057,7 +1055,7 @@ class App extends CakeObject {
  * @return boolean
  * @access private
  */
-	function __load($file) {
+	public function __load($file) {
 		if (empty($file)) {
 			return false;
 		}
@@ -1084,7 +1082,7 @@ class App extends CakeObject {
  * @return void
  * @access private
  */
-	function __map($file, $name, $type, $plugin) {
+	public function __map($file, $name, $type, $plugin) {
 		if ($plugin) {
 			$this->__map['Plugin'][$plugin][$type][$name] = $file;
 		} else {
@@ -1101,7 +1099,7 @@ class App extends CakeObject {
  * @return mixed, file path if found, false otherwise
  * @access private
  */
-	function __mapped($name, $type, $plugin) {
+	public function __mapped($name, $type, $plugin) {
 		if ($plugin) {
 			if (isset($this->__map['Plugin'][$plugin][$type]) && isset($this->__map['Plugin'][$plugin][$type][$name])) {
 				return $this->__map['Plugin'][$plugin][$type][$name];
@@ -1122,7 +1120,7 @@ class App extends CakeObject {
  * @param string $name Class name to overload
  * @access private
  */
-	function __overload($type, $name, $parent) {
+	public function __overload($type, $name, $parent) {
 		if (($type === 'Model' || $type === 'Helper') && $parent !== false) {
 			Overloadable::overload($name);
 		}
@@ -1138,9 +1136,9 @@ class App extends CakeObject {
  * @return array
  * @access private
  */
-	function __settings($type, $plugin, $parent) {
+	public function __settings($type, $plugin, $parent) {
 		if (!$parent) {
-			return array('class' => null, 'suffix' => null, 'path' => null);
+			return ['class' => null, 'suffix' => null, 'path' => null];
 		}
 
 		if ($plugin) {
@@ -1159,48 +1157,48 @@ class App extends CakeObject {
 				}
 				if ($plugin) {
 					if (!class_exists($plugin . 'AppModel')) {
-						App::import($type, $plugin . '.' . $plugin . 'AppModel', false, array(), $pluginPath . DS . $pluginPath . '_app_model.php');
+						App::import($type, $plugin . '.' . $plugin . 'AppModel', false, [], $pluginPath . DS . $pluginPath . '_app_model.php');
 					}
 					$path = $pluginPath . DS . 'models' . DS;
 				}
-				return array('class' => null, 'suffix' => null, 'path' => $path);
+				return ['class' => null, 'suffix' => null, 'path' => $path];
 			break;
 			case 'behavior':
 				if ($plugin) {
 					$path = $pluginPath . DS . 'models' . DS . 'behaviors' . DS;
 				}
-				return array('class' => $type, 'suffix' => null, 'path' => $path);
+				return ['class' => $type, 'suffix' => null, 'path' => $path];
 			break;
 			case 'datasource':
 				if ($plugin) {
 					$path = $pluginPath . DS . 'models' . DS . 'datasources' . DS;
 				}
-				return array('class' => $type, 'suffix' => null, 'path' => $path);
+				return ['class' => $type, 'suffix' => null, 'path' => $path];
 			case 'controller':
 				App::import($type, 'AppController', false);
 				if ($plugin) {
-					App::import($type, $plugin . '.' . $plugin . 'AppController', false, array(), $pluginPath . DS . $pluginPath . '_app_controller.php');
+					App::import($type, $plugin . '.' . $plugin . 'AppController', false, [], $pluginPath . DS . $pluginPath . '_app_controller.php');
 					$path = $pluginPath . DS . 'controllers' . DS;
 				}
-				return array('class' => $type, 'suffix' => $type, 'path' => $path);
+				return ['class' => $type, 'suffix' => $type, 'path' => $path];
 			break;
 			case 'component':
 				if ($plugin) {
 					$path = $pluginPath . DS . 'controllers' . DS . 'components' . DS;
 				}
-				return array('class' => $type, 'suffix' => null, 'path' => $path);
+				return ['class' => $type, 'suffix' => null, 'path' => $path];
 			break;
 			case 'lib':
 				if ($plugin) {
 					$path = $pluginPath . DS . 'libs' . DS;
 				}
-				return array('class' => null, 'suffix' => null, 'path' => $path);
+				return ['class' => null, 'suffix' => null, 'path' => $path];
 			break;
 			case 'view':
 				if ($plugin) {
 					$path = $pluginPath . DS . 'views' . DS;
 				}
-				return array('class' => $type, 'suffix' => null, 'path' => $path);
+				return ['class' => $type, 'suffix' => null, 'path' => $path];
 			break;
 			case 'helper':
 				if (!class_exists('AppHelper')) {
@@ -1209,19 +1207,19 @@ class App extends CakeObject {
 				if ($plugin) {
 					$path = $pluginPath . DS . 'views' . DS . 'helpers' . DS;
 				}
-				return array('class' => $type, 'suffix' => null, 'path' => $path);
+				return ['class' => $type, 'suffix' => null, 'path' => $path];
 			break;
 			case 'vendor':
 				if ($plugin) {
 					$path = $pluginPath . DS . 'vendors' . DS;
 				}
-				return array('class' => null, 'suffix' => null, 'path' => $path);
+				return ['class' => null, 'suffix' => null, 'path' => $path];
 			break;
 			default:
 				$type = $suffix = $path = null;
 			break;
 		}
-		return array('class' => null, 'suffix' => null, 'path' => null);
+		return ['class' => null, 'suffix' => null, 'path' => null];
 	}
 
 /**
@@ -1231,17 +1229,14 @@ class App extends CakeObject {
  * @return array list of paths
  * @access private
  */
-	function __paths($type) {
+	public function __paths($type) {
 		$type = strtolower($type);
-		$paths = array();
+		$paths = [];
 
 		if ($type === 'core') {
 			return App::core('libs');
 		}
-		if (isset($this->{$type . 's'})) {
-			return $this->{$type . 's'};
-		}
-		return $paths;
+		return $this->{$type . 's'} ?? $paths;
 	}
 
 /**
@@ -1253,7 +1248,7 @@ class App extends CakeObject {
  * @return void
  * @access private
  */
-	function __remove($name, $type, $plugin) {
+	public function __remove($name, $type, $plugin) {
 		if ($plugin) {
 			unset($this->__map['Plugin'][$plugin][$type][$name]);
 		} else {
@@ -1269,11 +1264,11 @@ class App extends CakeObject {
  * @return array  List of directories or files in directory
  * @access private
  */
-	function __list($path, $suffix = false, $extension = false) {
+	public function __list($path, $suffix = false, $extension = false) {
 		if (!class_exists('Folder')) {
 			require LIBS . 'folder.php';
 		}
-		$items = array();
+		$items = [];
 		$Folder = new Folder($path);
 		$contents = $Folder->read(false, true);
 
@@ -1282,7 +1277,7 @@ class App extends CakeObject {
 				return $contents[0];
 			} else {
 				foreach ($contents[1] as $item) {
-					if (substr($item, - strlen($suffix)) === $suffix) {
+					if (str_ends_with($item, $suffix)) {
 						if ($extension) {
 							$items[] = $item;
 						} else {
@@ -1302,8 +1297,8 @@ class App extends CakeObject {
  * @return boolean
  * @access private
  */	
-	function __resetCache($reset = null) {
-		static $cache = array();
+	public function __resetCache($reset = null) {
+		static $cache = [];
 		if (!$cache && $reset === true) {
 			$cache = true;	
 		}
@@ -1318,7 +1313,7 @@ class App extends CakeObject {
  * @return void
  * @access private
  */
-	function __destruct() {
+	public function __destruct() {
 		if ($this->__resetCache() === true) {
 			$core = App::core('cake');
 			unset($this->__paths[rtrim($core[0], DS)]);

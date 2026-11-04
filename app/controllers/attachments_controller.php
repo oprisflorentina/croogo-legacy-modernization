@@ -28,7 +28,7 @@ class AttachmentsController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Node');
+	public $uses = ['Node'];
 
 /**
  * Helpers used by the Controller
@@ -36,7 +36,7 @@ class AttachmentsController extends AppController {
  * @var array
  * @access public
  */
-	public $helpers = array('Filemanager', 'Text', 'Image');
+	public $helpers = ['Filemanager', 'Text', 'Image'];
 
 /**
  * Node type
@@ -69,10 +69,10 @@ class AttachmentsController extends AppController {
 		parent::beforeFilter();
 
 		// Comment, Category, Tag not needed
-		$this->Node->unbindModel(array('hasMany' => array('Comment'), 'hasAndBelongsToMany' => array('Category', 'Tag')));
+		$this->Node->unbindModel(['hasMany' => ['Comment'], 'hasAndBelongsToMany' => ['Category', 'Tag']]);
 
 		$this->Node->type = $this->type;
-		$this->Node->Behaviors->attach('Tree', array('scope' => array('Node.type' => $this->type)));
+		$this->Node->Behaviors->attach('Tree', ['scope' => ['Node.type' => $this->type]]);
 		$this->set('type', $this->type);
 	}
 
@@ -136,15 +136,15 @@ class AttachmentsController extends AppController {
 				// move the file
 				move_uploaded_file($file['tmp_name'], $destination);
 
-				$this->Session->setFlash(__('The Attachment has been saved', true), 'default', array('class' => 'success'));
+				$this->Session->setFlash(__('The Attachment has been saved', true), 'default', ['class' => 'success']);
 
 				if (isset($this->params['named']['editor'])) {
-					$this->redirect(array('action' => 'browse'));
+					$this->redirect(['action' => 'browse']);
 				} else {
-					$this->redirect(array('action'=>'index'));
+					$this->redirect(['action'=>'index']);
 				}
 			} else {
-				$this->Session->setFlash(__('The Attachment could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Attachment could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 	}
@@ -160,15 +160,15 @@ class AttachmentsController extends AppController {
 		$this->set('title_for_layout', __('Edit Attachment', true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Attachment', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Attachment', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Node->save($this->data)) {
-				$this->Session->setFlash(__('The Attachment has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Attachment has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Attachment could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Attachment could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -185,29 +185,29 @@ class AttachmentsController extends AppController {
  */
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Attachment', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Attachment', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 
-		$attachment = $this->Node->find('first', array(
-			'conditions' => array(
+		$attachment = $this->Node->find('first', [
+			'conditions' => [
 				'Node.id' => $id,
 				'Node.type' => $this->type,
-			),
-		));
+			],
+		]);
 		if (isset($attachment['Node'])) {
 			if ($this->Node->delete($id)) {
 				unlink(WWW_ROOT . $this->uploadsDir . DS . $attachment['Node']['slug']);
-				$this->Session->setFlash(__('Attachment deleted', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('Attachment deleted', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			}
 		} else {
-			$this->Session->setFlash(__('Invalid id for Attachment', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Attachment', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 

@@ -35,7 +35,7 @@ class MemcacheEngine extends CacheEngine {
  * @var Memcache
  * @access private
  */
-	var $__Memcache = null;
+	public $__Memcache = null;
 
 /**
  * Settings
@@ -47,7 +47,7 @@ class MemcacheEngine extends CacheEngine {
  * @var array
  * @access public
  */
-	var $settings = array();
+	public $settings = [];
 
 /**
  * Initialize the Cache Engine
@@ -59,30 +59,30 @@ class MemcacheEngine extends CacheEngine {
  * @return boolean True if the engine has been successfully initialized, false if not
  * @access public
  */
-	function init($settings = array()) {
+	public function init($settings = []) {
 		if (!class_exists('Memcache')) {
 			return false;
 		}
-		parent::init(array_merge(array(
+		parent::init(array_merge([
 			'engine'=> 'Memcache', 
 			'prefix' => Inflector::slug(APP_DIR) . '_', 
-			'servers' => array('127.0.0.1'),
+			'servers' => ['127.0.0.1'],
 			'compress'=> false,
 			'persistent' => true
-			), $settings)
+			], $settings)
 		);
 
 		if ($this->settings['compress']) {
 			$this->settings['compress'] = MEMCACHE_COMPRESSED;
 		}
 		if (!is_array($this->settings['servers'])) {
-			$this->settings['servers'] = array($this->settings['servers']);
+			$this->settings['servers'] = [$this->settings['servers']];
 		}
 		if (!isset($this->__Memcache)) {
 			$return = false;
 			$this->__Memcache = new Memcache();
 			foreach ($this->settings['servers'] as $server) {
-				list($host, $port) = $this->_parseServerString($server);
+				[$host, $port] = $this->_parseServerString($server);
 				if ($this->__Memcache->addServer($host, $port, $this->settings['persistent'])) {
 					$return = true;
 				}
@@ -99,11 +99,11 @@ class MemcacheEngine extends CacheEngine {
  * @param string $server The server address string.
  * @return array Array containing host, port
  */
-	function _parseServerString($server) {
+	public function _parseServerString($server) {
 		if ($server[0] == 'u') {
-			return array($server, 0);
+			return [$server, 0];
 		}
-		if (substr($server, 0, 1) == '[') {
+		if (str_starts_with($server, '[')) {
 			$position = strpos($server, ']:');
 			if ($position !== false) {
 				$position++;
@@ -117,7 +117,7 @@ class MemcacheEngine extends CacheEngine {
 			$host = substr($server, 0, $position);
 			$port = substr($server, $position + 1);
 		}
-		return array($host, $port);
+		return [$host, $port];
 	}
 
 /**
@@ -132,7 +132,7 @@ class MemcacheEngine extends CacheEngine {
  * @see http://php.net/manual/en/memcache.set.php
  * @access public
  */
-	function write($key, &$value, $duration) {
+	public function write($key, &$value, $duration) {
 		if ($duration > 30 * DAY) {
 			$duration = 0;
 		}
@@ -146,7 +146,7 @@ class MemcacheEngine extends CacheEngine {
  * @return mixed The cached data, or false if the data doesn't exist, has expired, or if there was an error fetching it
  * @access public
  */
-	function read($key) {
+	public function read($key) {
 		return $this->__Memcache->get($key);
 	}
 
@@ -159,9 +159,9 @@ class MemcacheEngine extends CacheEngine {
  * @return New incremented value, false otherwise
  * @access public
  */
-	function increment($key, $offset = 1) {
+	public function increment($key, $offset = 1) {
 		if ($this->settings['compress']) {
-			trigger_error(sprintf(__('Method increment() not implemented for compressed cache in %s', true), get_class($this)), E_USER_ERROR);
+			trigger_error(sprintf(__('Method increment() not implemented for compressed cache in %s', true), static::class), E_USER_ERROR);
 		}
 		return $this->__Memcache->increment($key, $offset);
 	}
@@ -175,9 +175,9 @@ class MemcacheEngine extends CacheEngine {
  * @return New decremented value, false otherwise
  * @access public
  */
-	function decrement($key, $offset = 1) {
+	public function decrement($key, $offset = 1) {
 		if ($this->settings['compress']) {
-			trigger_error(sprintf(__('Method decrement() not implemented for compressed cache in %s', true), get_class($this)), E_USER_ERROR);
+			trigger_error(sprintf(__('Method decrement() not implemented for compressed cache in %s', true), static::class), E_USER_ERROR);
 		}
 		return $this->__Memcache->decrement($key, $offset);
 	}
@@ -189,7 +189,7 @@ class MemcacheEngine extends CacheEngine {
  * @return boolean True if the value was succesfully deleted, false if it didn't exist or couldn't be removed
  * @access public
  */
-	function delete($key) {
+	public function delete($key) {
 		return $this->__Memcache->delete($key);
 	}
 
@@ -199,7 +199,7 @@ class MemcacheEngine extends CacheEngine {
  * @return boolean True if the cache was succesfully cleared, false otherwise
  * @access public
  */
-	function clear($check = false) {
+	public function clear($check = false) {
 		return $this->__Memcache->flush();
 	}
 
@@ -211,7 +211,7 @@ class MemcacheEngine extends CacheEngine {
  * @return boolean True if memcache server was connected
  * @access public
  */
-	function connect($host, $port = 11211) {
+	public function connect($host, $port = 11211) {
 		if ($this->__Memcache->getServerStatus($host, $port) === 0) {
 			if ($this->__Memcache->connect($host, $port)) {
 				return true;

@@ -41,7 +41,7 @@ class Folder extends CakeObject {
  * @var string
  * @access public
  */
-	var $path = null;
+	public $path = null;
 
 /**
  * Sortedness. Whether or not list results
@@ -50,7 +50,7 @@ class Folder extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $sort = false;
+	public $sort = false;
 
 /**
  * Mode to be used on create. Does nothing on windows platforms.
@@ -58,7 +58,7 @@ class Folder extends CakeObject {
  * @var integer
  * @access public
  */
-	var $mode = 0755;
+	public $mode = 0755;
 
 /**
  * Holds messages from last method.
@@ -66,7 +66,7 @@ class Folder extends CakeObject {
  * @var array
  * @access private
  */
-	var $__messages = array();
+	public $__messages = [];
 
 /**
  * Holds errors from last method.
@@ -74,7 +74,7 @@ class Folder extends CakeObject {
  * @var array
  * @access private
  */
-	var $__errors = false;
+	public $__errors = false;
 
 /**
  * Holds array of complete directory paths.
@@ -82,7 +82,7 @@ class Folder extends CakeObject {
  * @var array
  * @access private
  */
-	var $__directories;
+	public $__directories;
 
 /**
  * Holds array of complete file paths.
@@ -90,7 +90,7 @@ class Folder extends CakeObject {
  * @var array
  * @access private
  */
-	var $__files;
+	public $__files;
 
 /**
  * Constructor.
@@ -99,7 +99,7 @@ class Folder extends CakeObject {
  * @param boolean $create Create folder if not found
  * @param mixed $mode Mode (CHMOD) to apply to created folder, false to ignore
  */
-	function __construct($path = false, $create = false, $mode = false) {
+	public function __construct($path = false, $create = false, $mode = false) {
 		parent::__construct();
 		if (empty($path)) {
 			$path = TMP;
@@ -125,7 +125,7 @@ class Folder extends CakeObject {
  * @return string Current path
  * @access public
  */
-	function pwd() {
+	public function pwd() {
 		return $this->path;
 	}
 
@@ -136,7 +136,7 @@ class Folder extends CakeObject {
  * @return string The new path. Returns false on failure
  * @access public
  */
-	function cd($path) {
+	public function cd($path) {
 		$path = $this->realpath($path);
 		if (is_dir($path)) {
 			return $this->path = $path;
@@ -155,11 +155,11 @@ class Folder extends CakeObject {
  * @return mixed Contents of current directory as an array, an empty array on failure
  * @access public
  */
-	function read($sort = true, $exceptions = false, $fullPath = false) {
-		$dirs = $files = array();
+	public function read($sort = true, $exceptions = false, $fullPath = false) {
+		$dirs = $files = [];
 
 		if (!$this->pwd()) {
-			return array($dirs, $files);
+			return [$dirs, $files];
 		}
 		if (is_array($exceptions)) {
 			$exceptions = array_flip($exceptions);
@@ -167,7 +167,7 @@ class Folder extends CakeObject {
 		$skipHidden = isset($exceptions['.']) || $exceptions === true;
 
 		if (false === ($dir = @opendir($this->path))) {
-			return array($dirs, $files);
+			return [$dirs, $files];
 		}
 
 		while (false !== ($item = readdir($dir))) {
@@ -189,7 +189,7 @@ class Folder extends CakeObject {
 		}
 
 		closedir($dir);
-		return array($dirs, $files);
+		return [$dirs, $files];
 	}
 
 /**
@@ -200,8 +200,8 @@ class Folder extends CakeObject {
  * @return array Files that match given pattern
  * @access public
  */
-	function find($regexpPattern = '.*', $sort = false) {
-		list($dirs, $files) = $this->read($sort);
+	public function find($regexpPattern = '.*', $sort = false) {
+		[$dirs, $files] = $this->read($sort);
 		return array_values(preg_grep('/^' . $regexpPattern . '$/i', $files)); ;
 	}
 
@@ -213,9 +213,9 @@ class Folder extends CakeObject {
  * @return array Files matching $pattern
  * @access public
  */
-	function findRecursive($pattern = '.*', $sort = false) {
+	public function findRecursive($pattern = '.*', $sort = false) {
 		if (!$this->pwd()) {
-			return array();
+			return [];
 		}
 		$startsOn = $this->path;
 		$out = $this->_findRecursive($pattern, $sort);
@@ -231,9 +231,9 @@ class Folder extends CakeObject {
  * @return array Files matching pattern
  * @access private
  */
-	function _findRecursive($pattern, $sort = false) {
-		list($dirs, $files) = $this->read($sort);
-		$found = array();
+	public function _findRecursive($pattern, $sort = false) {
+		[$dirs, $files] = $this->read($sort);
+		$found = [];
 
 		foreach ($files as $file) {
 			if (preg_match('/^' . $pattern . '$/i', $file)) {
@@ -257,8 +257,8 @@ class Folder extends CakeObject {
  * @access public
  * @static
  */
-	static function isWindowsPath($path) {
-		return (preg_match('/^[A-Z]:\\\\/i', $path) || substr($path, 0, 2) == '\\\\');
+	public static function isWindowsPath($path) {
+		return (preg_match('/^[A-Z]:\\\\/i', $path) || str_starts_with($path, '\\\\'));
 	}
 
 /**
@@ -269,8 +269,8 @@ class Folder extends CakeObject {
  * @access public
  * @static
  */
-	static function isAbsolute($path) {
-		return !empty($path) && ($path[0] === '/' || preg_match('/^[A-Z]:\\\\/i', $path) || substr($path, 0, 2) == '\\\\');
+	public static function isAbsolute($path) {
+		return !empty($path) && ($path[0] === '/' || preg_match('/^[A-Z]:\\\\/i', $path) || str_starts_with($path, '\\\\'));
 	}
 
 /**
@@ -281,7 +281,7 @@ class Folder extends CakeObject {
  * @access public
  * @static
  */
-	function normalizePath($path) {
+	public function normalizePath($path) {
 		return Folder::correctSlashFor($path);
 	}
 
@@ -293,7 +293,7 @@ class Folder extends CakeObject {
  * @access public
  * @static
  */
-	static function correctSlashFor($path) {
+	public static function correctSlashFor($path) {
 		return (Folder::isWindowsPath($path)) ? '\\' : '/';
 	}
 
@@ -305,7 +305,7 @@ class Folder extends CakeObject {
  * @access public
  * @static
  */
-	static function slashTerm($path) {
+	public static function slashTerm($path) {
 		if (Folder::isSlashTerm($path)) {
 			return $path;
 		}
@@ -321,7 +321,7 @@ class Folder extends CakeObject {
  * @access public
  * @static
  */
-	static function addPathElement($path, $element) {
+	public static function addPathElement($path, $element) {
 		return rtrim($path, DS) . DS . $element;
 	}
 
@@ -332,7 +332,7 @@ class Folder extends CakeObject {
  * @return bool
  * @access public
  */
-	function inCakePath($path = '') {
+	public function inCakePath($path = '') {
 		$dir = substr(Folder::slashTerm(ROOT), 0, -1);
 		$newdir = $dir . $path;
 
@@ -347,7 +347,7 @@ class Folder extends CakeObject {
  * @return bool
  * @access public
  */
-	function inPath($path = '', $reverse = false) {
+	public function inPath($path = '', $reverse = false) {
 		$dir = Folder::slashTerm($path);
 		$current = Folder::slashTerm($this->pwd());
 
@@ -369,7 +369,7 @@ class Folder extends CakeObject {
  * @return boolean Returns TRUE on success, FALSE on failure
  * @access public
  */
-	function chmod($path, $mode = false, $recursive = true, $exceptions = array()) {
+	public function chmod($path, $mode = false, $recursive = true, $exceptions = []) {
 		if (!$mode) {
 			$mode = $this->mode;
 		}
@@ -420,18 +420,18 @@ class Folder extends CakeObject {
  * @return mixed array of nested directories and files in each directory
  * @access public
  */
-	function tree($path, $exceptions = true, $type = null) {
+	public function tree($path, $exceptions = true, $type = null) {
 		$original = $this->path;
 		$path = rtrim($path, DS);
 		if (!$this->cd($path)) {
 			if ($type === null) {
-				return array(array(), array());
+				return [[], []];
 			}
-			return array();
+			return [];
 		}
-		$this->__files = array();
-		$this->__directories = array($this->realpath($path));
-		$directories = array();
+		$this->__files = [];
+		$this->__directories = [$this->realpath($path)];
+		$directories = [];
 
 		if ($exceptions === false) {
 			$exceptions = true;
@@ -443,7 +443,7 @@ class Folder extends CakeObject {
 		}
 
 		if ($type === null) {
-			return array($directories, $this->__files);
+			return [$directories, $this->__files];
 		}
 		if ($type === 'dir') {
 			return $directories;
@@ -460,9 +460,9 @@ class Folder extends CakeObject {
  * @param mixed $exceptions Array of files to exclude from the read that will be performed.
  * @access private
  */
-	function __tree($path, $exceptions) {
+	public function __tree($path, $exceptions) {
 		$this->path = $path;
-		list($dirs, $files) = $this->read(false, $exceptions, true);
+		[$dirs, $files] = $this->read(false, $exceptions, true);
 		$this->__directories = array_merge($this->__directories, $dirs);
 		$this->__files = array_merge($this->__files, $files);
 	}
@@ -476,7 +476,7 @@ class Folder extends CakeObject {
  * @return boolean Returns TRUE on success, FALSE on failure
  * @access public
  */
-	function create($pathname, $mode = false) {
+	public function create($pathname, $mode = false) {
 		if (is_dir($pathname) || empty($pathname)) {
 			return true;
 		}
@@ -516,10 +516,10 @@ class Folder extends CakeObject {
  * @return int size in bytes of current folder
  * @access public
  */
-	function dirsize() {
+	public function dirsize() {
 		$size = 0;
 		$directory = Folder::slashTerm($this->path);
-		$stack = array($directory);
+		$stack = [$directory];
 		$count = count($stack);
 		for ($i = 0, $j = $count; $i < $j; ++$i) {
 			if (is_file($stack[$i])) {
@@ -553,7 +553,7 @@ class Folder extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function delete($path = null) {
+	public function delete($path = null) {
 		if (!$path) {
 			$path = $this->pwd();
 		}
@@ -565,8 +565,8 @@ class Folder extends CakeObject {
 			$normalFiles = glob($path . '*');
 			$hiddenFiles = glob($path . '\.?*');
 
-			$normalFiles = $normalFiles ? $normalFiles : array();
-			$hiddenFiles = $hiddenFiles ? $hiddenFiles : array();
+			$normalFiles = $normalFiles ?: [];
+			$hiddenFiles = $hiddenFiles ?: [];
 
 			$files = array_merge($normalFiles, $hiddenFiles);
 			if (is_array($files)) {
@@ -610,16 +610,16 @@ class Folder extends CakeObject {
  * @return bool Success
  * @access public
  */
-	function copy($options = array()) {
+	public function copy($options = []) {
 		if (!$this->pwd()) {
 			return false;
 		}
 		$to = null;
 		if (is_string($options)) {
 			$to = $options;
-			$options = array();
+			$options = [];
 		}
-		$options = array_merge(array('to' => $to, 'from' => $this->path, 'mode' => $this->mode, 'skip' => array()), $options);
+		$options = array_merge(['to' => $to, 'from' => $this->path, 'mode' => $this->mode, 'skip' => []], $options);
 
 		$fromDir = $options['from'];
 		$toDir = $options['to'];
@@ -639,7 +639,7 @@ class Folder extends CakeObject {
 			return false;
 		}
 
-		$exceptions = array_merge(array('.', '..', '.svn'), $options['skip']);
+		$exceptions = array_merge(['.', '..', '.svn'], $options['skip']);
 		if ($handle = @opendir($fromDir)) {
 			while (false !== ($item = readdir($handle))) {
 				if (!in_array($item, $exceptions)) {
@@ -663,7 +663,7 @@ class Folder extends CakeObject {
 							chmod($to, $mode);
 							umask($old);
 							$this->__messages[] = sprintf(__('%s created', true), $to);
-							$options = array_merge($options, array('to'=> $to, 'from'=> $from));
+							$options = array_merge($options, ['to'=> $to, 'from'=> $from]);
 							$this->copy($options);
 						} else {
 							$this->__errors[] = sprintf(__('%s not created', true), $to);
@@ -696,13 +696,13 @@ class Folder extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function move($options) {
+	public function move($options) {
 		$to = null;
 		if (is_string($options)) {
 			$to = $options;
 			$options = (array)$options;
 		}
-		$options = array_merge(array('to' => $to, 'from' => $this->path, 'mode' => $this->mode, 'skip' => array()), $options);
+		$options = array_merge(['to' => $to, 'from' => $this->path, 'mode' => $this->mode, 'skip' => []], $options);
 
 		if ($this->copy($options)) {
 			if ($this->delete($options['from'])) {
@@ -718,7 +718,7 @@ class Folder extends CakeObject {
  * @return array
  * @access public
  */
-	function messages() {
+	public function messages() {
 		return $this->__messages;
 	}
 
@@ -728,7 +728,7 @@ class Folder extends CakeObject {
  * @return array
  * @access public
  */
-	function errors() {
+	public function errors() {
 		return $this->__errors;
 	}
 
@@ -738,16 +738,16 @@ class Folder extends CakeObject {
  * @param string $path Path to resolve
  * @return string The resolved path
  */
-	function realpath($path) {
+	public function realpath($path) {
 		$path = str_replace('/', DS, trim($path));
-		if (strpos($path, '..') === false) {
+		if (!str_contains($path, '..')) {
 			if (!Folder::isAbsolute($path)) {
 				$path = Folder::addPathElement($this->path, $path);
 			}
 			return $path;
 		}
 		$parts = explode(DS, $path);
-		$newparts = array();
+		$newparts = [];
 		$newpath = '';
 		if ($path[0] === DS) {
 			$newpath = DS;
@@ -780,7 +780,7 @@ class Folder extends CakeObject {
  * @access public
  * @static
  */
-	static function isSlashTerm($path) {
+	public static function isSlashTerm($path) {
 		$lastChar = $path[strlen($path) - 1];
 		return $lastChar === '/' || $lastChar === '\\';
 	}

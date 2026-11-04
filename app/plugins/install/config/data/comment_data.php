@@ -3,8 +3,8 @@ class CommentData {
 
 	public $table = 'comments';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '1',
 			'parent_id' => '',
 			'node_id' => '1',
@@ -24,7 +24,7 @@ class CommentData {
 			'rght' => '2',
 			'updated' => '2009-12-25 12:00:00',
 			'created' => '2009-12-25 12:00:00'
-		),
-	);
+		],
+	];
 
 }

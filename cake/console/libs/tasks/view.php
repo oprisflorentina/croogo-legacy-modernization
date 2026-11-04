@@ -18,7 +18,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 App::import('Controller', 'Controller', false);
-include_once dirname(__FILE__) . DS . 'bake.php';
+include_once __DIR__ . DS . 'bake.php';
 
 /**
  * Task class for creating and updating view files.
@@ -34,7 +34,7 @@ class ViewTask extends BakeTask {
  * @var array
  * @access public
  */
-	var $tasks = array('Project', 'Controller', 'DbConfig', 'Template');
+	public $tasks = ['Project', 'Controller', 'DbConfig', 'Template'];
 
 /**
  * path to VIEWS directory
@@ -42,7 +42,7 @@ class ViewTask extends BakeTask {
  * @var array
  * @access public
  */
-	var $path = VIEWS;
+	public $path = VIEWS;
 
 /**
  * Name of the controller being used
@@ -50,7 +50,7 @@ class ViewTask extends BakeTask {
  * @var string
  * @access public
  */
-	var $controllerName = null;
+	public $controllerName = null;
 
 /**
  * Path to controller to put views
@@ -58,7 +58,7 @@ class ViewTask extends BakeTask {
  * @var string
  * @access public
  */
-	var $controllerPath = null;
+	public $controllerPath = null;
 
 /**
  * The template file to use
@@ -66,7 +66,7 @@ class ViewTask extends BakeTask {
  * @var string
  * @access public
  */
-	var $template = null;
+	public $template = null;
 
 /**
  * Actions to use for scaffolding
@@ -74,7 +74,7 @@ class ViewTask extends BakeTask {
  * @var array
  * @access public
  */
-	var $scaffoldActions = array('index', 'view', 'add', 'edit');
+	public $scaffoldActions = ['index', 'view', 'add', 'edit'];
 
 /**
  * An array of action names that don't require templates.  These
@@ -83,14 +83,14 @@ class ViewTask extends BakeTask {
  * @var array
  * @access public
  */
-	var $noTemplateActions = array('delete');
+	public $noTemplateActions = ['delete'];
 
 /**
  * Override initialize
  *
  * @access public
  */
-	function initialize() {
+	public function initialize() {
 	}
 
 /**
@@ -98,7 +98,7 @@ class ViewTask extends BakeTask {
  *
  * @access public
  */
-	function execute() {
+	public function execute() {
 		if (empty($this->args)) {
 			$this->__interactive();
 		}
@@ -146,7 +146,7 @@ class ViewTask extends BakeTask {
  *
  * @return array Array of action names that should be baked
  */
-	function _methodsToBake() {
+	public function _methodsToBake() {
 		$methods =  array_diff(
 			array_map('strtolower', get_class_methods($this->controllerName . 'Controller')),
 			array_map('strtolower', get_class_methods('appcontroller'))
@@ -162,7 +162,7 @@ class ViewTask extends BakeTask {
 				if ($scaffoldActions) {
 					$methods[$i] = $adminRoute . $method;
 					continue;
-				} elseif (strpos($method, $adminRoute) === false) {
+				} elseif (!str_contains($method, $adminRoute)) {
 					unset($methods[$i]);
 				}
 			}
@@ -178,13 +178,13 @@ class ViewTask extends BakeTask {
  *
  * @return void
  */
-	function all() {
+	public function all() {
 		$this->Controller->interactive = false;
 		$tables = $this->Controller->listAll($this->connection, false);
 
 		$actions = null;
 		if (isset($this->args[1])) {
-			$actions = array($this->args[1]);
+			$actions = [$this->args[1]];
 		}
 		$this->interactive = false;
 		foreach ($tables as $table) {
@@ -207,7 +207,7 @@ class ViewTask extends BakeTask {
  *
  * @access private
  */
-	function __interactive() {
+	public function __interactive() {
 		$this->hr();
 		$this->out(sprintf("Bake View\nPath: %s", $this->path));
 		$this->hr();
@@ -224,16 +224,16 @@ class ViewTask extends BakeTask {
 		$this->controllerPath = strtolower(Inflector::underscore($this->controllerName));
 
 		$prompt = sprintf(__("Would you like bake to build your views interactively?\nWarning: Choosing no will overwrite %s views if it exist.", true),  $this->controllerName);
-		$interactive = $this->in($prompt, array('y', 'n'), 'n');
+		$interactive = $this->in($prompt, ['y', 'n'], 'n');
 
 		if (strtolower($interactive) == 'n') {
 			$this->interactive = false;
 		}
 
 		$prompt = __("Would you like to create some CRUD views\n(index, add, view, edit) for this controller?\nNOTE: Before doing so, you'll need to create your controller\nand model classes (including associated models).", true);
-		$wannaDoScaffold = $this->in($prompt, array('y','n'), 'y');
+		$wannaDoScaffold = $this->in($prompt, ['y','n'], 'y');
 
-		$wannaDoAdmin = $this->in(__("Would you like to create the views for admin routing?", true), array('y','n'), 'n');
+		$wannaDoAdmin = $this->in(__("Would you like to create the views for admin routing?", true), ['y','n'], 'n');
 
 		if (strtolower($wannaDoScaffold) == 'y' || strtolower($wannaDoAdmin) == 'y') {
 			$vars = $this->__loadController();
@@ -244,7 +244,7 @@ class ViewTask extends BakeTask {
 			if (strtolower($wannaDoAdmin) == 'y') {
 				$admin = $this->Project->getPrefix();
 				$regularActions = $this->scaffoldActions;
-				$adminActions = array();
+				$adminActions = [];
 				foreach ($regularActions as $action) {
 					$adminActions[] = $admin . $action;
 				}
@@ -268,7 +268,7 @@ class ViewTask extends BakeTask {
  * @return array Returns an variables to be made available to a view template
  * @access private
  */
-	function __loadController() {
+	public function __loadController() {
 		if (!$this->controllerName) {
 			$this->err(__('Controller not found', true));
 		}
@@ -302,7 +302,7 @@ class ViewTask extends BakeTask {
 			$primaryKey = $displayField = null;
 			$singularVar = Inflector::variable(Inflector::singularize($this->controllerName));
 			$singularHumanName = $this->_singularHumanName($this->controllerName);
-			$fields = $schema = $associations = array();
+			$fields = $schema = $associations = [];
 		}
 		$pluralVar = Inflector::variable($this->controllerName);
 		$pluralHumanName = $this->_pluralHumanName($this->controllerName);
@@ -317,7 +317,7 @@ class ViewTask extends BakeTask {
  * @param array $actions Array of actions to make files for.
  * @return void
  */
-	function bakeActions($actions, $vars) {
+	public function bakeActions($actions, $vars) {
 		foreach ($actions as $action) {
 			$content = $this->getContent($action, $vars);
 			$this->bake($action, $content);
@@ -329,7 +329,7 @@ class ViewTask extends BakeTask {
  *
  * @return void
  */
-	function customAction() {
+	public function customAction() {
 		$action = '';
 		while ($action == '') {
 			$action = $this->in(__('Action Name? (use lowercase_underscored function name)', true));
@@ -345,7 +345,7 @@ class ViewTask extends BakeTask {
 		$this->out(sprintf(__('Action Name:     %s', true), $action));
 		$this->out(sprintf(__('Path:            %s', true), $this->params['app'] . DS . 'views' . DS . $this->controllerPath . DS . Inflector::underscore($action) . ".ctp"));
 		$this->hr();
-		$looksGood = $this->in(__('Look okay?', true), array('y','n'), 'y');
+		$looksGood = $this->in(__('Look okay?', true), ['y','n'], 'y');
 		if (strtolower($looksGood) == 'y') {
 			$this->bake($action, true);
 			$this->_stop();
@@ -362,7 +362,7 @@ class ViewTask extends BakeTask {
  * @return boolean Success
  * @access public
  */
-	function bake($action, $content = '') {
+	public function bake($action, $content = '') {
 		if ($content === true) {
 			$content = $this->getContent($action);
 		}
@@ -382,7 +382,7 @@ class ViewTask extends BakeTask {
  * @return string content from template
  * @access public
  */
-	function getContent($action, $vars = null) {
+	public function getContent($action, $vars = null) {
 		if (!$vars) {
 			$vars = $this->__loadController();
 		}
@@ -404,7 +404,7 @@ class ViewTask extends BakeTask {
  * @return string template name
  * @access public
  */
-	function getTemplate($action) {
+	public function getTemplate($action) {
 		if ($action != $this->template && in_array($action, $this->noTemplateActions)) {
 			return false;
 		}
@@ -414,14 +414,14 @@ class ViewTask extends BakeTask {
 		$template = $action;
 		$prefixes = Configure::read('Routing.prefixes');
 		foreach ((array)$prefixes as $prefix) {
-			if (strpos($template, $prefix) !== false) {
+			if (str_contains($template, $prefix)) {
 				$template = str_replace($prefix . '_', '', $template);
 			}
 		}
-		if (in_array($template, array('add', 'edit'))) {
+		if (in_array($template, ['add', 'edit'])) {
 			$template = 'form';
 		} elseif (preg_match('@(_add|_edit)$@', $template)) {
-			$template = str_replace(array('_add', '_edit'), '_form', $template);
+			$template = str_replace(['_add', '_edit'], '_form', $template);
 		}
 		return $template;
 	}
@@ -431,7 +431,7 @@ class ViewTask extends BakeTask {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->hr();
 		$this->out("Usage: cake bake view <arg1> <arg2>...");
 		$this->hr();
@@ -473,9 +473,9 @@ class ViewTask extends BakeTask {
  * @return  array $associations
  * @access private
  */
-	function __associations(&$model) {
-		$keys = array('belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany');
-		$associations = array();
+	public function __associations(&$model) {
+		$keys = ['belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany'];
+		$associations = [];
 
 		foreach ($keys as $key => $type) {
 			foreach ($model->{$type} as $assocKey => $assocData) {

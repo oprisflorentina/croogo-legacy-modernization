@@ -32,7 +32,7 @@ class ExtractTask extends Shell {
  * @var string
  * @access private
  */
-	var $__paths = array();
+	public $__paths = [];
 
 /**
  * Files from where to extract
@@ -40,7 +40,7 @@ class ExtractTask extends Shell {
  * @var array
  * @access private
  */
-	var $__files = array();
+	public $__files = [];
 
 /**
  * Merge all domains string into the default.pot file
@@ -48,7 +48,7 @@ class ExtractTask extends Shell {
  * @var boolean
  * @access private
  */
-	var $__merge = false;
+	public $__merge = false;
 
 /**
  * Current file being processed
@@ -56,7 +56,7 @@ class ExtractTask extends Shell {
  * @var string
  * @access private
  */
-	var $__file = null;
+	public $__file = null;
 
 /**
  * Contains all content waiting to be write
@@ -64,7 +64,7 @@ class ExtractTask extends Shell {
  * @var string
  * @access private
  */
-	var $__storage = array();
+	public $__storage = [];
 
 /**
  * Extracted tokens
@@ -72,7 +72,7 @@ class ExtractTask extends Shell {
  * @var array
  * @access private
  */
-	var $__tokens = array();
+	public $__tokens = [];
 
 /**
  * Extracted strings
@@ -80,7 +80,7 @@ class ExtractTask extends Shell {
  * @var array
  * @access private
  */
-	var $__strings = array();
+	public $__strings = [];
 
 /**
  * Destination path
@@ -88,7 +88,7 @@ class ExtractTask extends Shell {
  * @var string
  * @access private
  */
-	var $__output = null;
+	public $__output = null;
 
 /**
  * Execution method always used for tasks
@@ -96,7 +96,7 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function execute() {
+	public function execute() {
 		if (isset($this->params['files']) && !is_array($this->params['files'])) {
 			$this->__files = explode(',', $this->params['files']);
 		}
@@ -146,7 +146,7 @@ class ExtractTask extends Shell {
 			$this->__merge = !(strtolower($this->params['merge']) === 'no');
 		} else {
 			$this->out();
-			$response = $this->in(sprintf(__('Would you like to merge all domains strings into the default.pot file?', true)), array('y', 'n'), 'n');
+			$response = $this->in(sprintf(__('Would you like to merge all domains strings into the default.pot file?', true)), ['y', 'n'], 'n');
 			$this->__merge = strtolower($response) === 'y';
 		}
 
@@ -162,7 +162,7 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function __extract() {
+	public function __extract() {
 		$this->out();
 		$this->out();
 		$this->out(__('Extracting...', true));
@@ -176,8 +176,8 @@ class ExtractTask extends Shell {
 		$this->__extractTokens();
 		$this->__buildFiles();
 		$this->__writeFiles();
-		$this->__paths = $this->__files = $this->__storage = array();
-		$this->__strings = $this->__tokens = array();
+		$this->__paths = $this->__files = $this->__storage = [];
+		$this->__strings = $this->__tokens = [];
 		$this->out();
 		$this->out(__('Done.', true));
 	}
@@ -188,7 +188,7 @@ class ExtractTask extends Shell {
  * @return void
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->out(__('CakePHP Language String Extraction:', true));
 		$this->hr();
 		$this->out(__('The Extract script generates .pot file(s) with translations', true));
@@ -217,14 +217,14 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function __extractTokens() {
+	public function __extractTokens() {
 		foreach ($this->__files as $file) {
 			$this->__file = $file;
 			$this->out(sprintf(__('Processing %s...', true), $file));
 
 			$code = file_get_contents($file);
 			$allTokens = token_get_all($code);
-			$this->__tokens = array();
+			$this->__tokens = [];
 			$lineNumber = 1;
 
 			foreach ($allTokens as $token) {
@@ -242,13 +242,13 @@ class ExtractTask extends Shell {
 				}
 			}
 			unset($allTokens);
-			$this->__parse('__', array('singular'));
-			$this->__parse('__n', array('singular', 'plural'));
-			$this->__parse('__d', array('domain', 'singular'));
-			$this->__parse('__c', array('singular'));
-			$this->__parse('__dc', array('domain', 'singular'));
-			$this->__parse('__dn', array('domain', 'singular', 'plural'));
-			$this->__parse('__dcn', array('domain', 'singular', 'plural'));
+			$this->__parse('__', ['singular']);
+			$this->__parse('__n', ['singular', 'plural']);
+			$this->__parse('__d', ['domain', 'singular']);
+			$this->__parse('__c', ['singular']);
+			$this->__parse('__dc', ['domain', 'singular']);
+			$this->__parse('__dn', ['domain', 'singular', 'plural']);
+			$this->__parse('__dcn', ['domain', 'singular', 'plural']);
 		}
 	}
 
@@ -260,18 +260,18 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function __parse($functionName, $map) {
+	public function __parse($functionName, $map) {
 		$count = 0;
 		$tokenCount = count($this->__tokens);
 
 		while (($tokenCount - $count) > 1) {
-			list($countToken, $firstParenthesis) = array($this->__tokens[$count], $this->__tokens[$count + 1]);
+			[$countToken, $firstParenthesis] = [$this->__tokens[$count], $this->__tokens[$count + 1]];
 			if (!is_array($countToken)) {
 				$count++;
 				continue;
 			}
 
-			list($type, $string, $line) = $countToken;
+			[$type, $string, $line] = $countToken;
 			if (($type == T_STRING) && ($string == $functionName) && ($firstParenthesis == '(')) {
 				$position = $count;
 				$depth = 0;
@@ -290,7 +290,7 @@ class ExtractTask extends Shell {
 
 				if ($mapCount == count($strings)) {
 					extract(array_combine($map, $strings));
-					$domain = isset($domain) ? $domain : 'default';
+					$domain ??= 'default';
 					$string = isset($plural) ? $singular . "\0" . $plural : $singular;
 					$this->__strings[$domain][$string][$this->__file][] = $line;
 				} else {
@@ -308,8 +308,8 @@ class ExtractTask extends Shell {
 * @param integer $target Number of strings to extract
 * @return array Strings extracted
 */
-	function __getStrings($position, $target) {
-		$strings = array();
+	public function __getStrings($position, $target) {
+		$strings = [];
 		while (count($strings) < $target && ($this->__tokens[$position] == ',' || $this->__tokens[$position][0] == T_CONSTANT_ENCAPSED_STRING)) {
 			$condition1 = ($this->__tokens[$position][0] == T_CONSTANT_ENCAPSED_STRING && $this->__tokens[$position+1] == '.');
 			$condition2 = ($this->__tokens[$position][0] == T_CONSTANT_ENCAPSED_STRING && $this->__tokens[$position+1][0] == T_COMMENT);
@@ -338,21 +338,21 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function __buildFiles() {
+	public function __buildFiles() {
 		foreach ($this->__strings as $domain => $strings) {
 			foreach ($strings as $string => $files) {
-				$occurrences = array();
+				$occurrences = [];
 				foreach ($files as $file => $lines) {
 					$occurrences[] = $file . ':' . implode(';', $lines);
 				}
 				$occurrences = implode("\n#: ", $occurrences);
 				$header = '#: ' . str_replace($this->__paths, '', $occurrences) . "\n";
 
-				if (strpos($string, "\0") === false) {
+				if (!str_contains($string, "\0")) {
 					$sentence = "msgid \"{$string}\"\n";
 					$sentence .= "msgstr \"\"\n\n";
 				} else {
-					list($singular, $plural) = explode("\0", $string);
+					[$singular, $plural] = explode("\0", $string);
 					$sentence = "msgid \"{$singular}\"\n";
 					$sentence .= "msgid_plural \"{$plural}\"\n";
 					$sentence .= "msgstr[0] \"\"\n";
@@ -373,10 +373,8 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function __store($domain, $header, $sentence) {
-		if (!isset($this->__storage[$domain])) {
-			$this->__storage[$domain] = array();
-		}
+	public function __store($domain, $header, $sentence) {
+		$this->__storage[$domain] ??= [];
 		if (!isset($this->__storage[$domain][$sentence])) {
 			$this->__storage[$domain][$sentence] = $header;
 		} else {
@@ -390,7 +388,7 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function __writeFiles() {
+	public function __writeFiles() {
 		$overwriteAll = false;
 		foreach ($this->__storage as $domain => $sentences) {
 			$output = $this->__writeHeader();
@@ -403,7 +401,7 @@ class ExtractTask extends Shell {
 			$response = '';
 			while ($overwriteAll === false && $File->exists() && strtoupper($response) !== 'Y') {
 				$this->out();
-				$response = $this->in(sprintf(__('Error: %s already exists in this location. Overwrite? [Y]es, [N]o, [A]ll', true), $filename), array('y', 'n', 'a'), 'y');
+				$response = $this->in(sprintf(__('Error: %s already exists in this location. Overwrite? [Y]es, [N]o, [A]ll', true), $filename), ['y', 'n', 'a'], 'y');
 				if (strtoupper($response) === 'N') {
 					$response = '';
 					while ($response == '') {
@@ -426,7 +424,7 @@ class ExtractTask extends Shell {
  * @return string Translation template header
  * @access private
  */
-	function __writeHeader() {
+	public function __writeHeader() {
 		$output  = "# LANGUAGE translation of CakePHP Application\n";
 		$output .= "# Copyright YEAR NAME <EMAIL@ADDRESS>\n";
 		$output .= "#\n";
@@ -452,13 +450,13 @@ class ExtractTask extends Shell {
  * @return string Formatted string
  * @access private
  */
-	function __formatString($string) {
+	public function __formatString($string) {
 		$quote = substr($string, 0, 1);
 		$string = substr($string, 1, -1);
 		if ($quote == '"') {
 			$string = stripcslashes($string);
 		} else {
-			$string = strtr($string, array("\\'" => "'", "\\\\" => "\\"));
+			$string = strtr($string, ["\\'" => "'", "\\\\" => "\\"]);
 		}
 		$string = str_replace("\r\n", "\n", $string);
 		return addcslashes($string, "\0..\37\\\"");
@@ -474,7 +472,7 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function __markerError($file, $line, $marker, $count) {
+	public function __markerError($file, $line, $marker, $count) {
 		$this->out(sprintf(__("Invalid marker content in %s:%s\n* %s(", true), $file, $line, $marker), true);
 		$count += 2;
 		$tokenCount = count($this->__tokens);
@@ -504,7 +502,7 @@ class ExtractTask extends Shell {
  * @return void
  * @access private
  */
-	function __searchFiles() {
+	public function __searchFiles() {
 		foreach ($this->__paths as $path) {
 			$Folder = new Folder($path);
 			$files = $Folder->findRecursive('.*\.(php|ctp|thtml|inc|tpl)', true);

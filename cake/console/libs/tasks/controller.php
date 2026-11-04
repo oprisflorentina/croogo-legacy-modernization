@@ -18,7 +18,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-include_once dirname(__FILE__) . DS . 'bake.php';
+include_once __DIR__ . DS . 'bake.php';
 
 /**
  * Task class for creating and updating controller files.
@@ -34,7 +34,7 @@ class ControllerTask extends BakeTask {
  * @var array
  * @access public
  */
-	var $tasks = array('Model', 'Test', 'Template', 'DbConfig', 'Project');
+	public $tasks = ['Model', 'Test', 'Template', 'DbConfig', 'Project'];
 
 /**
  * path to CONTROLLERS directory
@@ -42,14 +42,14 @@ class ControllerTask extends BakeTask {
  * @var array
  * @access public
  */
-	var $path = CONTROLLERS;
+	public $path = CONTROLLERS;
 
 /**
  * Override initialize
  *
  * @access public
  */
-	function initialize() {
+	public function initialize() {
 	}
 
 /**
@@ -57,7 +57,7 @@ class ControllerTask extends BakeTask {
  *
  * @access public
  */
-	function execute() {
+	public function execute() {
 		if (empty($this->args)) {
 			return $this->__interactive();
 		}
@@ -106,10 +106,10 @@ class ControllerTask extends BakeTask {
  * @access public
  * @return void
  */
-	function all() {
+	public function all() {
 		$this->interactive = false;
 		$this->listAll($this->connection, false);
-		ClassRegistry::config('Model', array('ds' => $this->connection));
+		ClassRegistry::config('Model', ['ds' => $this->connection]);
 		$unitTestExists = $this->_checkUnitTest();
 		foreach ($this->__tables as $table) {
 			$model = $this->_modelName($table);
@@ -128,7 +128,7 @@ class ControllerTask extends BakeTask {
  *
  * @access private
  */
-	function __interactive() {
+	public function __interactive() {
 		$this->interactive = true;
 		$this->hr();
 		$this->out(sprintf(__("Bake Controller\nPath: %s", true), $this->path));
@@ -143,7 +143,7 @@ class ControllerTask extends BakeTask {
 		$this->out(sprintf(__('Baking %sController', true), $controllerName));
 		$this->hr();
 
-		$helpers = $components = array();
+		$helpers = $components = [];
 		$actions = '';
 		$wannaUseSession = 'y';
 		$wannaBakeAdminCrud = 'n';
@@ -156,29 +156,29 @@ class ControllerTask extends BakeTask {
 		if (file_exists($this->path . $controllerFile .'_controller.php')) {
 			$question[] = sprintf(__("Warning: Choosing no will overwrite the %sController.", true), $controllerName);
 		}
-		$doItInteractive = $this->in(implode("\n", $question), array('y','n'), 'y');
+		$doItInteractive = $this->in(implode("\n", $question), ['y','n'], 'y');
 
 		if (strtolower($doItInteractive) == 'y') {
 			$this->interactive = true;
 			$useDynamicScaffold = $this->in(
-				__("Would you like to use dynamic scaffolding?", true), array('y','n'), 'n'
+				__("Would you like to use dynamic scaffolding?", true), ['y','n'], 'n'
 			);
 
 			if (strtolower($useDynamicScaffold) == 'y') {
 				$wannaBakeCrud = 'n';
 				$actions = 'scaffold';
 			} else {
-				list($wannaBakeCrud, $wannaBakeAdminCrud) = $this->_askAboutMethods();
+				[$wannaBakeCrud, $wannaBakeAdminCrud] = $this->_askAboutMethods();
 
 				$helpers = $this->doHelpers();
 				$components = $this->doComponents();
 
 				$wannaUseSession = $this->in(
-					__("Would you like to use Session flash messages?", true), array('y','n'), 'y'
+					__("Would you like to use Session flash messages?", true), ['y','n'], 'y'
 				);
 			}
 		} else {
-			list($wannaBakeCrud, $wannaBakeAdminCrud) = $this->_askAboutMethods();
+			[$wannaBakeCrud, $wannaBakeAdminCrud] = $this->_askAboutMethods();
 		}
 
 		if (strtolower($wannaBakeCrud) == 'y') {
@@ -192,7 +192,7 @@ class ControllerTask extends BakeTask {
 		$baked = false;
 		if ($this->interactive === true) {
 			$this->confirmController($controllerName, $useDynamicScaffold, $helpers, $components);
-			$looksGood = $this->in(__('Look okay?', true), array('y','n'), 'y');
+			$looksGood = $this->in(__('Look okay?', true), ['y','n'], 'y');
 
 			if (strtolower($looksGood) == 'y') {
 				$baked = $this->bake($controllerName, $actions, $helpers, $components);
@@ -214,7 +214,7 @@ class ControllerTask extends BakeTask {
  *
  * @return void
  */
-	function confirmController($controllerName, $useDynamicScaffold, $helpers, $components) {
+	public function confirmController($controllerName, $useDynamicScaffold, $helpers, $components) {
 		$this->out();
 		$this->hr();
 		$this->out(__('The following controller will be created:', true));
@@ -225,16 +225,16 @@ class ControllerTask extends BakeTask {
 			$this->out("var \$scaffold;");
 		}
 
-		$properties = array(
+		$properties = [
 			'helpers' => __("Helpers:", true),
 			'components' => __('Components:', true),
-		);
+		];
 
 		foreach ($properties as $var => $title) {
-			if (count($$var)) {
+			if (count(${$var})) {
 				$output = '';
-				$length = count($$var);
-				foreach ($$var as $i => $propElement) {
+				$length = count(${$var});
+				foreach (${$var} as $i => $propElement) {
 					if ($i != $length -1) {
 						$output .= ucfirst($propElement) . ', ';
 					} else {
@@ -252,16 +252,16 @@ class ControllerTask extends BakeTask {
  *
  * @return array Array containing (bakeRegular, bakeAdmin) answers
  */
-	function _askAboutMethods() {
+	public function _askAboutMethods() {
 		$wannaBakeCrud = $this->in(
 			__("Would you like to create some basic class methods \n(index(), add(), view(), edit())?", true),
-			array('y','n'), 'n'
+			['y','n'], 'n'
 		);
 		$wannaBakeAdminCrud = $this->in(
 			__("Would you like to create the basic class methods for admin routing?", true),
-			array('y','n'), 'n'
+			['y','n'], 'n'
 		);
-		return array($wannaBakeCrud, $wannaBakeAdminCrud);
+		return [$wannaBakeCrud, $wannaBakeAdminCrud];
 	}
 
 /**
@@ -273,7 +273,7 @@ class ControllerTask extends BakeTask {
  * @return string Baked actions
  * @access private
  */
-	function bakeActions($controllerName, $admin = null, $wannaUseSession = true) {
+	public function bakeActions($controllerName, $admin = null, $wannaUseSession = true) {
 		$currentModelName = $modelImport = $this->_modelName($controllerName);
 		$plugin = $this->plugin;
 		if ($plugin) {
@@ -308,7 +308,7 @@ class ControllerTask extends BakeTask {
  * @return string Baked controller
  * @access private
  */
-	function bake($controllerName, $actions = '', $helpers = null, $components = null) {
+	public function bake($controllerName, $actions = '', $helpers = null, $components = null) {
 		$isScaffold = ($actions === 'scaffold') ? true : false;
 
 		$this->Template->set('plugin', Inflector::camelize($this->plugin));
@@ -330,7 +330,7 @@ class ControllerTask extends BakeTask {
  * @return string Baked test
  * @access private
  */
-	function bakeTest($className) {
+	public function bakeTest($className) {
 		$this->Test->plugin = $this->plugin;
 		$this->Test->connection = $this->connection;
 		$this->Test->interactive = $this->interactive;
@@ -342,7 +342,7 @@ class ControllerTask extends BakeTask {
  *
  * @return array Helpers that the user wants to use.
  */
-	function doHelpers() {
+	public function doHelpers() {
 		return $this->_doPropertyChoices(
 			__("Would you like this controller to use other helpers\nbesides HtmlHelper and FormHelper?", true),
 			__("Please provide a comma separated list of the other\nhelper names you'd like to use.\nExample: 'Ajax, Javascript, Time'", true)
@@ -354,7 +354,7 @@ class ControllerTask extends BakeTask {
  *
  * @return array Components the user wants to use.
  */
-	function doComponents() {
+	public function doComponents() {
 		return $this->_doPropertyChoices(
 			__("Would you like this controller to use any components?", true),
 			__("Please provide a comma separated list of the component names you'd like to use.\nExample: 'Acl, Security, RequestHandler'", true)
@@ -368,9 +368,9 @@ class ControllerTask extends BakeTask {
  * @param sting $example A question for a comma separated list, with examples.
  * @return array Array of values for property.
  */
-	function _doPropertyChoices($prompt, $example) {
-		$proceed = $this->in($prompt, array('y','n'), 'n');
-		$property = array();
+	public function _doPropertyChoices($prompt, $example) {
+		$proceed = $this->in($prompt, ['y','n'], 'n');
+		$property = [];
 		if (strtolower($proceed) == 'y') {
 			$propertyList = $this->in($example);
 			$propertyListTrimmed = str_replace(' ', '', $propertyList);
@@ -387,15 +387,13 @@ class ControllerTask extends BakeTask {
  * @return array Set of controllers
  * @access public
  */
-	function listAll($useDbConfig = null) {
-		if (is_null($useDbConfig)) {
-			$useDbConfig = $this->connection;
-		}
+	public function listAll($useDbConfig = null) {
+		$useDbConfig ??= $this->connection;
 		$this->__tables = $this->Model->getAllTables($useDbConfig);
 
 		if ($this->interactive == true) {
 			$this->out(__('Possible Controllers based on your current database:', true));
-			$this->_controllerNames = array();
+			$this->_controllerNames = [];
 			$count = count($this->__tables);
 			for ($i = 0; $i < $count; $i++) {
 				$this->_controllerNames[] = $this->_controllerName($this->_modelName($this->__tables[$i]));
@@ -413,7 +411,7 @@ class ControllerTask extends BakeTask {
  * @return string Controller name
  * @access public
  */
-	function getName($useDbConfig = null) {
+	public function getName($useDbConfig = null) {
 		$controllers = $this->listAll($useDbConfig);
 		$enteredController = '';
 
@@ -444,7 +442,7 @@ class ControllerTask extends BakeTask {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->hr();
 		$this->out("Usage: cake bake controller <arg1> <arg2>...");
 		$this->hr();

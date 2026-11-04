@@ -33,7 +33,7 @@ class HtmlHelper extends AppHelper {
  * @var array
  * @access public
  */
-	var $tags = array(
+	public $tags = [
 		'meta' => '<meta%s/>',
 		'metalink' => '<link href="%s"%s/>',
 		'link' => '<a href="%s"%s>%s</a>',
@@ -90,7 +90,7 @@ class HtmlHelper extends AppHelper {
 		'javascriptstart' => '<script type="text/javascript">',
 		'javascriptlink' => '<script type="text/javascript" src="%s"%s></script>',
 		'javascriptend' => '</script>'
-	);
+	];
 
 /**
  * Breadcrumbs.
@@ -98,7 +98,7 @@ class HtmlHelper extends AppHelper {
  * @var array
  * @access protected
  */
-	var $_crumbs = array();
+	public $_crumbs = [];
 
 /**
  * Names of script files that have been included once
@@ -106,21 +106,21 @@ class HtmlHelper extends AppHelper {
  * @var array
  * @access private
  */
-	var $__includedScripts = array();
+	public $__includedScripts = [];
 /**
  * Options for the currently opened script block buffer if any.
  *
  * @var array
  * @access protected
  */
-	var $_scriptBlockOptions = array();
+	public $_scriptBlockOptions = [];
 /**
  * Document type definitions
  *
  * @var array
  * @access private
  */
-	var $__docTypes = array(
+	public $__docTypes = [
 		'html4-strict'  => '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
 		'html4-trans'  => '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
 		'html4-frame'  => '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">',
@@ -128,7 +128,7 @@ class HtmlHelper extends AppHelper {
 		'xhtml-trans' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 		'xhtml-frame' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">',
 		'xhtml11' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'
-	);
+	];
 
 /**
  * Adds a link to the breadcrumbs array.
@@ -140,8 +140,8 @@ class HtmlHelper extends AppHelper {
  * @see HtmlHelper::link() for details on $options that can be used.
  * @access public
  */
-	function addCrumb($name, $link = null, $options = null) {
-		$this->_crumbs[] = array($name, $link, $options);
+	public function addCrumb($name, $link = null, $options = null) {
+		$this->_crumbs[] = [$name, $link, $options];
 	}
 
 /**
@@ -162,11 +162,8 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#docType
  */
-	function docType($type = 'xhtml-strict') {
-		if (isset($this->__docTypes[$type])) {
-			return $this->__docTypes[$type];
-		}
-		return null;
+	public function docType($type = 'xhtml-strict') {
+		return $this->__docTypes[$type] ?? null;
 	}
 
 /**
@@ -184,18 +181,18 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#meta
  */
-	function meta($type, $url = null, $options = array()) {
-		$inline = isset($options['inline']) ? $options['inline'] : true;
+	public function meta($type, $url = null, $options = []) {
+		$inline = $options['inline'] ?? true;
 		unset($options['inline']);
 
 		if (!is_array($type)) {
-			$types = array(
-				'rss'	=> array('type' => 'application/rss+xml', 'rel' => 'alternate', 'title' => $type, 'link' => $url),
-				'atom'	=> array('type' => 'application/atom+xml', 'title' => $type, 'link' => $url),
-				'icon'	=> array('type' => 'image/x-icon', 'rel' => 'icon', 'link' => $url),
-				'keywords' => array('name' => 'keywords', 'content' => $url),
-				'description' => array('name' => 'description', 'content' => $url),
-			);
+			$types = [
+				'rss'	=> ['type' => 'application/rss+xml', 'rel' => 'alternate', 'title' => $type, 'link' => $url],
+				'atom'	=> ['type' => 'application/atom+xml', 'title' => $type, 'link' => $url],
+				'icon'	=> ['type' => 'image/x-icon', 'rel' => 'icon', 'link' => $url],
+				'keywords' => ['name' => 'keywords', 'content' => $url],
+				'description' => ['name' => 'description', 'content' => $url],
+			];
 
 			if ($type === 'icon' && $url === null) {
 				$types['icon']['link'] = $this->webroot('favicon.ico');
@@ -213,7 +210,7 @@ class HtmlHelper extends AppHelper {
 				$type = $types[$options['type']];
 				unset($options['type']);
 			} else {
-				$type = array();
+				$type = [];
 			}
 		} elseif ($url !== null) {
 			$inline = $url;
@@ -223,14 +220,14 @@ class HtmlHelper extends AppHelper {
 
 		if (isset($options['link'])) {
 			if (isset($options['rel']) && $options['rel'] === 'icon') {
-				$out = sprintf($this->tags['metalink'], $options['link'], $this->_parseAttributes($options, array('link'), ' ', ' '));
+				$out = sprintf($this->tags['metalink'], $options['link'], $this->_parseAttributes($options, ['link'], ' ', ' '));
 				$options['rel'] = 'shortcut icon';
 			} else {
 				$options['link'] = $this->url($options['link'], true);
 			}
-			$out .= sprintf($this->tags['metalink'], $options['link'], $this->_parseAttributes($options, array('link'), ' ', ' '));
+			$out .= sprintf($this->tags['metalink'], $options['link'], $this->_parseAttributes($options, ['link'], ' ', ' '));
 		} else {
-			$out = sprintf($this->tags['meta'], $this->_parseAttributes($options, array('type'), ' ', ' '));
+			$out = sprintf($this->tags['meta'], $this->_parseAttributes($options, ['type'], ' ', ' '));
 		}
 
 		if ($inline) {
@@ -250,7 +247,7 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#charset
  */
-	function charset($charset = null) {
+	public function charset($charset = null) {
 		if (empty($charset)) {
 			$charset = strtolower(Configure::read('App.encoding'));
 		}
@@ -278,7 +275,7 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#link
  */
-	function link($title, $url = null, $options = array(), $confirmMessage = false) {
+	public function link($title, $url = null, $options = [], $confirmMessage = false) {
 		$escapeTitle = true;
 		if ($url !== null) {
 			$url = $this->url($url);
@@ -333,8 +330,8 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#css
  */
-	function css($path, $rel = null, $options = array()) {
-		$options += array('inline' => true);
+	public function css($path, $rel = null, $options = []) {
+		$options += ['inline' => true];
 		if (is_array($path)) {
 			$out = '';
 			foreach ($path as $i) {
@@ -346,15 +343,15 @@ class HtmlHelper extends AppHelper {
 			return;
 		}
 
-		if (strpos($path, '//') !== false) {
+		if (str_contains($path, '//')) {
 			$url = $path;
 		} else {
 			if ($path[0] !== '/') {
 				$path = CSS_URL . $path;
 			}
 
-			if (strpos($path, '?') === false) {
-				if (substr($path, -4) !== '.css') {
+			if (!str_contains($path, '?')) {
+				if (!str_ends_with($path, '.css')) {
 					$path .= '.css';
 				}
 			}
@@ -369,12 +366,12 @@ class HtmlHelper extends AppHelper {
 		}
 
 		if ($rel == 'import') {
-			$out = sprintf($this->tags['style'], $this->_parseAttributes($options, array('inline'), '', ' '), '@import url(' . $url . ');');
+			$out = sprintf($this->tags['style'], $this->_parseAttributes($options, ['inline'], '', ' '), '@import url(' . $url . ');');
 		} else {
 			if ($rel == null) {
 				$rel = 'stylesheet';
 			}
-			$out = sprintf($this->tags['css'], $rel, $url, $this->_parseAttributes($options, array('inline'), '', ' '));
+			$out = sprintf($this->tags['css'], $rel, $url, $this->_parseAttributes($options, ['inline'], '', ' '));
 		}
 
 		if ($options['inline']) {
@@ -406,12 +403,12 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#script
  */
-	function script($url, $options = array()) {
+	public function script($url, $options = []) {
 		if (is_bool($options)) {
-			list($inline, $options) = array($options, array());
+			[$inline, $options] = [$options, []];
 			$options['inline'] = $inline;
 		}
-		$options = array_merge(array('inline' => true, 'once' => true), $options);
+		$options = array_merge(['inline' => true, 'once' => true], $options);
 		if (is_array($url)) {
 			$out = '';
 			foreach ($url as $i) {
@@ -427,11 +424,11 @@ class HtmlHelper extends AppHelper {
 		}
 		$this->__includedScripts[$url] = true;
 
-		if (strpos($url, '//') === false) {
+		if (!str_contains($url, '//')) {
 			if ($url[0] !== '/') {
 				$url = JS_URL . $url;
 			}
-			if (strpos($url, '?') === false && substr($url, -3) !== '.js') {
+			if (!str_contains($url, '?') && !str_ends_with($url, '.js')) {
 				$url .= '.js';
 			}
 			$url = $this->assetTimestamp($this->webroot($url));
@@ -440,7 +437,7 @@ class HtmlHelper extends AppHelper {
 				$url = str_replace(JS_URL, 'cjs/', $url);
 			}
 		}
-		$attributes = $this->_parseAttributes($options, array('inline', 'once'), ' ');
+		$attributes = $this->_parseAttributes($options, ['inline', 'once'], ' ');
 		$out = sprintf($this->tags['javascriptlink'], $url, $attributes);
 
 		if ($options['inline']) {
@@ -465,8 +462,8 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#scriptBlock
  */
-	function scriptBlock($script, $options = array()) {
-		$options += array('safe' => true, 'inline' => true);
+	public function scriptBlock($script, $options = []) {
+		$options += ['safe' => true, 'inline' => true];
 		if ($options['safe']) {
 			$script  = "\n" . '//<![CDATA[' . "\n" . $script . "\n" . '//]]>' . "\n";
 		}
@@ -497,8 +494,8 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#scriptStart
  */
-	function scriptStart($options = array()) {
-		$options += array('safe' => true, 'inline' => true);
+	public function scriptStart($options = []) {
+		$options += ['safe' => true, 'inline' => true];
 		$this->_scriptBlockOptions = $options;
 		ob_start();
 		return null;
@@ -513,10 +510,10 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#scriptEnd
  */
-	function scriptEnd() {
+	public function scriptEnd() {
 		$buffer = ob_get_clean();
 		$options = $this->_scriptBlockOptions;
-		$this->_scriptBlockOptions = array();
+		$this->_scriptBlockOptions = [];
 		return $this->scriptBlock($buffer, $options);
 	}
 
@@ -538,11 +535,11 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#style
  */
-	function style($data, $oneline = true) {
+	public function style($data, $oneline = true) {
 		if (!is_array($data)) {
 			return $data;
 		}
-		$out = array();
+		$out = [];
 		foreach ($data as $key=> $value) {
 			$out[] = $key.':'.$value.';';
 		}
@@ -560,9 +557,9 @@ class HtmlHelper extends AppHelper {
  * @return string Composed bread crumbs
  * @access public
  */
-	function getCrumbs($separator = '&raquo;', $startText = false) {
+	public function getCrumbs($separator = '&raquo;', $startText = false) {
 		if (!empty($this->_crumbs)) {
-			$out = array();
+			$out = [];
 			if ($startText) {
 				$out[] = $this->link($startText, '/');
 			}
@@ -601,19 +598,17 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#image
  */
-	function image($path, $options = array()) {
+	public function image($path, $options = []) {
 		if (is_array($path)) {
 			$path = $this->url($path);
-		} elseif (strpos($path, '://') === false) {
+		} elseif (!str_contains($path, '://')) {
 			if ($path[0] !== '/') {
 				$path = IMAGES_URL . $path;
 			}
 			$path = $this->assetTimestamp($this->webroot($path));
 		}
 
-		if (!isset($options['alt'])) {
-			$options['alt'] = '';
-		}
+		$options['alt'] ??= '';
 
 		$url = false;
 		if (!empty($options['url'])) {
@@ -639,8 +634,8 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#tableHeaders
  */
-	function tableHeaders($names, $trOptions = null, $thOptions = null) {
-		$out = array();
+	public function tableHeaders($names, $trOptions = null, $thOptions = null) {
+		$out = [];
 		foreach ($names as $arg) {
 			$out[] = sprintf($this->tags['tableheader'], $this->_parseAttributes($thOptions), $arg);
 		}
@@ -660,9 +655,9 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#tableCells
  */
-	function tableCells($data, $oddTrOptions = null, $evenTrOptions = null, $useCount = false, $continueOddEven = true) {
+	public function tableCells($data, $oddTrOptions = null, $evenTrOptions = null, $useCount = false, $continueOddEven = true) {
 		if (empty($data[0]) || !is_array($data[0])) {
-			$data = array($data);
+			$data = [$data];
 		}
 
 		if ($oddTrOptions === true) {
@@ -683,10 +678,10 @@ class HtmlHelper extends AppHelper {
 
 		foreach ($data as $line) {
 			$count++;
-			$cellsOut = array();
+			$cellsOut = [];
 			$i = 0;
 			foreach ($line as $cell) {
-				$cellOptions = array();
+				$cellOptions = [];
 
 				if (is_array($cell)) {
 					$cellOptions = $cell[1];
@@ -717,13 +712,13 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#tag
  */
-	function tag($name, $text = null, $options = array()) {
+	public function tag($name, $text = null, $options = []) {
 		if (is_array($options) && isset($options['escape']) && $options['escape']) {
 			$text = h($text);
 			unset($options['escape']);
 		}
 		if (!is_array($options)) {
-			$options = array('class' => $options);
+			$options = ['class' => $options];
 		}
 		if ($text === null) {
 			$tag = 'tagstart';
@@ -748,7 +743,7 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#div
  */
-	function div($class = null, $text = null, $options = array()) {
+	public function div($class = null, $text = null, $options = []) {
 		if (!empty($class)) {
 			$options['class'] = $class;
 		}
@@ -769,7 +764,7 @@ class HtmlHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/HTML.html#para
  */
-	function para($class, $text, $options = array()) {
+	public function para($class, $text, $options = []) {
 		if (isset($options['escape'])) {
 			$text = h($text);
 		}
@@ -794,10 +789,10 @@ class HtmlHelper extends AppHelper {
  * @return string The nested list
  * @access public
  */
-	function nestedList($list, $options = array(), $itemOptions = array(), $tag = 'ul') {
+	public function nestedList($list, $options = [], $itemOptions = [], $tag = 'ul') {
 		if (is_string($options)) {
 			$tag = $options;
-			$options = array();
+			$options = [];
 		}
 		$items = $this->__nestedListItem($list, $options, $itemOptions, $tag);
 		return sprintf($this->tags[$tag], $this->_parseAttributes($options, null, ' ', ''), $items);
@@ -814,7 +809,7 @@ class HtmlHelper extends AppHelper {
  * @access private
  * @see HtmlHelper::nestedList()
  */
-	function __nestedListItem($items, $options, $itemOptions, $tag) {
+	public function __nestedListItem($items, $options, $itemOptions, $tag) {
 		$out = '';
 
 		$index = 1;
@@ -827,7 +822,7 @@ class HtmlHelper extends AppHelper {
 			} else if (isset($itemOptions['odd']) && $index % 2 != 0) {
 				$itemOptions['class'] = $itemOptions['odd'];
 			}
-			$out .= sprintf($this->tags['li'], $this->_parseAttributes($itemOptions, array('even', 'odd'), ' ', ''), $item);
+			$out .= sprintf($this->tags['li'], $this->_parseAttributes($itemOptions, ['even', 'odd'], ' ', ''), $item);
 			$index++;
 		}
 		return $out;

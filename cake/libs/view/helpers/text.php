@@ -58,21 +58,21 @@ class TextHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Text.html#Text#highlight-1622
  */
-	function highlight($text, $phrase, $options = array()) {
+	public function highlight($text, $phrase, $options = []) {
 		if (empty($phrase)) {
 			return $text;
 		}
 
-		$default = array(
+		$default = [
 			'format' => '<span class="highlight">\1</span>',
 			'html' => false
-		);
+		];
 		$options = array_merge($default, $options);
 		extract($options);
 
 		if (is_array($phrase)) {
-			$replace = array();
-			$with = array();
+			$replace = [];
+			$with = [];
 
 			foreach ($phrase as $key => $segment) {
 				$segment = '(' . preg_quote($segment, '|') . ')';
@@ -103,7 +103,7 @@ class TextHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Text.html#Text#stripLinks-1623
  */
-	function stripLinks($text) {
+	public function stripLinks($text) {
 		return preg_replace('|<a\s+[^>]+>|im', '', preg_replace('|<\/a>|im', '', $text));
 	}
 
@@ -117,7 +117,7 @@ class TextHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Text.html#Text#autoLinkUrls-1619
  */
-	function autoLinkUrls($text, $htmlOptions = array()) {
+	public function autoLinkUrls($text, $htmlOptions = []) {
 		$text = preg_replace_callback('#(?<!href="|">)((?:https?|ftp|nntp)://[^\s<>()]+)#i', function ($matches) use ($htmlOptions) {
 			$Html = new HtmlHelper();
 			$Html->tags = $Html->loadConfig();
@@ -140,7 +140,7 @@ class TextHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Text.html#Text#autoLinkEmails-1618
  */
-	function autoLinkEmails($text, $options = array()) {
+	public function autoLinkEmails($text, $options = []) {
 		$atom = '[a-z0-9!#$%&\'*+\/=?^_`{|}~-]';
 
 		return preg_replace_callback(
@@ -161,7 +161,7 @@ class TextHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Text.html#Text#autoLink-1620
  */
-	function autoLink($text, $options = array()) {
+	public function autoLink($text, $options = []) {
 		return $this->autoLinkEmails($this->autoLinkUrls($text, $options), $options);
 	}
 
@@ -184,10 +184,10 @@ class TextHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Text.html#Text#truncate-1625
  */
-	function truncate($text, $length = 100, $options = array()) {
-		$default = array(
+	public function truncate($text, $length = 100, $options = []) {
+		$default = [
 			'ending' => '...', 'exact' => true, 'html' => false
-		);
+		];
 		$options = array_merge($default, $options);
 		extract($options);
 
@@ -196,7 +196,7 @@ class TextHelper extends AppHelper {
 				return $text;
 			}
 			$totalLength = mb_strlen(strip_tags($ending));
-			$openTags = array();
+			$openTags = [];
 			$truncate = '';
 
 			preg_match_all('/(<\/?([\w+]+)[^>]*>)?([^<>]*)/', $text, $tags, PREG_SET_ORDER);
@@ -285,9 +285,9 @@ class TextHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Text.html#Text#excerpt-1621
  */
-	function excerpt($text, $phrase, $radius = 100, $ending = '...') {
+	public function excerpt($text, $phrase, $radius = 100, $ending = '...') {
 		if (empty($text) or empty($phrase)) {
-			return $this->truncate($text, $radius * 2, array('ending' => $ending));
+			return $this->truncate($text, $radius * 2, ['ending' => $ending]);
 		}
 
 		$append = $prepend = $ending;
@@ -328,7 +328,7 @@ class TextHelper extends AppHelper {
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Helpers/Text.html#Text#toList-1624
  */
-	function toList($list, $and = 'and', $separator = ', ') {
+	public function toList($list, $and = 'and', $separator = ', ') {
 		if (count($list) > 1) {
 			return implode($separator, array_slice($list, null, -1)) . ' ' . $and . ' ' . array_pop($list);
 		} else {

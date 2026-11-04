@@ -18,10 +18,10 @@ class TinymceHelper extends AppHelper {
  * @var array
  * @access public
  */
-	public $helpers = array(
+	public $helpers = [
 		'Html',
 		'Js',
-	);
+	];
 
 /**
  * Actions
@@ -30,7 +30,7 @@ class TinymceHelper extends AppHelper {
  *
  * @var array
  */
-	public $actions = array();
+	public $actions = [];
 
 /**
  * Default settings for tinymce
@@ -38,7 +38,7 @@ class TinymceHelper extends AppHelper {
  * @var array
  * @access public
  */
-	public $settings = array(
+	public $settings = [
 		// General options
 		'mode' => 'exact',
 		'elements' => '',
@@ -69,13 +69,13 @@ class TinymceHelper extends AppHelper {
 
 		// Attachments browser
 		'file_browser_callback' => 'fileBrowserCallBack',
-	);
+	];
 
 	public function fileBrowserCallBack() {
 		$output = "function fileBrowserCallBack(field_name, url, type, win) {
 			browserField = field_name;
 			browserWin = win;
-			window.open('".$this->Html->url(array('plugin' => false, 'controller' => 'attachments', 'action' => 'browse'))."', 'browserWindow', 'modal,width=960,height=700,scrollbars=yes');
+			window.open('".$this->Html->url(['plugin' => false, 'controller' => 'attachments', 'action' => 'browse'])."', 'browserWindow', 'modal,width=960,height=700,scrollbars=yes');
 		}";
 
 		return $output;
@@ -97,11 +97,11 @@ class TinymceHelper extends AppHelper {
 		return $output;
 	}
 
-	public function getSettings($settings = array()) {
+	public function getSettings($settings = []) {
 		$_settings = $this->settings;
 		$action = Inflector::camelize($this->params['controller']).'/'.$this->params['action'];
 		if (isset($this->actions[$action])) {
-			$settings = array();
+			$settings = [];
 			foreach ($this->actions[$action] as $action) {
 				$settings[] = Set::merge($_settings, $action);
 			}
@@ -115,16 +115,16 @@ class TinymceHelper extends AppHelper {
 		}
 		$action = Inflector::camelize($this->params['controller']).'/'.$this->params['action'];
 		if (Configure::read('Writing.wysiwyg') && isset($this->actions[$action]) && ClassRegistry::getObject('view')) {
-			$this->Html->script('/tinymce/js/tiny_mce', array('inline' => false));
-			$this->Html->scriptBlock($this->fileBrowserCallBack(), array('inline' => false));
+			$this->Html->script('/tinymce/js/tiny_mce', ['inline' => false]);
+			$this->Html->scriptBlock($this->fileBrowserCallBack(), ['inline' => false]);
 			$settings = $this->getSettings();
 			foreach ($settings as $setting) {
-				$this->Html->scriptBlock('tinyMCE.init(' . $this->Js->object($setting) . ');', array('inline' => false));
+				$this->Html->scriptBlock('tinyMCE.init(' . $this->Js->object($setting) . ');', ['inline' => false]);
 			}
 		}
 
 		if ($this->params['controller'] == 'attachments' && $this->params['action'] == 'admin_browse') {
-			$this->Html->scriptBlock($this->selectURL(), array('inline' => false));
+			$this->Html->scriptBlock($this->selectURL(), ['inline' => false]);
 		}
 	}
 }

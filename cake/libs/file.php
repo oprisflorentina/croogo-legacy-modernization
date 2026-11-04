@@ -43,7 +43,7 @@ class File extends CakeObject {
  * @var Folder
  * @access public
  */
-	var $Folder = null;
+	public $Folder = null;
 
 /**
  * Filename
@@ -51,7 +51,7 @@ class File extends CakeObject {
  * @var string
  * @access public
  */
-	var $name = null;
+	public $name = null;
 
 /**
  * file info
@@ -59,7 +59,7 @@ class File extends CakeObject {
  * @var string
  * @access public
  */
-	var $info = array();
+	public $info = [];
 
 /**
  * Holds the file handler resource if the file is opened
@@ -67,7 +67,7 @@ class File extends CakeObject {
  * @var resource
  * @access public
  */
-	var $handle = null;
+	public $handle = null;
 
 /**
  * enable locking for file reading and writing
@@ -75,7 +75,7 @@ class File extends CakeObject {
  * @var boolean
  * @access public
  */
-	var $lock = null;
+	public $lock = null;
 
 /**
  * path property
@@ -85,7 +85,7 @@ class File extends CakeObject {
  * @var mixed null
  * @access public
  */
-	var $path = null;
+	public $path = null;
 
 /**
  * Constructor
@@ -94,7 +94,7 @@ class File extends CakeObject {
  * @param boolean $create Create file if it does not exist (if true)
  * @param integer $mode Mode to apply to the folder holding the file
  */
-	function __construct($path, $create = false, $mode = 0755) {
+	public function __construct($path, $create = false, $mode = 0755) {
 		parent::__construct();
 		$this->Folder = new Folder(dirname($path), $create, $mode);
 		if (!is_dir($path)) {
@@ -108,7 +108,7 @@ class File extends CakeObject {
  * Closes the current file if it is opened
  *
  */
-	function __destruct() {
+	public function __destruct() {
 		$this->close();
 	}
 
@@ -118,7 +118,7 @@ class File extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function create() {
+	public function create() {
 		$dir = $this->Folder->pwd();
 		if (is_dir($dir) && is_writable($dir) && !$this->exists()) {
 			$old = umask(0);
@@ -138,7 +138,7 @@ class File extends CakeObject {
  * @return boolean True on success, false on failure
  * @access public
  */
-	function open($mode = 'r', $force = false) {
+	public function open($mode = 'r', $force = false) {
 		if (!$force && is_resource($this->handle)) {
 			return true;
 		}
@@ -165,7 +165,7 @@ class File extends CakeObject {
  * @return mixed string on success, false on failure
  * @access public
  */
-	function read($bytes = false, $mode = 'rb', $force = false) {
+	public function read($bytes = false, $mode = 'rb', $force = false) {
 		if ($bytes === false && $this->lock === null) {
 			return file_get_contents($this->path);
 		}
@@ -201,7 +201,7 @@ class File extends CakeObject {
  * @return mixed True on success, false on failure (set mode), false on failure or integer offset on success (get mode)
  * @access public
  */
-	function offset($offset = false, $seek = SEEK_SET) {
+	public function offset($offset = false, $seek = SEEK_SET) {
 		if ($offset === false) {
 			if (is_resource($this->handle)) {
 				return ftell($this->handle);
@@ -221,12 +221,12 @@ class File extends CakeObject {
  * @return string The with converted line endings.
  * @access public
  */
-	function prepare($data, $forceWindows = false) {
+	public function prepare($data, $forceWindows = false) {
 		$lineBreak = "\n";
 		if (DIRECTORY_SEPARATOR == '\\' || $forceWindows === true) {
 			$lineBreak = "\r\n";
 		}
-		return strtr($data, array("\r\n" => $lineBreak, "\n" => $lineBreak, "\r" => $lineBreak));
+		return strtr($data, ["\r\n" => $lineBreak, "\n" => $lineBreak, "\r" => $lineBreak]);
 	}
 
 /**
@@ -238,7 +238,7 @@ class File extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function write($data, $mode = 'w', $force = false) {
+	public function write($data, $mode = 'w', $force = false) {
 		$success = false;
 		if ($this->open($mode, $force) === true) {
 			if ($this->lock !== null) {
@@ -265,7 +265,7 @@ class File extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function append($data, $force = false) {
+	public function append($data, $force = false) {
 		return $this->write($data, 'a', $force);
 	}
 
@@ -275,7 +275,7 @@ class File extends CakeObject {
  * @return boolean True if closing was successful or file was already closed, otherwise false
  * @access public
  */
-	function close() {
+	public function close() {
 		if (!is_resource($this->handle)) {
 			return true;
 		}
@@ -288,7 +288,7 @@ class File extends CakeObject {
  * @return boolean Success
  * @access public
  */
-	function delete() {
+	public function delete() {
 		clearstatcache();
 		if (is_resource($this->handle)) {
 			fclose($this->handle);
@@ -306,13 +306,11 @@ class File extends CakeObject {
  * @return string The File extension
  * @access public
  */
-	function info() {
+	public function info() {
 		if ($this->info == null) {
 			$this->info = pathinfo($this->path);
 		}
-		if (!isset($this->info['filename'])) {
-			$this->info['filename'] = $this->name();
-		}
+		$this->info['filename'] ??= $this->name();
 		return $this->info;
 	}
 
@@ -322,14 +320,11 @@ class File extends CakeObject {
  * @return string The File extension
  * @access public
  */
-	function ext() {
+	public function ext() {
 		if ($this->info == null) {
 			$this->info();
 		}
-		if (isset($this->info['extension'])) {
-			return $this->info['extension'];
-		}
-		return false;
+		return $this->info['extension'] ?? false;
 	}
 
 /**
@@ -338,7 +333,7 @@ class File extends CakeObject {
  * @return string The File name without extension.
  * @access public
  */
-	function name() {
+	public function name() {
 		if ($this->info == null) {
 			$this->info();
 		}
@@ -358,7 +353,7 @@ class File extends CakeObject {
  * @return string $ext the extension of the file
  * @access public
  */
-	function safe($name = null, $ext = null) {
+	public function safe($name = null, $ext = null) {
 		if (!$name) {
 			$name = $this->name;
 		}
@@ -375,7 +370,7 @@ class File extends CakeObject {
  * @return string md5 Checksum {@link http://php.net/md5_file See md5_file()}
  * @access public
  */
-	function md5($maxsize = 5) {
+	public function md5($maxsize = 5) {
 		if ($maxsize === true) {
 			return md5_file($this->path);
 		}
@@ -394,10 +389,8 @@ class File extends CakeObject {
  * @return string Full path to file
  * @access public
  */
-	function pwd() {
-		if (is_null($this->path)) {
-			$this->path = $this->Folder->slashTerm($this->Folder->pwd()) . $this->name;
-		}
+	public function pwd() {
+		$this->path ??= $this->Folder->slashTerm($this->Folder->pwd()) . $this->name;
 		return $this->path;
 	}
 
@@ -407,7 +400,7 @@ class File extends CakeObject {
  * @return boolean true if it exists, false otherwise
  * @access public
  */
-	function exists() {
+	public function exists() {
 		return (file_exists($this->path) && is_file($this->path));
 	}
 
@@ -417,7 +410,7 @@ class File extends CakeObject {
  * @return string Permissions for the file
  * @access public
  */
-	function perms() {
+	public function perms() {
 		if ($this->exists()) {
 			return substr(sprintf('%o', fileperms($this->path)), -4);
 		}
@@ -430,7 +423,7 @@ class File extends CakeObject {
  * @return integer size of the file in bytes, or false in case of an error
  * @access public
  */
-	function size() {
+	public function size() {
 		if ($this->exists()) {
 			return filesize($this->path);
 		}
@@ -443,7 +436,7 @@ class File extends CakeObject {
  * @return boolean true if its writable, false otherwise
  * @access public
  */
-	function writable() {
+	public function writable() {
 		return is_writable($this->path);
 	}
 
@@ -453,7 +446,7 @@ class File extends CakeObject {
  * @return boolean true if its executable, false otherwise
  * @access public
  */
-	function executable() {
+	public function executable() {
 		return is_executable($this->path);
 	}
 
@@ -463,7 +456,7 @@ class File extends CakeObject {
  * @return boolean true if file is readable, false otherwise
  * @access public
  */
-	function readable() {
+	public function readable() {
 		return is_readable($this->path);
 	}
 
@@ -473,7 +466,7 @@ class File extends CakeObject {
  * @return integer the Fileowner
  * @access public
  */
-	function owner() {
+	public function owner() {
 		if ($this->exists()) {
 			return fileowner($this->path);
 		}
@@ -486,7 +479,7 @@ class File extends CakeObject {
  * @return integer the Filegroup
  * @access public
  */
-	function group() {
+	public function group() {
 		if ($this->exists()) {
 			return filegroup($this->path);
 		}
@@ -499,7 +492,7 @@ class File extends CakeObject {
  * @return integer timestamp Timestamp of last access time
  * @access public
  */
-	function lastAccess() {
+	public function lastAccess() {
 		if ($this->exists()) {
 			return fileatime($this->path);
 		}
@@ -512,7 +505,7 @@ class File extends CakeObject {
  * @return integer timestamp Timestamp of last modification
  * @access public
  */
-	function lastChange() {
+	public function lastChange() {
 		if ($this->exists()) {
 			return filemtime($this->path);
 		}
@@ -525,7 +518,7 @@ class File extends CakeObject {
  * @return Folder Current folder
  * @access public
  */
-	function &Folder() {
+	public function &Folder() {
 		return $this->Folder;
 	}
 
@@ -537,7 +530,7 @@ class File extends CakeObject {
  * @return boolean Succes
  * @access public
  */
-	function copy($dest, $overwrite = true) {
+	public function copy($dest, $overwrite = true) {
 		if (!$this->exists() || is_file($dest) && !$overwrite) {
 			return false;
 		}

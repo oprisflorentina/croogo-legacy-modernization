@@ -30,7 +30,7 @@ class PluginTask extends Shell {
  * Tasks
  *
  */
-	var $tasks = array('Model', 'Controller', 'View');
+	public $tasks = ['Model', 'Controller', 'View'];
 
 /**
  * path to CONTROLLERS directory
@@ -38,14 +38,14 @@ class PluginTask extends Shell {
  * @var array
  * @access public
  */
-	var $path = null;
+	public $path = null;
 
 /**
  * initialize
  *
  * @return void
  */
-	function initialize() {
+	public function initialize() {
 		$this->path = APP . 'plugins' . DS;
 	}
 
@@ -54,7 +54,7 @@ class PluginTask extends Shell {
  *
  * @return void
  */
-	function execute() {
+	public function execute() {
 		if (empty($this->params['skel'])) {
 			$this->params['skel'] = '';
 			if (is_dir(CAKE_CORE_INCLUDE_PATH . DS . CAKE . 'console' . DS . 'templates' . DS . 'skel') === true) {
@@ -102,7 +102,7 @@ class PluginTask extends Shell {
  * @access private
  * @return void
  */
-	function __interactive($plugin = null) {
+	public function __interactive($plugin = null) {
 		while ($plugin === null) {
 			$plugin = $this->in(__('Enter the name of the plugin in CamelCase format', true));
 		}
@@ -119,7 +119,7 @@ class PluginTask extends Shell {
  * @access public
  * @return bool
  */
-	function bake($plugin) {
+	public function bake($plugin) {
 		$pluginPath = Inflector::underscore($plugin);
 
 		$pathOptions = App::path('plugins');
@@ -131,13 +131,13 @@ class PluginTask extends Shell {
 		$this->out(sprintf(__("Plugin Directory: %s", true), $this->path . $pluginPath));
 		$this->hr();
 
-		$looksGood = $this->in(__('Look okay?', true), array('y', 'n', 'q'), 'y');
+		$looksGood = $this->in(__('Look okay?', true), ['y', 'n', 'q'], 'y');
 
 		if (strtolower($looksGood) == 'y') {
-			$verbose = $this->in(__('Do you want verbose output?', true), array('y', 'n'), 'n');
+			$verbose = $this->in(__('Do you want verbose output?', true), ['y', 'n'], 'n');
 
 			$Folder = new Folder($this->path . $pluginPath);
-			$directories = array(
+			$directories = [
 				'config' . DS . 'schema',
 				'models' . DS . 'behaviors',
 				'models' . DS . 'datasources',
@@ -154,7 +154,7 @@ class PluginTask extends Shell {
 				'vendors',
 				'vendors' . DS . 'shells' . DS . 'tasks',
 				'webroot'
-			);
+			];
 
 			foreach ($directories as $directory) {
 				$dirPath = $this->path . $pluginPath . DS . $directory;
@@ -202,7 +202,7 @@ class PluginTask extends Shell {
  *
  * @return void
  */
-	function findPath($pathOptions) {
+	public function findPath($pathOptions) {
 		$valid = false;
 		$max = count($pathOptions);
 		while (!$valid) {
@@ -224,7 +224,7 @@ class PluginTask extends Shell {
  * @return void
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->hr();
 		$this->out("Usage: cake bake plugin <arg1> <arg2>...");
 		$this->hr();

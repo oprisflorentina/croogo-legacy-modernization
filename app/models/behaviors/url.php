@@ -19,21 +19,21 @@ class UrlBehavior extends ModelBehavior {
  * @param array  $config
  * @return void
  */
-	public function setup(&$model, $config = array()) {
-		$_config = array(
-			'url' => array(
+	public function setup(&$model, $config = []) {
+		$_config = [
+			'url' => [
 				'plugin' => false,
 				'controller' => 'nodes',
 				'action' => 'view',
-			),
-			'fields' => array(
+			],
+			'fields' => [
 				'type',
 				'slug',
-			),
-		);
+			],
+		];
 
 		if (is_string($config)) {
-			$config = array($config);
+			$config = [$config];
 		}
 
 		$config = array_merge($_config, $config);
@@ -49,7 +49,7 @@ class UrlBehavior extends ModelBehavior {
  * @param boolean $primary
  * @return array
  */
-	public function afterFind(&$model, $results = array(), $primary = false) {
+	public function afterFind(&$model, $results = [], $primary = false) {
 		if ($primary && isset($results[0][$model->alias])) {
 			foreach ($results AS $i => $result) {
 				$url = $this->settings[$model->alias]['url'];

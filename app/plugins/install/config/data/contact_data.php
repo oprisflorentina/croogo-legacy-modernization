@@ -3,8 +3,8 @@ class ContactData {
 
 	public $table = 'contacts';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '1',
 			'title' => 'Contact',
 			'alias' => 'contact',
@@ -28,7 +28,7 @@ class ContactData {
 			'status' => '1',
 			'updated' => '2009-10-07 22:07:49',
 			'created' => '2009-09-16 01:45:17'
-		),
-	);
+		],
+	];
 
 }

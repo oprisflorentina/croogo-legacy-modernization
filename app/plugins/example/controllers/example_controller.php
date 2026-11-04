@@ -26,7 +26,7 @@ class ExampleController extends ExampleAppController {
  * @var array
  * @access public
  */
-	public $uses = array('Setting');
+	public $uses = ['Setting'];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Example', true));

@@ -17,7 +17,7 @@ class AclGenerateComponent extends CakeObject {
  * @param object $controller controller
  * @param array  $settings   settings
  */
-	public function initialize(&$controller, $settings = array()) {
+	public function initialize(&$controller, $settings = []) {
 		$this->controller =& $controller;
 		App::import('Core', 'File');
 		$this->folder = new Folder;
@@ -29,7 +29,7 @@ class AclGenerateComponent extends CakeObject {
  * @return array
  */
 	public function listControllers() {
-		$controllerPaths = array();
+		$controllerPaths = [];
 
 		// app/controllers
 		$this->folder->path = APP.'controllers'.DS;
@@ -87,7 +87,7 @@ class AclGenerateComponent extends CakeObject {
 
 		// filter out methods
 		foreach ($methods AS $k => $method) {
-			if (strpos($method, '_', 0) === 0) {
+			if (str_starts_with($method, '_')) {
 				unset($methods[$k]);
 				continue;
 			}

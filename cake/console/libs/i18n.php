@@ -32,7 +32,7 @@ class I18nShell extends Shell {
  * @var string
  * @access public
  */
-	var $dataSource = 'default';
+	public $dataSource = 'default';
 
 /**
  * Contains tasks to load and instantiate
@@ -40,20 +40,20 @@ class I18nShell extends Shell {
  * @var array
  * @access public
  */
-	var $tasks = array('DbConfig', 'Extract');
+	public $tasks = ['DbConfig', 'Extract'];
 
 /**
  * Override startup of the Shell
  *
  * @access public
  */
-	function startup() {
+	public function startup() {
 		$this->_welcome();
 		if (isset($this->params['datasource'])) {
 			$this->dataSource = $this->params['datasource'];
 		}
 
-		if ($this->command && !in_array($this->command, array('help'))) {
+		if ($this->command && !in_array($this->command, ['help'])) {
 			if (!config('database')) {
 				$this->out(__('Your database configuration was not found. Take a moment to create one.', true), true);
 				return $this->DbConfig->execute();
@@ -66,7 +66,7 @@ class I18nShell extends Shell {
  *
  * @access public
  */
-	function main() {
+	public function main() {
 		$this->out(__('I18n Shell', true));
 		$this->hr();
 		$this->out(__('[E]xtract POT file from sources', true));
@@ -74,7 +74,7 @@ class I18nShell extends Shell {
 		$this->out(__('[H]elp', true));
 		$this->out(__('[Q]uit', true));
 
-		$choice = strtolower($this->in(__('What would you like to do?', true), array('E', 'I', 'H', 'Q')));
+		$choice = strtolower($this->in(__('What would you like to do?', true), ['E', 'I', 'H', 'Q']));
 		switch ($choice) {
 			case 'e':
 				$this->Extract->execute();
@@ -100,8 +100,8 @@ class I18nShell extends Shell {
  *
  * @access public
  */
-	function initdb() {
-		$this->Dispatch->args = array('schema', 'create', 'i18n');
+	public function initdb() {
+		$this->Dispatch->args = ['schema', 'create', 'i18n'];
 		$this->Dispatch->dispatch();
 	}
 
@@ -110,7 +110,7 @@ class I18nShell extends Shell {
  *
  * @access public
  */
-	function help() {
+	public function help() {
 		$this->hr();
 		$this->out(__('I18n Shell:', true));
 		$this->hr();

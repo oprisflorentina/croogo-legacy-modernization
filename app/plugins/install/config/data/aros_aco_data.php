@@ -3,8 +3,8 @@ class ArosAcoData {
 
 	public $table = 'aros_acos';
 
-	public $records = array(
-		array(
+	public $records = [
+		[
 			'id' => '1',
 			'aro_id' => '2',
 			'aco_id' => '23',
@@ -12,8 +12,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '2',
 			'aro_id' => '2',
 			'aco_id' => '22',
@@ -21,8 +21,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '3',
 			'aro_id' => '2',
 			'aco_id' => '21',
@@ -30,8 +30,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '4',
 			'aro_id' => '3',
 			'aco_id' => '21',
@@ -39,8 +39,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '5',
 			'aro_id' => '3',
 			'aco_id' => '22',
@@ -48,8 +48,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '6',
 			'aro_id' => '2',
 			'aco_id' => '29',
@@ -57,8 +57,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '7',
 			'aro_id' => '3',
 			'aco_id' => '29',
@@ -66,8 +66,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '8',
 			'aro_id' => '2',
 			'aco_id' => '77',
@@ -75,8 +75,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '9',
 			'aro_id' => '2',
 			'aco_id' => '78',
@@ -84,8 +84,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '10',
 			'aro_id' => '2',
 			'aco_id' => '79',
@@ -93,8 +93,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '11',
 			'aro_id' => '2',
 			'aco_id' => '80',
@@ -102,8 +102,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '12',
 			'aro_id' => '2',
 			'aco_id' => '81',
@@ -111,8 +111,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '13',
 			'aro_id' => '3',
 			'aco_id' => '77',
@@ -120,8 +120,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '14',
 			'aro_id' => '3',
 			'aco_id' => '78',
@@ -129,8 +129,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '15',
 			'aro_id' => '3',
 			'aco_id' => '79',
@@ -138,8 +138,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '16',
 			'aro_id' => '3',
 			'aco_id' => '80',
@@ -147,8 +147,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '17',
 			'aro_id' => '3',
 			'aco_id' => '81',
@@ -156,8 +156,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '18',
 			'aro_id' => '2',
 			'aco_id' => '123',
@@ -165,8 +165,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '19',
 			'aro_id' => '3',
 			'aco_id' => '124',
@@ -174,8 +174,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '20',
 			'aro_id' => '3',
 			'aco_id' => '125',
@@ -183,8 +183,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '21',
 			'aro_id' => '2',
 			'aco_id' => '126',
@@ -192,8 +192,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '22',
 			'aro_id' => '3',
 			'aco_id' => '127',
@@ -201,8 +201,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '23',
 			'aro_id' => '3',
 			'aco_id' => '128',
@@ -210,8 +210,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '24',
 			'aro_id' => '3',
 			'aco_id' => '129',
@@ -219,8 +219,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '25',
 			'aro_id' => '2',
 			'aco_id' => '130',
@@ -228,8 +228,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '26',
 			'aro_id' => '2',
 			'aco_id' => '131',
@@ -237,8 +237,8 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-		array(
+		],
+		[
 			'id' => '27',
 			'aro_id' => '3',
 			'aco_id' => '131',
@@ -246,7 +246,7 @@ class ArosAcoData {
 			'_read' => '1',
 			'_update' => '1',
 			'_delete' => '1'
-		),
-	);
+		],
+	];
 
 }

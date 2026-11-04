@@ -28,46 +28,46 @@
  */
 class DbAclSchema extends CakeSchema {
 
-	var $name = 'DbAcl';
+	public $name = 'DbAcl';
 
-	function before($event = array()) {
+	public function before($event = []) {
 		return true;
 	}
 
-	function after($event = array()) {
+	public function after($event = []) {
 	}
 
-	var $acos = array(
-			'id' => array('type'=>'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'),
-			'parent_id' => array('type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10),
-			'model' => array('type'=>'string', 'null' => true),
-			'foreign_key' => array('type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10),
-			'alias' => array('type'=>'string', 'null' => true),
-			'lft' => array('type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10),
-			'rght' => array('type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10),
-			'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1))
-		);
+	public $acos = [
+			'id' => ['type'=>'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'],
+			'parent_id' => ['type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10],
+			'model' => ['type'=>'string', 'null' => true],
+			'foreign_key' => ['type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10],
+			'alias' => ['type'=>'string', 'null' => true],
+			'lft' => ['type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10],
+			'rght' => ['type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10],
+			'indexes' => ['PRIMARY' => ['column' => 'id', 'unique' => 1]]
+		];
 
-	var $aros = array(
-			'id' => array('type'=>'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'),
-			'parent_id' => array('type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10),
-			'model' => array('type'=>'string', 'null' => true),
-			'foreign_key' => array('type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10),
-			'alias' => array('type'=>'string', 'null' => true),
-			'lft' => array('type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10),
-			'rght' => array('type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10),
-			'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1))
-		);
+	public $aros = [
+			'id' => ['type'=>'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'],
+			'parent_id' => ['type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10],
+			'model' => ['type'=>'string', 'null' => true],
+			'foreign_key' => ['type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10],
+			'alias' => ['type'=>'string', 'null' => true],
+			'lft' => ['type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10],
+			'rght' => ['type'=>'integer', 'null' => true, 'default' => NULL, 'length' => 10],
+			'indexes' => ['PRIMARY' => ['column' => 'id', 'unique' => 1]]
+		];
 
-	var $aros_acos = array(
-			'id' => array('type'=>'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'),
-			'aro_id' => array('type'=>'integer', 'null' => false, 'length' => 10, 'key' => 'index'),
-			'aco_id' => array('type'=>'integer', 'null' => false, 'length' => 10),
-			'_create' => array('type'=>'string', 'null' => false, 'default' => '0', 'length' => 2),
-			'_read' => array('type'=>'string', 'null' => false, 'default' => '0', 'length' => 2),
-			'_update' => array('type'=>'string', 'null' => false, 'default' => '0', 'length' => 2),
-			'_delete' => array('type'=>'string', 'null' => false, 'default' => '0', 'length' => 2),
-			'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'ARO_ACO_KEY' => array('column' => array('aro_id', 'aco_id'), 'unique' => 1))
-		);
+	public $aros_acos = [
+			'id' => ['type'=>'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'],
+			'aro_id' => ['type'=>'integer', 'null' => false, 'length' => 10, 'key' => 'index'],
+			'aco_id' => ['type'=>'integer', 'null' => false, 'length' => 10],
+			'_create' => ['type'=>'string', 'null' => false, 'default' => '0', 'length' => 2],
+			'_read' => ['type'=>'string', 'null' => false, 'default' => '0', 'length' => 2],
+			'_update' => ['type'=>'string', 'null' => false, 'default' => '0', 'length' => 2],
+			'_delete' => ['type'=>'string', 'null' => false, 'default' => '0', 'length' => 2],
+			'indexes' => ['PRIMARY' => ['column' => 'id', 'unique' => 1], 'ARO_ACO_KEY' => ['column' => ['aro_id', 'aco_id'], 'unique' => 1]]
+		];
 
 }

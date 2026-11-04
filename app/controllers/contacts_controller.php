@@ -26,11 +26,11 @@ class ContactsController extends AppController {
  * @var array
  * @access public
  */
-	public $components = array(
+	public $components = [
 		'Akismet',
 		'Email',
 		'Recaptcha',
-	);
+	];
 
 /**
  * Models used by the Controller
@@ -38,7 +38,7 @@ class ContactsController extends AppController {
  * @var array
  * @access public
  */
-	public $uses = array('Contact');
+	public $uses = ['Contact'];
 
 	public function admin_index() {
 		$this->set('title_for_layout', __('Contacts', true));
@@ -54,10 +54,10 @@ class ContactsController extends AppController {
 		if (!empty($this->data)) {
 			$this->Contact->create();
 			if ($this->Contact->save($this->data)) {
-				$this->Session->setFlash(__('The Contact has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Contact has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Contact could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Contact could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 	}
@@ -66,15 +66,15 @@ class ContactsController extends AppController {
 		$this->set('title_for_layout', __('Edit Contact', true));
 
 		if (!$id && empty($this->data)) {
-			$this->Session->setFlash(__('Invalid Contact', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid Contact', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!empty($this->data)) {
 			if ($this->Contact->save($this->data)) {
-				$this->Session->setFlash(__('The Contact has been saved', true), 'default', array('class' => 'success'));
-				$this->redirect(array('action'=>'index'));
+				$this->Session->setFlash(__('The Contact has been saved', true), 'default', ['class' => 'success']);
+				$this->redirect(['action'=>'index']);
 			} else {
-				$this->Session->setFlash(__('The Contact could not be saved. Please, try again.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('The Contact could not be saved. Please, try again.', true), 'default', ['class' => 'error']);
 			}
 		}
 		if (empty($this->data)) {
@@ -84,16 +84,16 @@ class ContactsController extends AppController {
 
 	public function admin_delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(__('Invalid id for Contact', true), 'default', array('class' => 'error'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Invalid id for Contact', true), 'default', ['class' => 'error']);
+			$this->redirect(['action'=>'index']);
 		}
 		if (!isset($this->params['named']['token']) || ($this->params['named']['token'] != $this->params['_Token']['key'])) {
 			$blackHoleCallback = $this->Security->blackHoleCallback;
 			$this->$blackHoleCallback();
 		}
 		if ($this->Contact->delete($id)) {
-			$this->Session->setFlash(__('Contact deleted', true), 'default', array('class' => 'success'));
-			$this->redirect(array('action'=>'index'));
+			$this->Session->setFlash(__('Contact deleted', true), 'default', ['class' => 'success']);
+			$this->redirect(['action'=>'index']);
 		}
 	}
 
@@ -102,16 +102,16 @@ class ContactsController extends AppController {
 			$this->redirect('/');
 		}
 
-		$contact = $this->Contact->find('first', array(
-			'conditions' => array(
+		$contact = $this->Contact->find('first', [
+			'conditions' => [
 				'Contact.alias' => $alias,
 				'Contact.status' => 1,
-			),
-			'cache' => array(
+			],
+			'cache' => [
 				'name' => 'contact_'.$alias,
 				'config' => 'contacts_view',
-			),
-		));
+			],
+		]);
 		if (!isset($contact['Contact']['id'])) {
 			$this->redirect('/');
 		}
@@ -167,7 +167,7 @@ class ContactsController extends AppController {
 			$this->Akismet->setCommentContent($this->data['Message']['body']);
 			if ($this->Akismet->isCommentSpam()) {
 				$continue = false;
-				$this->Session->setFlash(__('Sorry, the message appears to be spam.', true), 'default', array('class' => 'error'));
+				$this->Session->setFlash(__('Sorry, the message appears to be spam.', true), 'default', ['class' => 'error']);
 			}
 		}
 
@@ -180,7 +180,7 @@ class ContactsController extends AppController {
 			$continue === true &&
 			!$this->Recaptcha->valid($this->params['form'])) {
 			$continue = false;
-			$this->Session->setFlash(__('Invalid captcha entry', true), 'default', array('class' => 'error'));
+			$this->Session->setFlash(__('Invalid captcha entry', true), 'default', ['class' => 'error']);
 		}
 
 		return $continue;
