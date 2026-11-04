@@ -11,6 +11,20 @@ services:
       - db
       - mailpit
 
+  # The same code on PHP 8.3, sharing the database. app/tmp is its own
+  # volume so the two PHP versions never read each other's cache files.
+  php83:
+    build: docker/php83
+    ports:
+      - "8083:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/php83/database.php:/var/www/html/app/config/database.php:ro
+      - php83-tmp:/var/www/html/app/tmp
+    depends_on:
+      - db
+      - mailpit
+
   mailpit:
     image: axllent/mailpit:v1.33.0
     ports:
@@ -31,6 +45,7 @@ services:
       - db-data:/var/lib/mysql
 
   # Characterization tests: docker compose run --rm tests
+  # Against PHP 8.3:        docker compose run --rm -e CROOGO_URL=http://php83 tests
   tests:
     build: docker/tests
     profiles: [tests]
@@ -42,8 +57,10 @@ services:
       - composer-cache:/root/.composer/cache
     depends_on:
       - legacy
+      - php83
     command: vendor/bin/phpunit
 
 volumes:
   db-data:
   composer-cache:
+  php83-tmp:
