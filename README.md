@@ -137,7 +137,12 @@ These come from reading the code, then checking it against the running app (step
     The fix escapes on output and stores raw text.
 3. **The file manager upload accepts any path and any file type.** `FilemanagerController::admin_upload()` takes the target folder from the URL and doesn't run the `_isEditable()` check that `admin_editfile()` uses. It also doesn't check the extension, so an admin session could write a `.php` file anywhere the web server can write, including the web root.
 
-    *Confirmed in the code.* A scripted reproduction was stopped by CakePHP's form token check, so it gets reproduced by hand in the browser.
+    *Confirmed in the code, but not reachable with this CakePHP version.* Every File Manager form (upload, new file, new folder, rename) is rejected with "Security Error", in a real browser too. The cause:
+    - **CakePHP 1.3.18** (April 2014) started tying each form's security token to the URL it posts to.
+    - **Croogo's File Manager** builds its form URLs as absolute addresses with a `?path=` query (`http://host/admin/filemanager/upload?path=…`).
+    - **`FormHelper::_lastAction()`** prepends the base URL to them a second time. The token ends up hashed with a broken path, so it never matches the request.
+
+    The hole is still in Croogo's code; it only stays closed by accident, and an older 1.3 core opens it again. A small upgrade with a security fix silently broke a feature, which is exactly what characterization tests are meant to catch.
 4. **Attachment uploads aren't validated.** `AttachmentsController::admin_add()` saves uploads into `webroot/uploads` with the client's file name. It trusts the MIME type the client sends and has no extension allow-list. It also contains a logic bug: `explode(...) > 0` compares an array with a number.
 
     *Confirmed:* a file `probe.php` uploaded as an attachment with the type `image/png` was saved to `/uploads/probe.php`, and requesting it **ran the PHP code**. Anyone with an admin session (or who steals one) can run code on the server.
