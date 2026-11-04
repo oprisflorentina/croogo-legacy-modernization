@@ -62,7 +62,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 18 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and only talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 19 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and only talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 ```bash
 docker compose run --rm tests composer install   # once
@@ -74,6 +74,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | File | What it pins down |
 | --- | --- |
 | `AdminPagesTest` | Every admin screen reachable from the menu (about 240 pages) renders without PHP errors. Links that change data through a GET request are never followed. |
+| `AdminUsersTest` | An admin creates a user, who can then log in. Added when PHPStan showed that user validation was broken on PHP 8. |
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
@@ -109,7 +110,15 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
 
 6. **Rector** (`tools/quality/rector.php`) applied the PHP 8.3 rule sets across 225 files: short arrays, explicit visibility, `str_contains()`, `??` and more. It skipped seven rules that would have changed behavior here. The sharpest: `RandomFunctionRector` would have replaced the seeded `rand()` in `Security::cipher()` with `random_int()`, which can't be seeded, and cookie encryption would have broken silently, untouched by any test. From this commit on, the code needs PHP 8, and the PHP 5.6 container is retired.
 
-**Still to do in this step:** PHPStan with a baseline, the password migration and the security fixes. Then the `php83` tag.
+7. **PHPStan** (`tools/quality/phpstan.neon`). Every level 0 finding was read before anything went into a baseline, and they included real PHP 8 bugs the tests hadn't reached:
+    - **No user or role could be saved.** The regex behind `AppModel::_validAlias()` and `_validName()` has a range, `\p{Nd}-_`, that PCRE2 (PHP 7.3+) rejects, so the validation always failed. A new test, `AdminUsersTest`, failed first and passes after the fix.
+    - **`mysqli_client_encoding()`** was removed in PHP 8.0.
+    - **A crash introduced by Rector:** it turned a `get_class()` into `::class` on an error path where the value is empty. PHPStan flagged it.
+    - **Smaller items:** a typo (`$attribues`), an undefined `$model`, and `compact()` of variables that never exist.
+
+    The old `mysql_*` driver, which can't run on PHP 7+, was removed. PHPStan now runs at **level 5**. The 3,696 findings the 2012 code already had are recorded in `phpstan-baseline.neon`: about 1,040 are CakePHP's runtime properties like `$this->Session`, and most others come from `extract()` and outdated docblocks. New and changed code has to pass.
+
+**Still to do in this step:** the password migration and the security fixes. Then the `php83` tag.
 
 ## Structure
 
