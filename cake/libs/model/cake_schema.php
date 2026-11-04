@@ -25,7 +25,7 @@ App::import('Core', array('Model', 'ConnectionManager'));
  * @package       cake
  * @subpackage    cake.cake.libs.model
  */
-class CakeSchema extends Object {
+class CakeSchema extends CakeObject {
 
 /**
  * Name of the App Schema

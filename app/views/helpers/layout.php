@@ -652,7 +652,7 @@ class LayoutHelper extends AppHelper {
 			),
 		);
 		$options = Set::merge($_options, $options);
-		$uuid = String::uuid();
+		$uuid = CakeText::uuid();
 
 		$fields  = '';
 		if ($id != null) {

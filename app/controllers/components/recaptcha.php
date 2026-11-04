@@ -2,7 +2,7 @@
 /**
  * @link http://bakery.cakephp.org/articles/view/recaptcha-component-helper-for-cakephp
  */
- class RecaptchaComponent extends Object {
+ class RecaptchaComponent extends CakeObject {
 	public $publickey = '';
 	public $privatekey= '';
 

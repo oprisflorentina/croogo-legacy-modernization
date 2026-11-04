@@ -24,7 +24,7 @@
  * @package       cake
  * @subpackage    cake.cake.console.libs
  */
-class Shell extends Object {
+class Shell extends CakeObject {
 
 /**
  * An instance of the ShellDispatcher object that loaded this script

@@ -609,10 +609,10 @@ class Set {
 		}
 
 		if (!is_array($path)) {
-			if (!class_exists('String')) {
-				App::import('Core', 'String');
+			if (!class_exists('CakeText')) {
+				App::import('Core', 'CakeText');
 			}
-			$path = String::tokenize($path, '.', '{', '}');
+			$path = CakeText::tokenize($path, '.', '{', '}');
 		}
 		$tmp = array();
 

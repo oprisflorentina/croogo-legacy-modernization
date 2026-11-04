@@ -60,7 +60,7 @@
  *  @author     Alex Potsides
  *  @link       http://www.achingbrain.net/
  */
-class AkismetComponent extends Object
+class AkismetComponent extends CakeObject
 	{
 	private $version = '0.4';
 	private $wordPressAPIKey;

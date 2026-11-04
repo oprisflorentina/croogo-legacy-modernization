@@ -24,7 +24,7 @@
  * @package       cake
  * @subpackage    cake.cake.libs
  */
-class Security extends Object {
+class Security extends CakeObject {
 
 /**
  * Default hash method
@@ -79,10 +79,10 @@ class Security extends Object {
  * @static
  */
 	function generateAuthKey() {
-		if (!class_exists('String')) {
-			App::import('Core', 'String');
+		if (!class_exists('CakeText')) {
+			App::import('Core', 'CakeText');
 		}
-		return Security::hash(String::uuid());
+		return Security::hash(CakeText::uuid());
 	}
 
 /**

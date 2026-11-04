@@ -22,15 +22,21 @@
  */
 
 /**
- * Object class, allowing __construct and __destruct in PHP4.
+ * Base class for most framework classes. Named Object until PHP 7.2 made
+ * that a reserved word.
  *
  * Also includes methods for logging and the special method RequestAction,
  * to call other Controllers' Actions from anywhere.
  *
+ * CakePHP 1.3 sets properties it never declares all over the place;
+ * AllowDynamicProperties (inherited by every subclass) keeps PHP 8.2+
+ * from flagging each one until they are declared properly.
+ *
  * @package cake
  * @subpackage cake.cake.libs
  */
-class Object {
+#[\AllowDynamicProperties]
+class CakeObject {
 
 /**
  * Class constructor, overridden in descendant classes.
