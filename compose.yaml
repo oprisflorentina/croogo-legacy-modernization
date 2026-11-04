@@ -60,6 +60,15 @@ services:
       - php83
     command: vendor/bin/phpunit
 
+  # Rector and PHPStan: docker compose run --rm quality vendor/bin/phpstan
+  quality:
+    build: docker/tests
+    profiles: [tools]
+    working_dir: /app/tools/quality
+    volumes:
+      - .:/app
+      - composer-cache:/root/.composer/cache
+
 volumes:
   db-data:
   composer-cache:

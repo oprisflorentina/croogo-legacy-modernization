@@ -33,6 +33,10 @@ if (isset($argv[1])) {
     if (strpos($file, '/datasources/dbo/') !== false) {
         require_once LIBS . 'model' . DS . 'datasources' . DS . 'dbo_source.php';
     }
+    // AppError extends the core ErrorHandler, which loads only on demand.
+    if (basename($file) === 'app_error.php') {
+        require_once LIBS . 'error.php';
+    }
     // A plugin's classes extend its own <plugin>_app_controller / _app_model.
     if (preg_match('#/plugins/([^/]+)/#', $file, $m)) {
         foreach (array('app_controller', 'app_model') as $base) {
@@ -48,9 +52,9 @@ if (isset($argv[1])) {
 
 // cake/libs/{controller,model,view/helpers}/app_*.php are the defaults the
 // app's own AppController/AppModel/AppHelper replace, so they never load.
-$skip = '#/(tests|docker|tools|webroot|vendors/(shells|simpletest)|console/templates|views|layouts|elements|config|locale|tmp)/|/cake/console/|/cake/libs/(controller/app_controller|model/app_model|view/helpers/app_helper)\.php$#';
+// app/index.php is a front controller, not a class file.
+$skip = '#/(tests|docker|tools|webroot|vendors/(shells|simpletest)|console/templates|views|layouts|elements|config|locale|tmp)/|/cake/console/|/cake/libs/(controller/app_controller|model/app_model|view/helpers/app_helper)\.php$|/app/index\.php$#';
 $files = [];
-$it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/cake'));
 foreach ([$root . '/cake', $root . '/app'] as $dir) {
     foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)) as $f) {
         $p = $f->getPathname();

@@ -1,0 +1,16 @@
+{
+    "name": "oprisflorentina/croogo-quality-tools",
+    "description": "Rector and PHPStan for the Croogo modernization, kept apart from the app.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.3",
+        "rector/rector": "^2.8"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

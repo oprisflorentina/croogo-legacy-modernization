@@ -1,3 +1,4 @@
 /tests/characterization/vendor/
 /tests/characterization/.phpunit.cache/
 /tests/characterization/.phpunit.result.cache
+/tools/quality/vendor/
