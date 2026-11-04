@@ -163,7 +163,7 @@ class ExtensionsPluginsController extends AppController {
 			$this->redirect(array('action' => 'index'));
 		}
 
-		$folder =& new Folder;
+		$folder = new Folder;
 		if ($folder->delete(APP . 'plugins' . DS . $plugin)) {
 			$this->Session->setFlash(__('Plugin deleted successfully.', true), 'default', array('class' => 'success'));
 		} else {

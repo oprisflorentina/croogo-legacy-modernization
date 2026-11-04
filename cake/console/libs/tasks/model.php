@@ -131,7 +131,7 @@ class ModelTask extends BakeTask {
 		if (!$table) {
 			$table = Inflector::tableize($className);
 		}
-		$object =& new Model(array('name' => $className, 'table' => $table, 'ds' => $this->connection));
+		$object = new Model(array('name' => $className, 'table' => $table, 'ds' => $this->connection));
 		return $object;
 	}
 
@@ -348,7 +348,7 @@ class ModelTask extends BakeTask {
 		sort($options);
 		$default = 1;
 		foreach ($options as $key => $option) {
-			if ($option{0} != '_' && strtolower($option) != 'getinstance') {
+			if ($option[0] != '_' && strtolower($option) != 'getinstance') {
 				$choices[$default] = strtolower($option);
 				$default++;
 			}
@@ -710,7 +710,7 @@ class ModelTask extends BakeTask {
 	function _generatePossibleKeys() {
 		$possible = array();
 		foreach ($this->_tables as $otherTable) {
-			$tempOtherModel = & new Model(array('table' => $otherTable, 'ds' => $this->connection));
+			$tempOtherModel = new Model(array('table' => $otherTable, 'ds' => $this->connection));
 			$modelFieldsTemp = $tempOtherModel->schema(true);
 			foreach ($modelFieldsTemp as $fieldName => $field) {
 				if ($field['type'] == 'integer' || $field['type'] == 'string') {

@@ -177,7 +177,7 @@ class ExtensionsThemesController extends AppController {
 		);
 
 		$error = 0;
-		$folder =& new Folder;
+		$folder = new Folder;
 		foreach ($paths AS $path) {
 			if (is_dir($path)) {
 				if (!$folder->delete($path)) {

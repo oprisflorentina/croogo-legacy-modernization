@@ -37,7 +37,7 @@ class ExtensionsLocalesController extends AppController {
 	public function admin_index() {
 		$this->set('title_for_layout', __('Locales', true));
 
-		$folder =& new Folder;
+		$folder = new Folder;
 		$folder->path = APP . 'locale';
 		$content = $folder->read();
 		$locales = $content['0'];
@@ -59,7 +59,7 @@ class ExtensionsLocalesController extends AppController {
 			$this->$blackHoleCallback();
 		}
 
-		$file =& new File(APP . 'config' . DS . 'croogo_bootstrap.php', true);
+		$file = new File(APP . 'config' . DS . 'croogo_bootstrap.php', true);
 		$content = $file->read();
 
 		$content = str_replace("Configure::write('Config.language', '" . Configure::read('Site.locale') . "');",
@@ -158,7 +158,7 @@ class ExtensionsLocalesController extends AppController {
 			$this->redirect(array('action' => 'index'));
 		}
 
-		$file =& new File(APP . 'locale' . DS . $locale . DS . 'LC_MESSAGES' . DS . 'default.po', true);
+		$file = new File(APP . 'locale' . DS . $locale . DS . 'LC_MESSAGES' . DS . 'default.po', true);
 		$content = $file->read();
 
 		if (!empty($this->data)) {
@@ -182,7 +182,7 @@ class ExtensionsLocalesController extends AppController {
 			$this->$blackHoleCallback();
 		}
 
-		$folder =& new Folder;
+		$folder = new Folder;
 		if ($folder->delete(APP . 'locale' . DS . $locale)) {
 			$this->Session->setFlash(__('Locale deleted successfully.', true), 'default', array('class' => 'success'));
 		} else {

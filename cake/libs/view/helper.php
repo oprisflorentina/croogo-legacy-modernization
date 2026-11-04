@@ -884,11 +884,7 @@ class Helper extends Overloadable {
  * @access private
  */
 	function __clean() {
-		if (get_magic_quotes_gpc()) {
-			$this->__cleaned = stripslashes($this->__tainted);
-		} else {
-			$this->__cleaned = $this->__tainted;
-		}
+		$this->__cleaned = $this->__tainted;
 
 		$this->__cleaned = str_replace(array("&amp;", "&lt;", "&gt;"), array("&amp;amp;", "&amp;lt;", "&amp;gt;"), $this->__cleaned);
 		$this->__cleaned = preg_replace('#(&\#*\w+)[\x00-\x20]+;#u', "$1;", $this->__cleaned);

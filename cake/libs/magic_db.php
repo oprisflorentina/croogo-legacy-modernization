@@ -53,7 +53,7 @@ class MagicDb extends Object {
 		if (is_array($magicDb) || strpos($magicDb, '# FILE_ID DB') === 0) {
 			$data = $magicDb;
 		} else {
-			$File =& new File($magicDb);
+			$File = new File($magicDb);
 			if (!$File->exists()) {
 				return false;
 			}
@@ -114,7 +114,7 @@ class MagicDb extends Object {
 			}
 
 			$columns = explode("\t", $line);
-			if (in_array($columns[0]{0}, array('>', '&'))) {
+			if (in_array($columns[0][0], array('>', '&'))) {
 				$format[] = $columns;
 			} elseif (!empty($format)) {
 				$db['database'][] = $format;
@@ -158,7 +158,7 @@ class MagicDb extends Object {
 		}
 
 		$matches = array();
-		$MagicFileResource =& new MagicFileResource($file);
+		$MagicFileResource = new MagicFileResource($file);
 		foreach ($this->db['database'] as $format) {
 			$magic = $format[0];
 			$match = $MagicFileResource->test($magic);
@@ -205,7 +205,7 @@ class MagicFileResource extends Object{
  */
 	function __construct($file) {
 		if (file_exists($file)) {
-			$this->resource =& new File($file);
+			$this->resource = new File($file);
 		} else {
 			$this->resource = $file;
 		}

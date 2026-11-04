@@ -55,7 +55,7 @@ class AclComponent extends Object {
 				trigger_error(sprintf(__('Could not find %s.', true), $name), E_USER_WARNING);
 			}
 		}
-		$this->_Instance =& new $name();
+		$this->_Instance = new $name();
 		$this->_Instance->initialize($this);
 	}
 
@@ -374,7 +374,7 @@ class DbAcl extends AclBase {
 			}
 			if (is_array($actions)) {
 				foreach ($actions as $action) {
-					if ($action{0} != '_') {
+					if ($action[0] != '_') {
 						$action = '_' . $action;
 					}
 					if (in_array($action, $permKeys)) {

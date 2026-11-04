@@ -162,7 +162,7 @@ class InstallController extends InstallAppController {
 			if(!$db->isConnected()) {
 				$this->Session->setFlash(__('Could not connect to database.', true), 'default', array('class' => 'error'));
 			} else {
-				$schema =& new CakeSchema(array('name'=>'app'));
+				$schema = new CakeSchema(array('name'=>'app'));
 				$schema = $schema->load();
 				foreach($schema->tables as $table => $fields) {
 					$create = $db->createSchema($schema, $table);
@@ -177,7 +177,7 @@ class InstallController extends InstallAppController {
 					$table = $classVars['table'];
 					$records = $classVars['records'];
 					App::import('Model', 'Model', false);
-					$modelObject =& new Model(array(
+					$modelObject = new Model(array(
 						'name' => $modelAlias,
 						'table' => $table,
 						'ds' => 'default',
@@ -220,7 +220,7 @@ class InstallController extends InstallAppController {
 
 		// set new salt and seed value
 		copy(CONFIGS.'settings.yml.install', CONFIGS.'settings.yml');
-		$File =& new File(CONFIGS . 'core.php');
+		$File = new File(CONFIGS . 'core.php');
 		if (!class_exists('Security')) {
 			require LIBS . 'security.php';
 		}

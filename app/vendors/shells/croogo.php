@@ -36,7 +36,7 @@ class CroogoShell extends Shell {
         // get records
         $modelAlias = Inflector::camelize(Inflector::singularize($table));
         App::import('Model', 'Model', false);
-        $model =& new Model(array('name' => $modelAlias, 'table' => $table, 'ds' => $connection));
+        $model = new Model(array('name' => $modelAlias, 'table' => $table, 'ds' => $connection));
         $records = $model->find('all', array(
             'recursive' => -1,
         ));

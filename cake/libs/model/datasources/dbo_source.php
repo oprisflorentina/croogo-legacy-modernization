@@ -631,7 +631,7 @@ class DboSource extends DataSource {
 		if (PHP_SAPI != 'cli') {
 			App::import('Core', 'View');
 			$controller = null;
-			$View =& new View($controller, false);
+			$View = new View($controller, false);
 			$View->set('logs', array($this->configKeyName => $log));
 			echo $View->element('sql_dump', array('_forced_from_dbo_' => true));
 		} else {
@@ -2412,7 +2412,8 @@ class DboSource extends DataSource {
 		$keys = array_filter($keys);
 		$result = array();
 		while (!empty($keys)) {
-			list($key, $dir) = each($keys);
+			$key = key($keys);
+			$dir = current($keys);
 			array_shift($keys);
 
 			if (is_numeric($key)) {

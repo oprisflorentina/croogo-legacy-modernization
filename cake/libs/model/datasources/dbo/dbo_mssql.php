@@ -296,11 +296,7 @@ class DboMssql extends DboSource {
 				$data = $this->boolean((bool)$data);
 			break;
 			default:
-				if (get_magic_quotes_gpc()) {
-					$data = stripslashes(str_replace("'", "''", $data));
-				} else {
-					$data = str_replace("'", "''", $data);
-				}
+				$data = str_replace("'", "''", $data);
 			break;
 		}
 

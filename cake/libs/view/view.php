@@ -810,7 +810,7 @@ class View extends Object {
 						return false;
 					}
 				}
-				$loaded[$helper] =& new $helperCn($options);
+				$loaded[$helper] = new $helperCn($options);
 				$vars = array('base', 'webroot', 'here', 'params', 'action', 'data', 'theme', 'plugin');
 				$c = count($vars);
 
@@ -856,7 +856,7 @@ class View extends Object {
 		if (strpos($name, DS) === false && $name[0] !== '.') {
 			$name = $this->viewPath . DS . $subDir . Inflector::underscore($name);
 		} elseif (strpos($name, DS) !== false) {
-			if ($name{0} === DS || $name{1} === ':') {
+			if ($name[0] === DS || $name[1] === ':') {
 				$name = trim($name, DS);
 			} else if ($name[0] === '.') {
 				$name = substr($name, 3);
