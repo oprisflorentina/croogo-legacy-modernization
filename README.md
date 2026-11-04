@@ -153,7 +153,10 @@ These come from reading the code, then checking it against the running app (step
     - The installer creates `admin` with the password `password`.
 7. **Old frontend libraries** bundled for the admin and TinyMCE have known issues. To be inventoried in step 2.
 
-**Fixed in this project:** 1, 2, 3, 4 and 6. For 5, the decision is to remove the file editor instead of hardening it. 7 is documented and left for a later frontend step.
+**Fixed in this project:**
+- **Fixed in code:** 1, 2, 4 and 6.
+- **Removed:** findings 3 and 5 are resolved by removing the File Manager completely, rather than repairing its forms and then hardening them. A CMS doesn't need a web-based editor for server files, and media uploads stay available through Attachments, where finding 4 gets fixed.
+- **Documented only:** 7 is left for a later frontend step.
 
 **Already in place:**
 - **Form protection:** CakePHP's Security component is active on every controller, which gives form tampering protection and CSRF tokens on forms.
