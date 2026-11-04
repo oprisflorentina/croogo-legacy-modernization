@@ -32,6 +32,12 @@ RUN docker-php-ext-configure gd --with-zlib-dir=/usr/local --with-jpeg-dir=/usr/
         > /etc/apache2/conf-enabled/allow-override.conf \
     && printf 'date.timezone = UTC\n' > /usr/local/etc/php/conf.d/timezone.ini
 
+# PHP's mail() hands messages to Mailpit, which catches them for inspection
+# (web UI on port 8025) instead of delivering them.
+COPY --from=axllent/mailpit:v1.33.0 /mailpit /usr/local/bin/mailpit
+RUN printf 'sendmail_path = "/usr/local/bin/mailpit sendmail -S mailpit:1025"\n' \
+        > /usr/local/etc/php/conf.d/mail.ini
+
 COPY entrypoint.sh /usr/local/bin/croogo-entrypoint
 RUN chmod +x /usr/local/bin/croogo-entrypoint
 
