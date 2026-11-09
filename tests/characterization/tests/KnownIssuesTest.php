@@ -14,6 +14,9 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('known-issue')]
 final class KnownIssuesTest extends CroogoTestCase
 {
+    /** Prints "php-exec-42" only if the server runs it. */
+    private const PHP_PROBE = '<?php echo "php-exec-" . (6 * 7);';
+
     /** Security finding 2, fixed: a javascript: address is refused as the commenter's website. */
     public function testCommentWebsiteRejectsJavascriptUrl(): void
     {
@@ -90,24 +93,55 @@ final class KnownIssuesTest extends CroogoTestCase
         $this->assertSame($body, $row->filter('a.tooltip')->attr('title'));
     }
 
-    /** Security finding 4: an attachment named .php is saved in the web root and runs. */
-    public function testAttachmentUploadRunsPhpCode(): void
+    /** Security finding 4, fixed: a .php file is refused as an attachment. */
+    public function testAttachmentUploadRefusesPhpFile(): void
     {
         $name = 'probe-' . bin2hex(random_bytes(4)) . '.php';
         $file = sys_get_temp_dir() . '/' . $name;
-        file_put_contents($file, '<?php echo "php-exec-" . (6 * 7);');
+        file_put_contents($file, self::PHP_PROBE);
 
         $this->loginAsAdmin();
         try {
-            $form = $this->visit('/admin/attachments/add')->filter('#NodeAdminAddForm')->form();
-            $form['data[Node][file]']->upload($file);
-            $this->submit($form);
+            $this->uploadAttachment($file);
+            $this->assertStringContainsString('This file type is not allowed.', $this->pageText());
+            $this->assertFalse($this->storedAttachment(pathinfo($name, PATHINFO_FILENAME)), 'No attachment should be saved.');
 
             $this->browser->request('GET', $this->url('/uploads/' . $name));
-            $this->assertSame('php-exec-42', $this->browser->getInternalResponse()->getContent());
+            $this->assertStringNotContainsString('php-exec-42', $this->browser->getInternalResponse()->getContent());
         } finally {
             unlink($file);
             $this->deleteAttachment($name);
+        }
+    }
+
+    /**
+     * Security finding 4, fixed: the stored file name only keeps letters,
+     * digits and hyphens, so "x.php.png" can't run on a server that treats
+     * any name containing ".php." as code. The type stored is the one the
+     * server detects, not the one the browser claims.
+     */
+    public function testAttachmentGetsASafeNameAndItsRealType(): void
+    {
+        $title = 'Probe ' . bin2hex(random_bytes(4)) . '.php';
+        $file = sys_get_temp_dir() . '/' . $title . '.png';
+        file_put_contents($file, self::PHP_PROBE);
+
+        $this->loginAsAdmin();
+        try {
+            $this->uploadAttachment($file);
+            $this->assertStringContainsString('The Attachment has been saved', $this->pageText());
+
+            $stored = $this->storedAttachment($title);
+            $this->assertIsArray($stored, 'The attachment should be saved.');
+            $this->assertSame('/uploads/' . strtolower(str_replace([' ', '.'], '-', $title)) . '.png', $stored['path']);
+            $this->assertSame('text/x-php', $stored['mime_type']);
+
+            // Served as a plain file: the code comes back as text.
+            $this->browser->request('GET', $this->url($stored['path']));
+            $this->assertSame(self::PHP_PROBE, $this->browser->getInternalResponse()->getContent());
+        } finally {
+            unlink($file);
+            $this->deleteAttachment(basename($file));
         }
     }
 
@@ -135,6 +169,22 @@ final class KnownIssuesTest extends CroogoTestCase
             'data[Comment][body]' => $body,
         ]);
         $this->submit($form);
+    }
+
+    private function uploadAttachment(string $file): void
+    {
+        $form = $this->visit('/admin/attachments/add')->filter('#NodeAdminAddForm')->form();
+        $form['data[Node][file]']->upload($file);
+        $this->submit($form);
+    }
+
+    /** @return array{path: string, mime_type: string}|false */
+    private function storedAttachment(string $title): array|false
+    {
+        $query = $this->db()->prepare("SELECT path, mime_type FROM nodes WHERE type = 'attachment' AND title = ?");
+        $query->execute([$title]);
+
+        return $query->fetch(\PDO::FETCH_ASSOC);
     }
 
     private function deleteAttachment(string $name): void

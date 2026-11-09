@@ -121,20 +121,8 @@ parameters:
 			path: ../../app/controllers/attachments_controller.php
 
 		-
-			message: '#^Access to an undefined property AttachmentsController\:\:\$Session\.$#'
-			identifier: property.notFound
-			count: 8
-			path: ../../app/controllers/attachments_controller.php
-
-		-
 			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
 			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/controllers/attachments_controller.php
-
-		-
-			message: '#^Comparison operation "\>" between non\-empty\-list\<string\> and 0 results in an error\.$#'
-			identifier: greater.invalid
 			count: 1
 			path: ../../app/controllers/attachments_controller.php
 

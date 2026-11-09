@@ -1,0 +1,10 @@
+# Uploaded files are served as files and never run as code. Attachments
+# already refuse PHP files; this covers any other way a file could get here.
+# The nginx config needs the same rule when Apache is replaced (step 6).
+<IfModule php_module>
+    php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php[0-9]?|phtml|phar|pht|phps|cgi|pl|py|sh)$">
+    Require all denied
+</FilesMatch>

@@ -12,6 +12,8 @@
  * @author   Fahad Ibnay Heylaal <contact@fahad19.com>
  * @license  http://www.opensource.org/licenses/mit-license.php The MIT License
  * @link     http://www.croogo.org
+ *
+ * @property SessionComponent $Session
  */
 class AttachmentsController extends AppController {
 /**
@@ -60,6 +62,21 @@ class AttachmentsController extends AppController {
 	public $uploadsDir = 'uploads';
 
 /**
+ * File extensions an attachment may have. Anything a web server could run
+ * (php, phtml, phar, cgi...) or a browser could run as part of this site
+ * (html, svg, js) is left out.
+ *
+ * @var array
+ * @access public
+ */
+	public $allowedExtensions = [
+		'jpg', 'jpeg', 'png', 'gif', 'webp',
+		'pdf', 'txt', 'csv', 'zip',
+		'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp',
+		'mp3', 'mp4',
+	];
+
+/**
  * Before executing controller actions
  *
  * @return void
@@ -104,30 +121,27 @@ class AttachmentsController extends AppController {
 		}
 
 		if (!empty($this->data)) {
-			$file = $this->data['Node']['file'];
+			$file = $this->data['Node']['file'] ?? null;
 			unset($this->data['Node']['file']);
 
-			// check if file with same path exists
-			$destination = WWW_ROOT . $this->uploadsDir . DS . $file['name'];
-			if (file_exists($destination)) {
-				$newFileName = CakeText::uuid() . '-' . $file['name'];
-				$destination = WWW_ROOT . $this->uploadsDir . DS . $newFileName;
-			} else {
-				$newFileName = $file['name'];
+			if (!is_array($file) || ($file['error'] ?? null) !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name'])) {
+				$this->Session->setFlash(__('The file could not be uploaded. Please, try again.', true), 'default', ['class' => 'error']);
+				return;
+			}
+			$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+			if (!in_array($extension, $this->allowedExtensions, true)) {
+				$this->Session->setFlash(__('This file type is not allowed.', true), 'default', ['class' => 'error']);
+				return;
 			}
 
-			// remove the extension for title
-			if (explode('.', $file['name']) > 0) {
-				$fileTitleE = explode('.', $file['name']);
-				array_pop($fileTitleE);
-				$fileTitle = implode('.', $fileTitleE);
-			} else {
-				$fileTitle = $file['name'];
-			}
+			$newFileName = $this->_safeFileName($file['name'], $extension);
+			$destination = WWW_ROOT . $this->uploadsDir . DS . $newFileName;
 
-			$this->data['Node']['title'] = $fileTitle;
+			// The title keeps the name as uploaded, without its extension.
+			$this->data['Node']['title'] = pathinfo($file['name'], PATHINFO_FILENAME);
 			$this->data['Node']['slug'] = $newFileName;
-			$this->data['Node']['mime_type'] = $file['type'];
+			// Detected from the content: the type the browser sends is whatever it claims.
+			$this->data['Node']['mime_type'] = mime_content_type($file['tmp_name']) ?: 'application/octet-stream';
 			//$this->data['Node']['guid'] = Router::url('/' . $this->uploadsDir . '/' . $newFileName, true);
 			$this->data['Node']['path'] = '/' . $this->uploadsDir . '/' . $newFileName;
 
@@ -214,6 +228,30 @@ class AttachmentsController extends AppController {
 	public function admin_browse() {
 		$this->layout = 'admin_full';
 		$this->admin_index();
+	}
+
+/**
+ * A file name for the uploads folder: lowercase letters, digits and hyphens,
+ * then the extension. Every dot in the uploaded name becomes a hyphen, so
+ * "x.php.png" is stored as "x-php.png". If the name is taken, a random
+ * suffix is added.
+ *
+ * @param string $name File name as uploaded
+ * @param string $extension Allowed extension, lowercase
+ * @return string
+ */
+	protected function _safeFileName($name, $extension) {
+		$base = strtolower(Inflector::slug(pathinfo($name, PATHINFO_FILENAME), '-'));
+		$base = substr(trim((string)preg_replace('/[^a-z0-9]+/', '-', $base), '-'), 0, 100);
+		if ($base === '') {
+			$base = 'file';
+		}
+
+		$fileName = $base . '.' . $extension;
+		while (file_exists(WWW_ROOT . $this->uploadsDir . DS . $fileName)) {
+			$fileName = $base . '-' . bin2hex(random_bytes(4)) . '.' . $extension;
+		}
+		return $fileName;
 	}
 
 }
