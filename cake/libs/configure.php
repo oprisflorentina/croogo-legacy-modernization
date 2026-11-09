@@ -74,7 +74,7 @@ class Configure extends CakeObject {
  *
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-with-CakePHP/Configuration.html#write
  * @link http://book.cakephp.org/view/926/write
- * @param array $config Name of var to write
+ * @param array|string $config Name of var to write, or an array of names and values
  * @param mixed $value Value to set for var
  * @return boolean True if write was successful
  * @access public
@@ -155,7 +155,7 @@ class Configure extends CakeObject {
  *
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-with-CakePHP/Configuration.html#read
  * @param string $var Variable to obtain.  Use '.' to access array elements.
- * @return string value of Configure::$var
+ * @return mixed value of Configure::$var, or null if it isn't set
  * @access public
  */
 	public static function read($var = 'debug') {

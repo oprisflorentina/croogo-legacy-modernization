@@ -37,12 +37,6 @@ parameters:
 			path: ../../app/app_controller.php
 
 		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../app/app_controller.php
-
-		-
 			message: '#^Offset ''locale'' on string\|null in isset\(\) does not exist\.$#'
 			identifier: isset.offset
 			count: 1
@@ -83,24 +77,6 @@ parameters:
 			identifier: requireOnce.fileNotFound
 			count: 1
 			path: ../../app/config/bootstrap.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 14
-			path: ../../app/config/core.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, \(int\|string\) given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../app/config/croogo_bootstrap.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../../app/config/croogo_bootstrap.php
 
 		-
 			message: '#^Path in require_once\(\) "\.\.//app/config/croogo_routes\.php" is not a file or it does not exist\.$#'
@@ -358,12 +334,6 @@ parameters:
 			message: '#^PHPDoc tag @param has invalid value \(int port\)\: Unexpected token "port", expected variable at offset 137 on line 6$#'
 			identifier: phpDoc.parseError
 			count: 1
-			path: ../../app/controllers/components/recaptcha.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 5
 			path: ../../app/controllers/components/recaptcha.php
 
 		-
@@ -775,44 +745,8 @@ parameters:
 			path: ../../app/controllers/vocabularies_controller.php
 
 		-
-			message: '#^Call to function is_array\(\) with \*NEVER\* will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../app/libs/croogo.php
-
-		-
-			message: '#^Call to function is_array\(\) with non\-falsy\-string will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 1
-			path: ../../app/libs/croogo.php
-
-		-
-			message: '#^Call to function is_array\(\) with null will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 1
-			path: ../../app/libs/croogo.php
-
-		-
 			message: '#^Call to function is_array\(\) with string will always evaluate to false\.$#'
 			identifier: function.impossibleType
-			count: 6
-			path: ../../app/libs/croogo.php
-
-		-
-			message: '#^Offset string on array\{\} on left side of \?\?\= does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 2
-			path: ../../app/libs/croogo.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 5
-			path: ../../app/libs/croogo.php
-
-		-
-			message: '#^Parameter \#2 \$arr2 of static method Set\:\:merge\(\) expects array\|null, string given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../../app/libs/croogo.php
 
@@ -827,30 +761,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../app/libs/croogo.php
-
-		-
-			message: '#^Result of \|\| is always true\.$#'
-			identifier: booleanOr.alwaysTrue
-			count: 1
-			path: ../../app/libs/croogo.php
-
-		-
-			message: '#^Call to function is_array\(\) with string will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 1
-			path: ../../app/libs/croogo_router.php
-
-		-
-			message: '#^Result of \|\| is always true\.$#'
-			identifier: booleanOr.alwaysTrue
-			count: 1
-			path: ../../app/libs/croogo_router.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: ../../app/libs/croogo_router.php
 
 		-
 			message: '#^Call to function is_string\(\) with array will always evaluate to false\.$#'
@@ -1024,12 +934,6 @@ parameters:
 			message: '#^Parameter \#1 \$conditions of method Model\:\:find\(\) expects array\|null, string given\.$#'
 			identifier: argument.type
 			count: 2
-			path: ../../app/models/setting.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 1
 			path: ../../app/models/setting.php
 
 		-
@@ -1387,18 +1291,6 @@ parameters:
 			path: ../../app/plugins/install/models/install.php
 
 		-
-			message: '#^Argument of an invalid type string supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../../app/plugins/tinymce/config/tinymce_bootstrap.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../app/plugins/tinymce/config/tinymce_bootstrap.php
-
-		-
 			message: '#^Access to an undefined property TinymceHelper\:\:\$Html\.$#'
 			identifier: property.notFound
 			count: 5
@@ -1409,24 +1301,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: ../../app/plugins/tinymce/views/helpers/tinymce.php
-
-		-
-			message: '#^Call to function is_array\(\) with string will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 1
-			path: ../../app/plugins/tinymce/views/helpers/tinymce.php
-
-		-
-			message: '#^Argument of an invalid type string supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../../app/plugins/translate/config/translate_bootstrap.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../app/plugins/translate/config/translate_bootstrap.php
 
 		-
 			message: '#^Access to an undefined property TranslateController\:\:\$Language\.$#'
@@ -1444,12 +1318,6 @@ parameters:
 			message: '#^Access to an undefined property TranslateController\:\:\$Session\.$#'
 			identifier: property.notFound
 			count: 14
-			path: ../../app/plugins/translate/controllers/translate_controller.php
-
-		-
-			message: '#^Call to function is_array\(\) with string will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 2
 			path: ../../app/plugins/translate/controllers/translate_controller.php
 
 		-
@@ -1528,12 +1396,6 @@ parameters:
 			message: '#^Access to an undefined property LayoutHelper\:\:\$adminTabs\.$#'
 			identifier: property.notFound
 			count: 1
-			path: ../../app/views/helpers/layout.php
-
-		-
-			message: '#^Call to function is_array\(\) with string will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 4
 			path: ../../app/views/helpers/layout.php
 
 		-
@@ -1909,12 +1771,6 @@ parameters:
 			path: ../../cake/basics.php
 
 		-
-			message: '#^Variable \$defaultCharset on left side of \?\?\= always exists and is not nullable\.$#'
-			identifier: nullCoalesce.variable
-			count: 1
-			path: ../../cake/basics.php
-
-		-
 			message: '#^Variable \$filename might not be defined\.$#'
 			identifier: variable.undefined
 			count: 5
@@ -1987,30 +1843,6 @@ parameters:
 			path: ../../cake/dispatcher.php
 
 		-
-			message: '#^Offset ''css'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../../cake/dispatcher.php
-
-		-
-			message: '#^Offset ''css'' on string in empty\(\) does not exist\.$#'
-			identifier: empty.offset
-			count: 1
-			path: ../../cake/dispatcher.php
-
-		-
-			message: '#^Offset ''js'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../../cake/dispatcher.php
-
-		-
-			message: '#^Offset ''js'' on string in empty\(\) does not exist\.$#'
-			identifier: empty.offset
-			count: 1
-			path: ../../cake/dispatcher.php
-
-		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$missingAction$#'
 			identifier: parameter.notFound
 			count: 1
@@ -2019,18 +1851,6 @@ parameters:
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$params$#'
 			identifier: parameter.notFound
-			count: 1
-			path: ../../cake/dispatcher.php
-
-		-
-			message: '#^Parameter \#1 \$array of function extract expects array, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../cake/dispatcher.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../../cake/dispatcher.php
 
@@ -2090,12 +1910,6 @@ parameters:
 
 		-
 			message: '#^Strict comparison using \=\=\= between string and false will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: ../../cake/dispatcher.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and true will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
 			path: ../../cake/dispatcher.php
@@ -2581,18 +2395,6 @@ parameters:
 			path: ../../cake/libs/cake_object.php
 
 		-
-			message: '#^Binary operation "\*" between int and string results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 2
-			path: ../../cake/libs/cake_session.php
-
-		-
-			message: '#^Binary operation "\*" between string and int results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 2
-			path: ../../cake/libs/cake_session.php
-
-		-
 			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -2713,12 +2515,6 @@ parameters:
 			path: ../../cake/libs/cake_session.php
 
 		-
-			message: '#^Result of \|\| is always false\.$#'
-			identifier: booleanOr.alwaysFalse
-			count: 1
-			path: ../../cake/libs/cake_session.php
-
-		-
 			message: '#^Strict comparison using \=\=\= between array and false will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 2
@@ -2726,24 +2522,6 @@ parameters:
 
 		-
 			message: '#^Strict comparison using \=\=\= between array and string will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: ../../cake/libs/cake_session.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and false will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 2
-			path: ../../cake/libs/cake_session.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 2
-			path: ../../cake/libs/cake_session.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and true will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
 			path: ../../cake/libs/cake_session.php
@@ -2935,12 +2713,6 @@ parameters:
 			path: ../../cake/libs/configure.php
 
 		-
-			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../cake/libs/configure.php
-
-		-
 			message: '#^Call to function is_null\(\) with string will always evaluate to false\.$#'
 			identifier: function.impossibleType
 			count: 1
@@ -2971,24 +2743,6 @@ parameters:
 			path: ../../cake/libs/configure.php
 
 		-
-			message: '#^Method Configure\:\:read\(\) should return string but returns array\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../cake/libs/configure.php
-
-		-
-			message: '#^Method Configure\:\:read\(\) should return string but returns int\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../cake/libs/configure.php
-
-		-
-			message: '#^Method Configure\:\:read\(\) should return string but returns null\.$#'
-			identifier: return.type
-			count: 3
-			path: ../../cake/libs/configure.php
-
-		-
 			message: '#^PHPDoc tag @return has invalid value \(mixed, file path if found, false otherwise\)\: Unexpected token ",", expected TOKEN_HORIZONTAL_WS at offset 214 on line 7$#'
 			identifier: phpDoc.parseError
 			count: 1
@@ -2997,12 +2751,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$array \(array\{cake\: array\{non\-falsy\-string\}, libs\: array\{literal\-string&non\-falsy\-string\}, models\: array\{literal\-string&non\-falsy\-string\}, datasources\: array\{literal\-string&non\-falsy\-string\}, behaviors\: array\{literal\-string&non\-falsy\-string\}, controllers\: array\{literal\-string&non\-falsy\-string\}, components\: array\{literal\-string&non\-falsy\-string\}, views\: array\{literal\-string&non\-falsy\-string\}, \.\.\.\}\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
 			identifier: arrayFilter.same
-			count: 1
-			path: ../../cake/libs/configure.php
-
-		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../../cake/libs/configure.php
 
@@ -3039,12 +2787,6 @@ parameters:
 		-
 			message: '#^Static method Overloadable\:\:overload\(\) invoked with 1 parameter, 0 required\.$#'
 			identifier: arguments.count
-			count: 1
-			path: ../../cake/libs/configure.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between string and true will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: ../../cake/libs/configure.php
 
@@ -3679,12 +3421,6 @@ parameters:
 			path: ../../cake/libs/controller/components/email.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: ../../cake/libs/controller/components/email.php
-
-		-
 			message: '#^Call to function is_array\(\) with string will always evaluate to false\.$#'
 			identifier: function.impossibleType
 			count: 1
@@ -3723,12 +3459,6 @@ parameters:
 		-
 			message: '#^Right side of && is always true\.$#'
 			identifier: booleanAnd.rightAlwaysTrue
-			count: 1
-			path: ../../cake/libs/controller/components/request_handler.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: ../../cake/libs/controller/components/request_handler.php
 
@@ -3825,12 +3555,6 @@ parameters:
 		-
 			message: '#^Property SessionComponent\:\:\$__bare \(bool\) does not accept default value of type int\.$#'
 			identifier: property.defaultValue
-			count: 1
-			path: ../../cake/libs/controller/components/session.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and true will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
 			count: 1
 			path: ../../cake/libs/controller/components/session.php
 
@@ -4036,12 +3760,6 @@ parameters:
 			path: ../../cake/libs/controller/scaffold.php
 
 		-
-			message: '#^Argument of an invalid type string supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../../cake/libs/controller/scaffold.php
-
-		-
 			message: '#^Call to function is_null\(\) with string will always evaluate to false\.$#'
 			identifier: function.impossibleType
 			count: 1
@@ -4062,12 +3780,6 @@ parameters:
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$controller_class$#'
 			identifier: parameter.notFound
-			count: 1
-			path: ../../cake/libs/controller/scaffold.php
-
-		-
-			message: '#^Parameter \#2 \$haystack of function in_array expects array, string given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../../cake/libs/controller/scaffold.php
 
@@ -4948,12 +4660,6 @@ parameters:
 			path: ../../cake/libs/inflector.php
 
 		-
-			message: '#^Parameter \#1 \$config of static method Configure\:\:write\(\) expects array, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../cake/libs/l10n.php
-
-		-
 			message: '#^Property L10n\:\:\$found \(string\) does not accept default value of type false\.$#'
 			identifier: property.defaultValue
 			count: 1
@@ -4962,12 +4668,6 @@ parameters:
 		-
 			message: '#^Property L10n\:\:\$found \(string\) does not accept true\.$#'
 			identifier: assign.propertyType
-			count: 1
-			path: ../../cake/libs/l10n.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
 			count: 1
 			path: ../../cake/libs/l10n.php
 
@@ -7084,12 +6784,6 @@ parameters:
 			path: ../../cake/libs/model/db_acl.php
 
 		-
-			message: '#^Variable \$config in isset\(\) always exists and is not nullable\.$#'
-			identifier: isset.variable
-			count: 1
-			path: ../../cake/libs/model/db_acl.php
-
-		-
 			message: '#^Variable \$model in empty\(\) always exists and is not falsy\.$#'
 			identifier: empty.variable
 			count: 1
@@ -7564,12 +7258,6 @@ parameters:
 			path: ../../cake/libs/model/model.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between string and true will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: ../../cake/libs/model/model.php
-
-		-
 			message: '#^Strict comparison using \=\=\= between string\|null and false will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
@@ -7996,18 +7684,6 @@ parameters:
 			path: ../../cake/libs/router.php
 
 		-
-			message: '#^Offset ''admin'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../../cake/libs/router.php
-
-		-
-			message: '#^Offset ''admin'' on string in empty\(\) does not exist\.$#'
-			identifier: empty.offset
-			count: 1
-			path: ../../cake/libs/router.php
-
-		-
 			message: '#^Offset ''controller'' on string in isset\(\) does not exist\.$#'
 			identifier: isset.offset
 			count: 1
@@ -8022,18 +7698,6 @@ parameters:
 		-
 			message: '#^Offset ''greedy'' does not exist on string\.$#'
 			identifier: offsetAccess.notFound
-			count: 1
-			path: ../../cake/libs/router.php
-
-		-
-			message: '#^Offset ''prefixes'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../../cake/libs/router.php
-
-		-
-			message: '#^Offset ''prefixes'' on string in empty\(\) does not exist\.$#'
-			identifier: empty.offset
 			count: 1
 			path: ../../cake/libs/router.php
 
@@ -8200,20 +7864,8 @@ parameters:
 			path: ../../cake/libs/sanitize.php
 
 		-
-			message: '#^Variable \$defaultCharset on left side of \?\?\= always exists and is not nullable\.$#'
-			identifier: nullCoalesce.variable
-			count: 1
-			path: ../../cake/libs/sanitize.php
-
-		-
 			message: '#^Call to function is_string\(\) with true will always evaluate to false\.$#'
 			identifier: function.impossibleType
-			count: 1
-			path: ../../cake/libs/security.php
-
-		-
-			message: '#^Parameter \#1 \$seed of function srand expects int\|null, string given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../../cake/libs/security.php
 
@@ -8488,12 +8140,6 @@ parameters:
 			path: ../../cake/libs/view/helper.php
 
 		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 1
-			path: ../../cake/libs/view/helper.php
-
-		-
 			message: '#^Result of \|\| is always false\.$#'
 			identifier: booleanOr.alwaysFalse
 			count: 1
@@ -8520,7 +8166,7 @@ parameters:
 		-
 			message: '#^Strict comparison using \=\=\= between string and true will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
-			count: 2
+			count: 1
 			path: ../../cake/libs/view/helper.php
 
 		-
@@ -9844,12 +9490,6 @@ parameters:
 			path: ../../cake/libs/view/helpers/session.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between string and true will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: ../../cake/libs/view/helpers/session.php
-
-		-
 			message: '#^Call to function is_array\(\) with non\-falsy\-string will always evaluate to false\.$#'
 			identifier: function.impossibleType
 			count: 1
@@ -10126,12 +9766,6 @@ parameters:
 			path: ../../cake/libs/view/helpers/xml.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: ../../cake/libs/view/helpers/xml.php
-
-		-
 			message: '#^Binary operation "\-" between int\<0, max\>\|false and string results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -10270,12 +9904,6 @@ parameters:
 			path: ../../cake/libs/view/view.php
 
 		-
-			message: '#^If condition is always false\.$#'
-			identifier: if.alwaysFalse
-			count: 1
-			path: ../../cake/libs/view/view.php
-
-		-
 			message: '#^Method View\:\:_getLayoutFileName\(\) should return string but returns false\.$#'
 			identifier: return.type
 			count: 1
@@ -10360,12 +9988,6 @@ parameters:
 			path: ../../cake/libs/view/view.php
 
 		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 1
-			path: ../../cake/libs/view/view.php
-
-		-
 			message: '#^Strict comparison using \!\=\= between string\|null and false will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
 			count: 2
@@ -10375,12 +9997,6 @@ parameters:
 			message: '#^Strict comparison using \=\=\= between string and false will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
-			path: ../../cake/libs/view/view.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and true will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 2
 			path: ../../cake/libs/view/view.php
 
 		-

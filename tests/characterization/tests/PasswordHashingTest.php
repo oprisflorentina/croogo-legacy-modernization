@@ -17,7 +17,11 @@ use Symfony\Component\HttpClient\HttpClient;
  */
 final class PasswordHashingTest extends CroogoTestCase
 {
-    /** Security.salt in app/config/core.php. The sample admin's hash uses it too. */
+    /**
+     * CakePHP's published salt, which the sample data's hashes were made with.
+     * The site now has its own salt, and compose.yaml passes this one as
+     * CROOGO_LEGACY_SALT, so these tests also cover a changed salt.
+     */
     private const SALT = 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi19';
 
     public function testAnOldSha1HashIsReplacedAtTheFirstLogin(): void

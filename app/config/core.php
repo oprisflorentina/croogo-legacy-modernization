@@ -33,8 +33,11 @@
  *
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
+ *
+ * Production mode unless the environment variable CROOGO_DEBUG says
+ * otherwise. compose.yaml sets it for local development.
  */
-	Configure::write('debug', 1);
+	Configure::write('debug', (int)getenv('CROOGO_DEBUG'));
 
 /**
  * CakePHP Log Level:
@@ -210,6 +213,43 @@
  * A random numeric string (digits only) used to encrypt/decrypt strings.
  */
 	Configure::write('Security.cipherSeed', '7685930965745354249674968364519');
+
+/**
+ * Secrets set in the environment replace the two values above, so they don't
+ * have to be stored in this file.
+ *
+ * Security.legacySalt is the salt that old SHA1 password hashes were made
+ * with. It is needed only after the salt has changed, until every user has
+ * logged in once and got a password_hash() hash. See
+ * AuthComponent::checkPassword().
+ */
+	foreach ([
+		'CROOGO_SECURITY_SALT' => 'Security.salt',
+		'CROOGO_CIPHER_SEED' => 'Security.cipherSeed',
+		'CROOGO_LEGACY_SALT' => 'Security.legacySalt',
+	] as $variable => $setting) {
+		$value = getenv($variable);
+		if (is_string($value) && $value !== '') {
+			Configure::write($setting, $value);
+		}
+	}
+
+/**
+ * An installed site in production mode refuses to run with CakePHP's
+ * published salt or cipher seed: anyone could compute the form protection
+ * hashes made with them. Before installation (no settings.yml yet) the
+ * installer still runs, since it is what replaces them.
+ */
+	if (!Configure::read('debug') && file_exists(CONFIGS . 'settings.yml') && (
+		Configure::read('Security.salt') === 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi19' ||
+		Configure::read('Security.cipherSeed') === '7685930965745354249674968364519'
+	)) {
+		error_log('Croogo: refusing to run with the published Security.salt or Security.cipherSeed. Set CROOGO_SECURITY_SALT and CROOGO_CIPHER_SEED, or run the installer.');
+		if (PHP_SAPI !== 'cli' && !headers_sent()) {
+			header('HTTP/1.1 500 Internal Server Error');
+		}
+		exit('This site is not configured yet.');
+	}
 
 /**
  * Compress CSS output by removing comments, whitespace, repeating tags, etc.

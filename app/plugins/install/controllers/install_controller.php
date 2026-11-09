@@ -224,8 +224,11 @@ class InstallController extends InstallAppController {
 		if (!class_exists('Security')) {
 			require LIBS . 'security.php';
 		}
-		$salt = Security::generateAuthKey();
-		$seed = mt_rand() . mt_rand();
+		// random_bytes() and random_int() use the operating system's secure
+		// generator. mt_rand() and the uuid() behind generateAuthKey() don't.
+		// The seed stays within PHP's integer range, as srand() expects.
+		$salt = bin2hex(random_bytes(20));
+		$seed = (string)random_int(1000000000, PHP_INT_MAX);
 		$contents = $File->read();
 		$contents = preg_replace('/(?<=Configure::write\(\'Security.salt\', \')([^\' ]+)(?=\'\))/', $salt, $contents);
 		$contents = preg_replace('/(?<=Configure::write\(\'Security.cipherSeed\', \')(\d+)(?=\'\))/', $seed, $contents);
@@ -233,11 +236,14 @@ class InstallController extends InstallAppController {
 			return false;
 		}
 
-		// Store the admin password with password_hash(), the same way
-		// AuthComponent::password() does. It no longer depends on the salt.
+		// The admin gets a random password, shown once on this page, instead
+		// of "password". It is stored with password_hash(), the same way
+		// AuthComponent::password() does.
+		$adminPassword = bin2hex(random_bytes(8));
 		$User = ClassRegistry::init('User');
 		$User->id = $User->field('id', ['username' => 'admin']);
-		$User->saveField('password', password_hash('password', PASSWORD_DEFAULT));
+		$User->saveField('password', password_hash($adminPassword, PASSWORD_DEFAULT));
+		$this->set('adminPassword', $adminPassword);
 	}
 
 }

@@ -8,6 +8,16 @@ services:
     build: docker/php83
     ports:
       - "8083:80"
+    environment:
+      # Debug output on: the characterization tests find PHP warnings in it.
+      # Without CROOGO_DEBUG the app runs in production mode.
+      CROOGO_DEBUG: "1"
+      # The site's own secrets, instead of CakePHP's published ones.
+      CROOGO_SECURITY_SALT: local-development-salt-not-for-production
+      CROOGO_CIPHER_SEED: "4815162342"
+      # The sample data's password hashes were made with CakePHP's published
+      # salt. It stays usable for checking them until each user logs in once.
+      CROOGO_LEGACY_SALT: DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi19
     volumes:
       - .:/var/www/html
       - ./docker/php83/database.php:/var/www/html/app/config/database.php:ro

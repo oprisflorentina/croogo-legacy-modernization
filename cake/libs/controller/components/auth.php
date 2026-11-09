@@ -971,7 +971,10 @@ class AuthComponent extends CakeObject {
 			return false;
 		}
 		if ($this->_isLegacyHash($hash)) {
-			return hash_equals($hash, Security::hash($password, null, true));
+			// Old hashes were made with the salt of their time. After the salt
+			// changes, Security.legacySalt keeps them usable until rehashed.
+			$salt = Configure::read('Security.legacySalt');
+			return hash_equals($hash, Security::hash($password, null, is_string($salt) && $salt !== '' ? $salt : true));
 		}
 		return password_verify($password, $hash);
 	}
