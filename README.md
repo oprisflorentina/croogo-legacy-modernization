@@ -54,7 +54,16 @@ The setup replaces Croogo's web installer, so every machine starts from the same
 - **Connection:** `docker/php83/database.php` is mounted as `app/config/database.php`.
 - **Settings:** the container copies `settings.yml.install` to `settings.yml`, as the installer's last screen does.
 
-`app/config/core.php` keeps its shipped salt, because the seeded admin password hash depends on it. The passwords in `compose.yaml` are throwaway values for local use only.
+**Configuration comes from environment variables** (security finding 6). Without them the app runs in production mode. `compose.yaml` sets throwaway values for local use:
+
+| Variable | What it does | In `compose.yaml` |
+| --- | --- | --- |
+| `CROOGO_DEBUG` | CakePHP's debug level. 0, production mode, when it isn't set. | `1`: the tests read PHP warnings from the pages |
+| `CROOGO_SECURITY_SALT` | The site's own `Security.salt` | a local value |
+| `CROOGO_CIPHER_SEED` | The site's own `Security.cipherSeed` (digits) | a local value |
+| `CROOGO_LEGACY_SALT` | The salt old SHA1 password hashes were made with, needed only after the salt changes | CakePHP's published salt, which the sample data used |
+
+An installed site in production mode refuses to run with CakePHP's published salt or seed. It answers 500 and logs which variables to set. The other passwords in `compose.yaml` are also throwaway values for local use only.
 
 **About the PHP 5.6 image** (at `last-php56`): the Debian 9 package archive behind it is signed with keys that have since expired. Rather than turning off apt's signature check, its Dockerfile builds zlib, libjpeg and libpng from their official source releases, downloaded over HTTPS and pinned by SHA-256.
 
@@ -74,7 +83,7 @@ docker compose run --rm tests composer install   # once
 docker compose run --rm tests                    # run them
 ```
 
-Besides what each test checks, **every page any test loads fails the test if it shows a PHP error**. The app runs in debug mode, so CakePHP prints warnings and notices into the HTML, and a page can show the right content while failing underneath. Forms are submitted exactly as a browser sends them, including CakePHP's hidden companion inputs.
+Besides what each test checks, **every page any test loads fails the test if it shows a PHP error**. The app runs in debug mode (`CROOGO_DEBUG=1` in `compose.yaml`), so CakePHP prints warnings and notices into the HTML, and a page can show the right content while failing underneath. Forms are submitted exactly as a browser sends them, including CakePHP's hidden companion inputs.
 
 | File | What it pins down |
 | --- | --- |
@@ -260,6 +269,19 @@ These come from reading the code, then checking it against the running app (step
     - `debug` is 1 in `config/core.php`.
     - `Security.salt` and `Security.cipherSeed` ship as CakePHP's public defaults. The installer replaces them.
     - The installer creates `admin` with the password `password`.
+
+    *Fixed in step 4:*
+    - **Debug:** `core.php` reads `CROOGO_DEBUG`, so production mode is the default and development has to opt in. With debug off, CakePHP's old web test runner `/test.php` stops at "Debug setting does not allow access". With debug on, it showed a PHP parse error with server paths.
+    - **Secrets from the environment:** `CROOGO_SECURITY_SALT` and `CROOGO_CIPHER_SEED` replace the values in `core.php`, so they don't have to be stored in the repository. An installed site with debug off refuses to start with the published values.
+        - Before installation it still starts, because the installer is what replaces them.
+        - Checked by hand in throwaway containers: production mode without its own secrets answered 500 and logged which variables to set. With them, the site worked.
+    - **Changing the salt without locking anyone out:** old SHA1 hashes depend on the salt. `CROOGO_LEGACY_SALT` keeps them usable until each user's next login replaces the hash (item 8 of the upgrade).
+        - The local setup does exactly this: the site has its own salt, and the sample data's hashes use the published one.
+        - `PasswordHashingTest` failed after the salt changed and passed once the legacy salt was read.
+    - **The installer** generates the salt and seed with `random_bytes()` / `random_int()` instead of `mt_rand()`. It gives `admin` a random password and shows it once on its last page.
+        - This part isn't covered by a test: the Docker setup seeds the database and never runs the installer.
+        - The local sample data still has `admin` / `password`.
+    - **PHPStan:** CakePHP's docblocks for `Configure::write()` and `Configure::read()` were wrong: one only accepted an array, the other always returned a string. Correcting them took the baseline from 3,674 to 3,568 findings.
 7. **Old frontend libraries** bundled for the admin and TinyMCE have known issues. To be inventoried in step 2.
 8. **Anyone can lock out any account.** After 5 failed logins in 5 minutes, a username is blocked for everyone, including its owner with the right password (`UsersController::beforeFilter`). Knowing that the admin is called `admin` is enough to keep them out.
 
