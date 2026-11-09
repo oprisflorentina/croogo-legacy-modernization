@@ -14,14 +14,44 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('known-issue')]
 final class KnownIssuesTest extends CroogoTestCase
 {
-    /** Security finding 2: the commenter's website becomes a raw link href. */
-    public function testCommentWebsiteAcceptsJavascriptUrl(): void
+    /** Security finding 2, fixed: a javascript: address is refused as the commenter's website. */
+    public function testCommentWebsiteRejectsJavascriptUrl(): void
     {
-        $payload = 'javascript:alert(' . random_int(100000, 999999) . ')';
+        $body = $this->unique('website check');
 
-        $this->postComment('Visitor', $payload, $this->unique('website check'));
+        $this->postComment('Visitor', 'javascript:alert(' . random_int(100000, 999999) . ')', $body);
 
-        $this->assertCount(1, $this->visit('/blog/hello-world')->filter('a[href="' . $payload . '"]'));
+        $this->assertStringContainsString('Please enter a web address starting with http:// or https://', $this->pageText());
+        $this->visit('/blog/hello-world');
+        $this->assertStringNotContainsString($body, $this->pageText(), 'The comment should not have been saved.');
+    }
+
+    /**
+     * Security finding 2, fixed: comments saved before the check existed can
+     * still hold a javascript: address. The name is then shown without a link.
+     */
+    public function testStoredJavascriptWebsiteIsNotLinked(): void
+    {
+        $body = $this->unique('stored website check');
+        // Croogo caches each post's comments, and saving a comment clears that
+        // cache. The redirect back to the post isn't followed, so nothing is
+        // cached again before the row is changed behind the app's back.
+        $this->browser->followRedirects(false);
+        try {
+            $this->postComment('Visitor', 'http://example.com', $body);
+        } finally {
+            $this->browser->followRedirects(true);
+        }
+        $this->db()->prepare('UPDATE comments SET website = ? WHERE body = ?')
+            ->execute(['javascript:alert(' . random_int(100000, 999999) . ')', $body]);
+        $id = $this->db()->prepare('SELECT id FROM comments WHERE body = ?');
+        $id->execute([$body]);
+
+        $page = $this->visit('/blog/hello-world');
+        $name = $page->filter('#comment-' . $id->fetchColumn() . ' .comment-info .name');
+        $this->assertSame('Visitor', trim($name->text()));
+        $this->assertCount(0, $name->filter('a'));
+        $this->assertCount(0, $page->filter('a[href^="javascript:"]'), 'No comment on the page may link to a javascript: address.');
     }
 
     /** Escaping happens before saving, so output that escapes again shows entities. */

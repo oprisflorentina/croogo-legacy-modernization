@@ -3,7 +3,10 @@
 		<span class="avatar"><?php echo $this->Html->image('http://www.gravatar.com/avatar/' . md5(strtolower($comment['Comment']['email'])) . '?s=32') ?></span>
 		<span class="name">
 		<?php
-			if ($comment['Comment']['website'] != null) {
+			// Only web addresses and paths on this site become links. Comments
+			// saved before the website was validated can hold anything, such
+			// as a javascript: address.
+			if (preg_match('#^(https?://|/)#i', (string)$comment['Comment']['website'])) {
 				echo $this->Html->link($comment['Comment']['name'], $comment['Comment']['website'], array('target' => '_blank'));
 			} else {
 				echo $comment['Comment']['name'];

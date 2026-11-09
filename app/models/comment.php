@@ -58,6 +58,11 @@ class Comment extends AppModel {
 			'required' => true,
 			'message' => 'Please enter a valid email address.',
 		],
+		'website' => [
+			'rule' => '_validWebsite',
+			'allowEmpty' => true,
+			'message' => 'Please enter a web address starting with http:// or https://.',
+		],
 	];
 
 /**
@@ -73,5 +78,26 @@ class Comment extends AppModel {
 		],
 		'User',
 	];
+
+/**
+ * The website becomes a link on the commenter's name, so only web addresses
+ * are accepted: a javascript: address would run in the browser of whoever
+ * clicks the name. A path on this site, like the sample admin's "/about", is
+ * accepted too, because a logged-in user's comment takes the website from
+ * their profile.
+ *
+ * @param array $check Field name => value
+ * @return boolean
+ */
+	protected function _validWebsite($check) {
+		$website = current($check);
+		if (!is_string($website)) {
+			return false;
+		}
+		if (preg_match('#^/(?!/)#', $website)) {
+			return true;
+		}
+		return preg_match('#^https?://#i', $website) === 1 && filter_var($website, FILTER_VALIDATE_URL) !== false;
+	}
 
 }
