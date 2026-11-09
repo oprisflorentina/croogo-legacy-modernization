@@ -62,7 +62,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 19 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and only talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 22 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony. The password tests also read the `users` table, because the stored hash is what they check. That table stays the same whichever app serves the site.
 
 ```bash
 docker compose run --rm tests composer install   # once
@@ -79,6 +79,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
 | `KnownIssuesTest` | Behavior that is wrong but real: the `javascript:` website link, double-encoded comment names, PHP running from an attachment upload, and the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. |
+| `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
 
 **Built to run again and again:**
 - Every run uses fresh random values.
@@ -118,7 +119,20 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
 
     The old `mysql_*` driver, which can't run on PHP 7+, was removed. PHPStan now runs at **level 5**. The 3,696 findings the 2012 code already had are recorded in `phpstan-baseline.neon`: about 1,040 are CakePHP's runtime properties like `$this->Session`, and most others come from `extract()` and outdated docblocks. New and changed code has to pass.
 
-**Still to do in this step:** the password migration and the security fixes. Then the `php83` tag.
+8. **Passwords** are stored with `password_hash()` (bcrypt, through `PASSWORD_DEFAULT`) and checked with `password_verify()`. Nobody has to reset a password: an old SHA1 hash is checked one last time at login and replaced on success. The change is in CakePHP's `AuthComponent`, where CakePHP itself later added password hashers (2.4+).
+    - **Login works differently.** Before, Auth hashed the posted password and looked for a row with that username **and** that hash. A `password_hash()` hash has a random salt, so it can't be matched in SQL. The user is now found by username, and the password is checked in PHP.
+    - **The new hash is saved with model callbacks off.** Saving only the password makes the ACL behavior and `User::afterSave()` rebuild the user's ACL record without its role.
+    - **Every place that writes a password moved too:**
+        - The admin "reset password" screen checks the current password with `checkPassword()`.
+        - The "forgot password" flow stores a `password_hash()` hash.
+        - The installer and the `croogo password` shell no longer write SHA1.
+    - **`PasswordHashingTest`** failed first, then passed with the fix.
+    - **PHPStan:** the baseline went from 3,696 to 3,683 findings. `identify()`'s docblock now says it can return `null` or `false`.
+    - **Not done, on purpose:**
+        - A login for an unknown username skips the hash check, so it answers faster. That isn't hidden, because Croogo already shows every username on public profile pages (`/user/<name>`).
+        - The `password` column stays `varchar(100)`. That fits bcrypt (60 characters) and Argon2id (about 97). PHP recommends 255 for future algorithms.
+
+**Still to do in this step:** the security fixes. Then the `php83` tag.
 
 ## Structure
 
@@ -186,6 +200,8 @@ There are 22 tables, defined in `config/schema/schema.php`, with SQL versions in
 These come from reading the code, then checking it against the running app (step 2). Each finding says what the check showed.
 
 1. **Weak password hashing.** Passwords are `sha1(salt + password)`: `Security::hash()` with CakePHP 1.3's default settings. That is fast and unsuited to passwords. **Fix:** `password_hash()` / `password_verify()`, with old hashes checked once more at login and then rehashed.
+
+    *Fixed in step 4 (item 8 of the upgrade).*
 
     *Confirmed:* the seeded admin hash `c054b15…` is exactly `sha1(default salt + "password")`.
 2. **XSS through the commenter's website.** The comment form accepts any value as the website, and the public page turns it into the link on the commenter's name. A visitor who clicks that name runs the script.
