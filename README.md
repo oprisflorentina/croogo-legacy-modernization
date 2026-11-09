@@ -62,11 +62,12 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 23 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 24 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
 - One comment test changes a saved row, to stand for data stored before a fix.
+- The attachment tests read the stored file name and type.
 
 ```bash
 docker compose run --rm tests composer install   # once
@@ -82,7 +83,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
-| `KnownIssuesTest` | Behavior that is wrong but real: PHP running from an attachment upload, and the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. Flipped so far: a `javascript:` website is refused, one already stored is not shown as a link, and comment text is stored as typed and escaped when shown, no longer double-encoded. |
+| `KnownIssuesTest` | Behavior that is wrong but real: the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. Flipped so far: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
 
 **Built to run again and again:**
@@ -245,6 +246,15 @@ These come from reading the code, then checking it against the running app (step
 4. **Attachment uploads aren't validated.** `AttachmentsController::admin_add()` saves uploads into `webroot/uploads` with the client's file name. It trusts the MIME type the client sends and has no extension allow-list. It also contains a logic bug: `explode(...) > 0` compares an array with a number.
 
     *Confirmed:* a file `probe.php` uploaded as an attachment with the type `image/png` was saved to `/uploads/probe.php`, and requesting it **ran the PHP code**. Anyone with an admin session (or who steals one) can run code on the server.
+
+    *Fixed in step 4,* in three layers:
+    - **Allow-list:** only images, PDFs, office documents, text, CSV, ZIP, MP3 and MP4. Anything a web server or a browser could run as part of this site is left out: PHP, CGI scripts, HTML, SVG and JavaScript. A refused file is never written to disk.
+    - **Safe names:** the stored name keeps only lowercase letters, digits and hyphens, then the extension. `Probe 1.php.png` becomes `probe-1-php.png`, which can't run even on Apache setups that treat any name containing `.php.` as code. A name already taken gets a random suffix, not a UUID prefix. The title keeps the name as uploaded, and the `explode(...) > 0` bug is gone.
+    - **Real type:** the MIME type is detected from the file's content. In the test, a PHP file sent as `image/png` is stored as `text/x-php`.
+    - **No PHP in `uploads/`:** `webroot/uploads/.htaccess` switches PHP off and denies script extensions. It covers any other way a file could get there.
+        - Checked by hand, because the HTTP tests can't put a file into that folder. A PHP probe placed there answered **403** with the file and printed `php-exec-42` without it.
+        - Croogo's `app/.gitignore` ignores the uploads folder, so this one file is added to git on purpose.
+        - nginx ignores `.htaccess`, so step 6 has to repeat the rule in the nginx config.
 5. **The file manager can edit any file under `app/`,** PHP code included. It is a feature, but in practice it means code execution for anyone with an admin session. The modernized version should remove it or limit it to theme assets. `_isEditable()` also matches by prefix, so `/app` would match `/app_backup`.
 6. **Insecure defaults:**
     - `debug` is 1 in `config/core.php`.
@@ -276,7 +286,7 @@ Each step ends with a commit and, where noted, a tag.
 | 3 | Characterization tests: HTTP tests (PHPUnit) in a separate PHP 8.3 container that don't depend on the app's code | |
 | 4 | PHP 8.3: the core first, then Croogo, Rector, PHPStan with a baseline, password migration, security fixes | `php83` |
 | 5 | CI on GitHub Actions: tests and PHPStan on every push | |
-| 6 | Apache with mod_php replaced by nginx + PHP-FPM | |
+| 6 | Apache with mod_php replaced by nginx + PHP-FPM, keeping the `.htaccess` rules (friendly URLs, no PHP in `uploads/`) | |
 | 7 | One area moved to Symfony 7 behind the same nginx, on the same database (strangler fig) | |
 
 ## How this was built
