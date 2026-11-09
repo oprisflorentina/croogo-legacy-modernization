@@ -62,7 +62,11 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 22 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony. The password tests also read the `users` table, because the stored hash is what they check. That table stays the same whichever app serves the site.
+`tests/characterization/` holds 23 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+
+A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
+- The password tests read the stored hash, which is what they check.
+- One comment test changes a saved row, to stand for data stored before a fix.
 
 ```bash
 docker compose run --rm tests composer install   # once
@@ -78,7 +82,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
-| `KnownIssuesTest` | Behavior that is wrong but real: the `javascript:` website link, double-encoded comment names, PHP running from an attachment upload, and the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. |
+| `KnownIssuesTest` | Behavior that is wrong but real: double-encoded comment names, PHP running from an attachment upload, and the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. Flipped so far: a `javascript:` website is refused, and one already stored is not shown as a link. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
 
 **Built to run again and again:**
@@ -201,12 +205,16 @@ These come from reading the code, then checking it against the running app (step
 
 1. **Weak password hashing.** Passwords are `sha1(salt + password)`: `Security::hash()` with CakePHP 1.3's default settings. That is fast and unsuited to passwords. **Fix:** `password_hash()` / `password_verify()`, with old hashes checked once more at login and then rehashed.
 
-    *Fixed in step 4 (item 8 of the upgrade).*
-
     *Confirmed:* the seeded admin hash `c054b15…` is exactly `sha1(default salt + "password")`.
+
+    *Fixed in step 4 (item 8 of the upgrade).*
 2. **XSS through the commenter's website.** The comment form accepts any value as the website, and the public page turns it into the link on the commenter's name. A visitor who clicks that name runs the script.
 
     *Confirmed:* a comment posted without logging in, with the website `javascript:alert(1)`, was published immediately and rendered as `<a href="javascript:alert(1)">`.
+
+    *Fixed in step 4,* in two layers:
+    - **On input:** the `Comment` model only accepts an `http://` or `https://` address, or a path on this site such as the sample admin's `/about`. Logged-in users' comments take the website from their profile, so that path has to keep working. An address without a scheme, like `example.com`, is now refused with a message.
+    - **On output:** the name becomes a link only for those addresses. Comments saved before the check can still hold anything: this database already had 11 `javascript:` websites, left by earlier test runs.
 
     *Corrected after testing:* the code reading also suspected the comment name and body. They turned out not to be exploitable, because `CommentsController` runs `htmlspecialchars()` on them **before saving**. That's escaping at the wrong layer, though:
     - The database holds HTML entities instead of the text people typed.
