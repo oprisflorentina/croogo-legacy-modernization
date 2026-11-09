@@ -82,7 +82,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
-| `KnownIssuesTest` | Behavior that is wrong but real: double-encoded comment names, PHP running from an attachment upload, and the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. Flipped so far: a `javascript:` website is refused, and one already stored is not shown as a link. |
+| `KnownIssuesTest` | Behavior that is wrong but real: PHP running from an attachment upload, and the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. Flipped so far: a `javascript:` website is refused, one already stored is not shown as a link, and comment text is stored as typed and escaped when shown, no longer double-encoded. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
 
 **Built to run again and again:**
@@ -222,6 +222,18 @@ These come from reading the code, then checking it against the running app (step
     - Any other way of writing comments would skip the protection.
 
     The fix escapes on output and stores raw text.
+
+    *Fixed in step 4:*
+    - **Saving:** `CommentsController` stores the name and body as typed.
+    - **Showing:** each view escapes for its own output.
+        - The comment element uses `h()` before `autoLink()`. That gives the same HTML as before, because the escaping only moved from saving to showing.
+        - The admin list escapes the name, the email, and the body in its tooltip. That tooltip link uses `'escape' => false` for its icon, which also switches off escaping of its attributes.
+        - The RSS feed already escaped everything, so it now shows the text once instead of double-encoded.
+        - The notification email is plain text, so it now shows what was typed instead of entities.
+    - **Existing rows:** `app/config/schema/sql/upgrades/2026-11-09-decode-comment-text.sql` turns them back into plain text, once.
+        - A round trip checked it: 14 strings encoded with PHP 8's and PHP 5's `htmlspecialchars()` rules came back exactly.
+        - On this database, it decoded 13 names and 1 body.
+    - **The test** checks the stored row, the public page with and without a website, and the admin list. It fails if the public views stop escaping. It also fails if only the admin list stops escaping.
 3. **The file manager upload accepts any path and any file type.** `FilemanagerController::admin_upload()` takes the target folder from the URL and doesn't run the `_isEditable()` check that `admin_editfile()` uses. It also doesn't check the extension, so an admin session could write a `.php` file anywhere the web server can write, including the web root.
 
     *Confirmed in the code, but not reachable with this CakePHP version.* Every File Manager form (upload, new file, new folder, rename) is rejected with "Security Error", in a real browser too. The cause:
