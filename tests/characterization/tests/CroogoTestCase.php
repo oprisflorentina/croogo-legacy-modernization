@@ -25,6 +25,22 @@ abstract class CroogoTestCase extends TestCase
 
     protected HttpBrowser $browser;
 
+    private static ?\PDO $db = null;
+
+    /**
+     * The site's database, for the few tests that check what was stored.
+     * It stays the same whichever app serves the site.
+     */
+    protected function db(): \PDO
+    {
+        return self::$db ??= new \PDO(
+            (string) getenv('DB_DSN'),
+            (string) getenv('DB_USER'),
+            (string) getenv('DB_PASSWORD'),
+            [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION],
+        );
+    }
+
     protected function setUp(): void
     {
         $this->browser = new class (HttpClient::create()) extends HttpBrowser {

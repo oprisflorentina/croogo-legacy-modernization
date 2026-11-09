@@ -20,19 +20,6 @@ final class PasswordHashingTest extends CroogoTestCase
     /** Security.salt in app/config/core.php. The sample admin's hash uses it too. */
     private const SALT = 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi19';
 
-    private \PDO $db;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->db = new \PDO(
-            (string) getenv('DB_DSN'),
-            (string) getenv('DB_USER'),
-            (string) getenv('DB_PASSWORD'),
-            [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION],
-        );
-    }
-
     public function testAnOldSha1HashIsReplacedAtTheFirstLogin(): void
     {
         $password = 'secret-' . bin2hex(random_bytes(4));
@@ -130,7 +117,7 @@ final class PasswordHashingTest extends CroogoTestCase
         $this->submit($form);
         $this->browser->getCookieJar()->clear();
 
-        $this->db->prepare('UPDATE users SET password = ? WHERE username = ?')
+        $this->db()->prepare('UPDATE users SET password = ? WHERE username = ?')
             ->execute([sha1(self::SALT . $password), $username]);
         $this->assertSame(sha1(self::SALT . $password), $this->storedHash($username));
 
@@ -190,7 +177,7 @@ final class PasswordHashingTest extends CroogoTestCase
 
     private function column(string $column, string $username): string
     {
-        $query = $this->db->prepare(sprintf('SELECT `%s` FROM users WHERE username = ?', $column));
+        $query = $this->db()->prepare(sprintf('SELECT `%s` FROM users WHERE username = ?', $column));
         $query->execute([$username]);
 
         return (string) $query->fetchColumn();
