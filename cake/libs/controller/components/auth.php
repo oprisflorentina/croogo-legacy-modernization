@@ -330,7 +330,6 @@ class AuthComponent extends CakeObject {
 			return false;
 		}
 
-		$this->data = $controller->data = $this->hashPasswords($controller->data);
 		$url = '';
 
 		if (isset($controller->params['url']['url'])) {
@@ -338,6 +337,15 @@ class AuthComponent extends CakeObject {
 		}
 		$url = Router::normalize($url);
 		$loginAction = Router::normalize($this->loginAction);
+
+		// The login form keeps the plain password: identify() checks it
+		// against the stored hash, because password_hash() adds a random
+		// salt and never produces the same hash twice.
+		if ($loginAction != $url) {
+			$this->data = $controller->data = $this->hashPasswords($controller->data);
+		} else {
+			$this->data = $controller->data;
+		}
 
 		$allowedActions = array_map('strtolower', $this->allowedActions);
 		$isAllowed = (
@@ -832,7 +840,7 @@ class AuthComponent extends CakeObject {
  * @param mixed $user Optional. The identity of the user to be validated.
  *              Uses the current user session if none specified.
  * @param array $conditions Optional. Additional conditions to a find.
- * @return array User record data, or null, if the user could not be identified.
+ * @return array|false|null User record data, or null or false if the user could not be identified.
  * @access public
  */
 	public function identify($user = null, $conditions = null) {
@@ -861,30 +869,33 @@ class AuthComponent extends CakeObject {
 
 		if (is_array($user) && (isset($user[$this->fields['username']]) || isset($user[$model->alias . '.' . $this->fields['username']]))) {
 			if (isset($user[$this->fields['username']]) && !empty($user[$this->fields['username']])  && !empty($user[$this->fields['password']])) {
-				if (trim($user[$this->fields['username']]) == '=' || trim($user[$this->fields['password']]) == '=') {
-					return false;
-				}
-				$find = [
-					$model->alias.'.'.$this->fields['username'] => $user[$this->fields['username']],
-					$model->alias.'.'.$this->fields['password'] => $user[$this->fields['password']]
-				];
+				$username = $user[$this->fields['username']];
+				$password = $user[$this->fields['password']];
 			} elseif (isset($user[$model->alias . '.' . $this->fields['username']]) && !empty($user[$model->alias . '.' . $this->fields['username']])) {
-				if (trim($user[$model->alias . '.' . $this->fields['username']]) == '=' || trim($user[$model->alias . '.' . $this->fields['password']]) == '=') {
-					return false;
-				}
-				$find = [
-					$model->alias.'.'.$this->fields['username'] => $user[$model->alias . '.' . $this->fields['username']],
-					$model->alias.'.'.$this->fields['password'] => $user[$model->alias . '.' . $this->fields['password']]
-				];
+				$username = $user[$model->alias . '.' . $this->fields['username']];
+				$password = $user[$model->alias . '.' . $this->fields['password']] ?? null;
 			} else {
 				return false;
 			}
+			if (!is_string($username) || trim($username) == '=' || !is_string($password) || trim($password) == '=') {
+				return false;
+			}
+
+			// Find the user by name only, then check the password in PHP.
+			// A salted hash can't be matched in the WHERE clause.
 			$data = $model->find('first', [
-				'conditions' => array_merge($find, $conditions),
+				'conditions' => array_merge([$model->alias . '.' . $this->fields['username'] => $username], $conditions),
 				'recursive' => 0
 			]);
 			if (empty($data) || empty($data[$model->alias])) {
 				return null;
+			}
+			$hash = (string)$data[$model->alias][$this->fields['password']];
+			if (!$this->checkPassword($password, $hash)) {
+				return null;
+			}
+			if ($this->needsRehash($hash)) {
+				$this->_storePassword($model, $data[$model->alias][$model->primaryKey], $password);
 			}
 		} elseif (!empty($user) && is_string($user)) {
 			$data = $model->find('first', [
@@ -930,7 +941,11 @@ class AuthComponent extends CakeObject {
 	}
 
 /**
- * Hash a password with the application's salt value (as defined with Configure::write('Security.salt');
+ * Hash a password with password_hash(). PASSWORD_DEFAULT lets PHP pick the
+ * algorithm (bcrypt today), and needsRehash() moves users to a newer one.
+ *
+ * CakePHP 1.3 used sha1(Security.salt . password): fast to brute-force, and
+ * the same password always gave the same hash.
  *
  * @param string $password Password to hash
  * @return string Hashed password
@@ -938,7 +953,67 @@ class AuthComponent extends CakeObject {
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Components/Authentication.html#password
  */
 	public function password($password) {
-		return Security::hash($password, null, true);
+		return password_hash((string)$password, PASSWORD_DEFAULT);
+	}
+
+/**
+ * Check a plain password against a stored hash. Hashes from before the
+ * switch to password_hash() are still accepted, so existing users can log in
+ * and get a new hash (see needsRehash()).
+ *
+ * @param mixed $password Plain password as posted. It can be an array or
+ *     missing in a crafted request, which is rejected here.
+ * @param mixed $hash Stored hash
+ * @return boolean
+ */
+	public function checkPassword($password, $hash) {
+		if (!is_string($password) || $password === '' || !is_string($hash) || $hash === '') {
+			return false;
+		}
+		if ($this->_isLegacyHash($hash)) {
+			return hash_equals($hash, Security::hash($password, null, true));
+		}
+		return password_verify($password, $hash);
+	}
+
+/**
+ * Whether a stored hash should be replaced: it is an old SHA1 hash, or
+ * PASSWORD_DEFAULT or its cost has changed since it was made.
+ *
+ * @param string $hash Stored hash
+ * @return boolean
+ */
+	public function needsRehash($hash) {
+		return $this->_isLegacyHash($hash) || password_needs_rehash($hash, PASSWORD_DEFAULT);
+	}
+
+/**
+ * A hash password_hash() didn't make, so Security::hash() did.
+ *
+ * @param string $hash Stored hash
+ * @return boolean
+ */
+	protected function _isLegacyHash($hash) {
+		return password_get_info($hash)['algo'] === null;
+	}
+
+/**
+ * Save a new hash for a user who just logged in. Only the password column is
+ * written. Callbacks are off: this is not an edit of the user, and both
+ * AclBehavior::afterSave() and Croogo's User::afterSave() would rebuild the
+ * user's ACL record without its role when only the password is saved.
+ *
+ * @param object $model User model
+ * @param mixed $id User id
+ * @param string $password Plain password
+ * @return void
+ */
+	protected function _storePassword(&$model, $id, $password) {
+		$model->create(false);
+		$model->save(
+			[$model->alias => [$model->primaryKey => $id, $this->fields['password'] => $this->password($password)]],
+			['validate' => false, 'callbacks' => false, 'fieldList' => [$this->fields['password']]]
+		);
 	}
 
 /**

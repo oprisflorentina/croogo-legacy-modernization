@@ -20,7 +20,7 @@ class CroogoShell extends Shell {
  */
     public function password() {
         $value = trim($this->args['0']);
-        $this->out(Security::hash($value, null, true));
+        $this->out(password_hash($value, PASSWORD_DEFAULT));
     }
 
 /**

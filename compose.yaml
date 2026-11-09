@@ -42,6 +42,9 @@ services:
     environment:
       CROOGO_URL: http://php83
       MAILPIT_URL: http://mailpit:8025
+      DB_DSN: mysql:host=db;dbname=croogo;charset=utf8
+      DB_USER: croogo
+      DB_PASSWORD: croogo
     volumes:
       - ./tests/characterization:/tests
       - composer-cache:/root/.composer/cache

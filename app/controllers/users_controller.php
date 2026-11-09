@@ -10,6 +10,8 @@
  * @author   Fahad Ibnay Heylaal <contact@fahad19.com>
  * @license  http://www.opensource.org/licenses/mit-license.php The MIT License
  * @link     http://www.croogo.org
+ *
+ * @property AuthComponent $Auth
  */
 class UsersController extends AppController {
 /**
@@ -120,7 +122,7 @@ class UsersController extends AppController {
 		}
 		if (!empty($this->data)) {
 			$user = $this->User->findById($id);
-			if ($user['User']['password'] == Security::hash($this->data['User']['current_password'], null, true)) {
+			if ($this->Auth->checkPassword($this->data['User']['current_password'], $user['User']['password'])) {
 				if ($this->User->save($this->data)) {
 					$this->Session->setFlash(__('Password has been reset.', true), 'default', ['class' => 'success']);
 					$this->redirect(['action' => 'index']);
@@ -267,7 +269,7 @@ class UsersController extends AppController {
 
 		if (!empty($this->data) && isset($this->data['User']['password'])) {
 			$this->User->id = $user['User']['id'];
-			$user['User']['password'] = Security::hash($this->data['User']['password'], null, true);
+			$user['User']['password'] = $this->Auth->password($this->data['User']['password']);
 			$user['User']['activation_key'] = md5(uniqid());
 			$options = ['fieldList' => ['password', 'activation_key']];
 			if ($this->User->save($user['User'], $options)) {

@@ -233,10 +233,11 @@ class InstallController extends InstallAppController {
 			return false;
 		}
 
-		// set new password for admin, hashed according to new salt value
+		// Store the admin password with password_hash(), the same way
+		// AuthComponent::password() does. It no longer depends on the salt.
 		$User = ClassRegistry::init('User');
 		$User->id = $User->field('id', ['username' => 'admin']);
-		$User->saveField('password', Security::hash('password', null, $salt));
+		$User->saveField('password', password_hash('password', PASSWORD_DEFAULT));
 	}
 
 }
