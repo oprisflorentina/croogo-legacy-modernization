@@ -46,8 +46,8 @@
 				$this->Form->checkbox('Comment.'.$comment['Comment']['id'].'.id'),
 				$comment['Comment']['id'],
 				//$comment['Comment']['title'],
-				$comment['Comment']['name'],
-				$comment['Comment']['email'],
+				h($comment['Comment']['name']),
+				h($comment['Comment']['email']),
 				$this->Html->link($comment['Node']['title'], array(
 					'admin' => false,
 					'controller' => 'nodes',
@@ -55,7 +55,9 @@
 					'type' => $comment['Node']['type'],
 					'slug' => $comment['Node']['slug'],
 				)),
-				$this->Html->link($this->Html->image('/img/icons/comment.png'), '#', array('class' => 'tooltip', 'title' => $comment['Comment']['body'], 'escape' => false)),
+				// 'escape' => false keeps the icon's HTML, but it also turns off
+				// escaping of the attributes, so the body is escaped here.
+				$this->Html->link($this->Html->image('/img/icons/comment.png'), '#', array('class' => 'tooltip', 'title' => h($comment['Comment']['body']), 'escape' => false)),
 				$comment['Comment']['created'],
 				$actions,
 			);

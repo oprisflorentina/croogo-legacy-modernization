@@ -9,13 +9,13 @@
 			if (preg_match('#^(https?://|/)#i', (string)$comment['Comment']['website'])) {
 				echo $this->Html->link($comment['Comment']['name'], $comment['Comment']['website'], array('target' => '_blank'));
 			} else {
-				echo $comment['Comment']['name'];
+				echo h($comment['Comment']['name']);
 			}
 		?>
 		</span>
 		<span class="date"><?php echo sprintf(__('said on %s', true), $this->Time->format(Configure::read('Comment.date_time_format'), $comment['Comment']['created'], null, Configure::read('Site.timezone'))); ?></span>
 	</div>
-	<div class="comment-body"><?php echo nl2br($this->Text->autoLink($comment['Comment']['body'])); ?></div>
+	<div class="comment-body"><?php echo nl2br($this->Text->autoLink(h($comment['Comment']['body']))); ?></div>
 	<div class="comment-reply">
 	<?php
 		if ($level <= Configure::read('Comment.level')) {

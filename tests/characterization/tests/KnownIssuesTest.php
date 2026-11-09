@@ -54,15 +54,40 @@ final class KnownIssuesTest extends CroogoTestCase
         $this->assertCount(0, $page->filter('a[href^="javascript:"]'), 'No comment on the page may link to a javascript: address.');
     }
 
-    /** Escaping happens before saving, so output that escapes again shows entities. */
-    public function testCommentNameIsEncodedTwice(): void
+    /**
+     * Fixed with finding 2: comment names and bodies are stored as typed and
+     * escaped where they are shown. They used to be escaped before saving,
+     * so pages that escape again showed them double-encoded.
+     */
+    public function testCommentTextIsStoredAsTypedAndEscapedWhenShown(): void
     {
-        $marker = bin2hex(random_bytes(4));
+        // With a website the name is a link, without one it is plain text.
+        foreach (['http://example.com', ''] as $website) {
+            $marker = bin2hex(random_bytes(4));
+            $name = '<i>' . $marker . '</i> & Co';
+            $body = '<b>' . $marker . '</b> "quoted" & more';
 
-        $this->postComment('<b>' . $marker . '</b>', 'http://example.com', $this->unique('name check'));
+            $this->postComment($name, $website, $body);
 
-        $this->visit('/blog/hello-world');
-        $this->assertStringContainsString('&lt;b&gt;' . $marker . '&lt;/b&gt;', $this->pageText());
+            $query = $this->db()->prepare('SELECT id, name, body FROM comments WHERE body = ?');
+            $query->execute([$body]);
+            $stored = $query->fetch(\PDO::FETCH_ASSOC);
+            $this->assertIsArray($stored, 'No comment is stored with the body exactly as typed.');
+            $this->assertSame($name, $stored['name']);
+
+            $shown = $this->visit('/blog/hello-world')->filter('#comment-' . $stored['id']);
+            $this->assertSame($name, trim($shown->filter('.name')->text()));
+            $this->assertSame($body, trim($shown->filter('.comment-body')->text()));
+            $this->assertCount(0, $shown->filter('.name i, .comment-body b'), 'Markup in a comment must not become HTML.');
+        }
+
+        // The admin list shows the name as text and the body in a tooltip.
+        $this->loginAsAdmin();
+        $row = $this->visit('/admin/comments')->filter('tr')->reduce(fn ($tr) => str_contains($tr->text(), $marker));
+        $this->assertCount(1, $row);
+        $this->assertStringContainsString($name, $row->text());
+        $this->assertCount(0, $row->filter('td i'));
+        $this->assertSame($body, $row->filter('a.tooltip')->attr('title'));
     }
 
     /** Security finding 4: an attachment named .php is saved in the web root and runs. */

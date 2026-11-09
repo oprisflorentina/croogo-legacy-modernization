@@ -210,11 +210,12 @@ class CommentsController extends AppController {
 				$data['email'] = $this->Session->read('Auth.User.email');
 				$data['website'] = $this->Session->read('Auth.User.website');
 			} else {
-				$data['name'] = htmlspecialchars($this->data['Comment']['name']);
+				$data['name'] = $this->data['Comment']['name'];
 				$data['email'] = $this->data['Comment']['email'];
 				$data['website'] = $this->data['Comment']['website'];
 			}
-			$data['body'] = htmlspecialchars($this->data['Comment']['body']);
+			// Stored as typed. The views escape it, each for its own output.
+			$data['body'] = $this->data['Comment']['body'];
 			$data['ip'] = $_SERVER['REMOTE_ADDR'];
 			$data['type'] = $node['Node']['type'];
 			if ($type['Type']['comment_approve']) {
