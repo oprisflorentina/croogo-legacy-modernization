@@ -31,14 +31,16 @@ class Message
     #[ORM\JoinColumn(name: 'contact_id', nullable: false)]
     private Contact $contact;
 
+    /** NOT NULL in Croogo's table, so never null here: MessageType sends '' for an empty field. */
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: self::BLANK, normalizer: 'trim')]
-    private ?string $name = null;
+    private string $name = '';
 
+    /** NOT NULL in Croogo's table, like the name. */
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: self::INVALID_EMAIL)]
     #[Assert\Email(message: self::INVALID_EMAIL, mode: Assert\Email::VALIDATION_MODE_STRICT)]
-    private ?string $email = null;
+    private string $email = '';
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank(message: self::BLANK, normalizer: 'trim')]
@@ -74,22 +76,22 @@ class Message
         return $this->contact;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName(?string $name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function setEmail(?string $email): void
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }

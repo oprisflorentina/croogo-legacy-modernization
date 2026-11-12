@@ -91,7 +91,7 @@ final class ContactController extends AbstractController
         }
 
         $email = (new Email())
-            ->from(new Address((string) $message->getEmail(), (string) $message->getName()))
+            ->from(new Address($message->getEmail(), $message->getName()))
             ->to((string) $contact->getEmail())
             ->subject(sprintf('[%s] %s', $this->settings->get('Site.title'), $contact->getTitle()))
             ->text($this->renderView('emails/contact.txt.twig', [

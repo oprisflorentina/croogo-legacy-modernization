@@ -20,6 +20,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * the same server-side messages instead of the browser's own pop-ups. The
  * email field is plain text for the same reason.
  *
+ * An empty text field gives null by default. The name and email columns are
+ * NOT NULL, so those two fields give '' instead ("empty_data"), and the
+ * entity never holds a null its table refuses. NotBlank catches '' just as it
+ * caught null, with the same messages.
+ *
  * @extends AbstractType<Message>
  */
 final class MessageType extends AbstractType
@@ -30,11 +35,13 @@ final class MessageType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Your name',
                 'required' => false,
+                'empty_data' => '',
                 'attr' => ['maxlength' => 100],
             ])
             ->add('email', TextType::class, [
                 'label' => 'Your email',
                 'required' => false,
+                'empty_data' => '',
                 'attr' => ['maxlength' => 100],
             ])
             ->add('title', TextType::class, [
