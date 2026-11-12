@@ -250,6 +250,12 @@ The first area to move is the public contact form at `/contact`. It's small, and
     - **The quoting matters.** The encoding had also been keeping the name harmless in the `From` header. Without the quotes, a visitor named `Boss <boss@your-site.com>` would be the sender as far as Mailpit, and any mail client, can tell: the check showed `boss@your-site.com`.
     - **The tests:** one checks the email's text and sender with `O'Brien & "Sons" <boss@your-site.com>` as the name. Another switches archiving on through the admin, then checks the stored row and the admin list. Both failed first. Each layer was then removed on its own, and its test failed.
 
+**The Symfony app,** in `symfony/`:
+- **A Symfony 7.4 skeleton,** the long-term support version, created with `composer create-project symfony/skeleton`. It has only the framework's core: the front controller `public/index.php`, the kernel, the console and the configuration. Each package comes in with the part that needs it.
+- **Its own PHP-FPM container,** the `symfony` service in `compose.yaml`. It has the same `clear_env = no` fix as Croogo's container, because Symfony reads `APP_ENV` and `APP_SECRET` from the environment. `var/`, which holds the cache and logs, is a volume, owned by PHP-FPM's user.
+- **No secret in git.** Symfony's recipe generated a random `APP_SECRET` into a committed `.env.dev`. That file is removed; `compose.yaml` sets a throwaway local value, as it does for Croogo's salts.
+- **Not routed yet.** nginx still sends every address to Croogo, so the 37 tests ran against Croogo as before. Checked by hand: a temporary nginx location for one throwaway address reached Symfony through PHP-FPM and got its dev-mode "No route found" page, showing that the environment reaches the workers. Then the config was restored.
+
 ## Structure
 
 | Area | Files |
