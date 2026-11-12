@@ -51,6 +51,7 @@ services:
     profiles: [tests]
     environment:
       CROOGO_URL: http://php83
+      CROOGO_RELAY_URL: http://relay
       MAILPIT_URL: http://mailpit:8025
       DB_DSN: mysql:host=db;dbname=croogo;charset=utf8
       DB_USER: croogo
@@ -60,7 +61,18 @@ services:
       - composer-cache:/root/.composer/cache
     depends_on:
       - php83
+      - relay
     command: vendor/bin/phpunit
+
+  # A second visitor for the tests: it passes TCP connections to the app
+  # unchanged, so the app sees the relay's IP address instead of the tests
+  # container's. No header is added. Used by the login lockout tests.
+  relay:
+    image: alpine/socat:1.8.1.1
+    profiles: [tests]
+    command: TCP-LISTEN:80,fork,reuseaddr TCP:php83:80
+    depends_on:
+      - php83
 
   # Rector and PHPStan: docker compose run --rm quality vendor/bin/phpstan
   quality:

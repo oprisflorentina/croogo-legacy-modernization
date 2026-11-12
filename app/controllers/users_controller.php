@@ -48,8 +48,7 @@ class UsersController extends AppController {
 			if (!empty($this->data) && empty($this->data['User'][$field])) {
 				$this->redirect(['action' => $this->params['action']]);
 			}
-			$username = $this->data['User'][$field] ?? '';
-			$cacheName = 'auth_failed_' . $username;
+			$cacheName = $this->_failedLoginsKey($this->data['User'][$field] ?? '');
 			if (Cache::read($cacheName, 'users_login') >= Configure::read('User.failed_login_limit')) {
 				$this->Session->setFlash(__('You have reached maximum limit for failed login attempts. Please try again after a few minutes.', true), 'default', ['class' => 'error']);
 				$this->redirect(['action' => $this->params['action']]);
@@ -63,11 +62,37 @@ class UsersController extends AppController {
 		if (in_array($this->params['action'], ['admin_login', 'login'])) {
 			if (!empty($this->data)) {
 				$field = $this->Auth->fields['username'];
-				$cacheName = 'auth_failed_' . $this->data['User'][$field];
+				$cacheName = $this->_failedLoginsKey($this->data['User'][$field]);
 				$cacheValue = Cache::read($cacheName, 'users_login');
 				Cache::write($cacheName, (int)$cacheValue + 1, 'users_login');
 			}
 		}
+	}
+
+/**
+ * Cache key that counts failed logins for one username from one IP address.
+ *
+ * Counting per username alone let anyone lock any account out (security
+ * finding 8). Now whoever fails only locks themselves out.
+ *
+ * The address is $_SERVER['REMOTE_ADDR'], the other end of the connection,
+ * which a client can't choose. Two CakePHP helpers would let it choose:
+ * RequestHandler::getClientIP() prefers the Client-IP and ClientAddress
+ * headers, and env('REMOTE_ADDR') takes the PC-Remote-Addr header when the
+ * request comes from the server's own address. An attacker could send a new
+ * address with every attempt and never be locked out.
+ *
+ * Behind a reverse proxy, REMOTE_ADDR is the proxy's address. The web server
+ * then has to restore the client's address from the proxy's header, trusting
+ * only that proxy (mod_remoteip in Apache, the realip module in nginx).
+ *
+ * Hashed, so what was typed as the username never ends up in a file name.
+ *
+ * @param string $username Username as typed
+ * @return string
+ */
+	protected function _failedLoginsKey($username) {
+		return 'auth_failed_' . sha1($username . '|' . ($_SERVER['REMOTE_ADDR'] ?? ''));
 	}
 
 	public function admin_index() {
