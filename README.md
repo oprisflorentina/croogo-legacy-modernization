@@ -73,7 +73,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 27 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 28 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
@@ -95,7 +95,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `AdminUsersTest` | An admin creates a user, who can then log in. Added when PHPStan showed that user validation was broken on PHP 8. |
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, and forged address headers don't get around it. |
-| `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
+| `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API); an attachment whose stored name has no extension is listed as `file` |
 | `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. CakePHP's web test runner `/test.php` is gone too. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
 
@@ -172,7 +172,7 @@ The tag `php83` marks the end of this step.
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request. It uses the same Docker Compose services as a local run, in two jobs:
 
-- **Characterization tests:** builds the stack, waits for the database, and loads every class on PHP 8.3 with `tools/check-declarations.php`, which fails the job if one doesn't load. Then it runs the 27 tests. If anything fails, the job prints the app's and the database's logs.
+- **Characterization tests:** builds the stack, waits for the database, and loads every class on PHP 8.3 with `tools/check-declarations.php`, which fails the job if one doesn't load. Then it runs the characterization tests. If anything fails, the job prints the app's and the database's logs.
 - **PHPStan and Rector:** PHPStan at level 5 against the baseline. Then Rector's dry run, which fails if new or changed code misses one of the PHP 8.3 rules the rest of the code already follows.
 
 A long-running local setup hides three things that a fresh CI machine runs into:
@@ -182,6 +182,12 @@ A long-running local setup hides three things that a fresh CI machine runs into:
 - **Files git doesn't track.** The first run failed in PHPStan: `cake/basics.php` includes `app/config/database.php`, which git ignores, and locally Docker had left an empty placeholder there. A rehearsal on a fresh clone missed it, because it started the app before running PHPStan. PHPStan now skips the "included file exists" check for that one include, which only runs after a `file_exists()` check.
 
 **Rector joined CI after one leftover was settled.** Its dry run still proposed `get_class($var)` to `$var::class` in `Debugger::exportVar()`. Rector had made that change, and the PHPStan fixes turned it back, because the docblock then said `$var` was a string, so PHPStan rejected `::class`. The docblock now says `mixed`, and the line sits under `case 'object':`, so the change is safe and is applied. Checked by hand: `exportVar()` still prints an object's class and properties.
+
+## Follow-ups after the PHP 8.3 step
+
+Smaller problems noticed while working on step 4, each fixed in its own commit with its test. The before/after table above describes the `php83` tag; these come after it.
+
+- **An attachment without an extension was listed with its whole name as the extension.** `FilemanagerHelper::filename2ext()` compared the array from `explode()` with 1 instead of counting it, so the check was always false. New uploads always keep an extension (security finding 4), so the test changes the stored name in the database to stand for an older upload. It failed first with `text/plain (notes-…)` and now shows `text/plain (file)`. PHPStan had both findings in the baseline, which went from 3,524 to 3,522.
 
 ## Structure
 
