@@ -32,3 +32,13 @@ parameters:
     bootstrapFiles:
         - phpstan-bootstrap.php
     tmpDir: /tmp/phpstan
+    ignoreErrors:
+        # app/config/database.php holds each site's database settings: the
+        # installer writes it, Docker mounts it, and git ignores it. Whether it
+        # exists depends on the machine, not on the code, so the check that an
+        # included file exists is skipped there. The include itself only runs
+        # after a file_exists() check.
+        -
+            identifier: includeOnce.fileNotFound
+            path: /app/cake/basics.php
+            reportUnmatched: false
