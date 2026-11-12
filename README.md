@@ -35,6 +35,8 @@ Two things differ from upstream:
 - **The root `.gitignore`:** CakePHP's own `.gitignore` was dropped, because it excludes `/app/config`, `/plugins` and `/vendors`, which belong to the application here.
 - **Placeholder folders:** the empty placeholder files in `app/tmp/`, `app/webroot/uploads/` and `app/views/themed/` are tracked even though `app/.gitignore` ignores them, so a fresh clone has the folders the app needs at runtime.
 
+Added in later steps: `docker/` and `compose.yaml` to run it, `tests/characterization/` for the tests, `tools/` for the quality tools, and `symfony/`, the Symfony 7.4 app that the moved pages run in.
+
 ## Running the app
 
 You need Docker.
@@ -43,7 +45,7 @@ You need Docker.
 docker compose up -d --build
 ```
 
-- **Site:** http://localhost:8083 (PHP 8.3 as PHP-FPM, behind nginx)
+- **Site:** http://localhost:8083 (PHP 8.3 as PHP-FPM, behind nginx). The contact form, http://localhost:8083/contact, is served by the Symfony app; every other address is still Croogo's. The Symfony app needs its dependencies once: `docker compose run --rm --no-deps -w /app/symfony quality composer install`. Its console runs as PHP-FPM's user, so cache files stay writable: `docker compose exec -u www-data symfony php bin/console debug:router`.
 - **Admin:** http://localhost:8083/admin, user `admin`, password `password`. This is the account from Croogo's sample data (see security finding 6).
 - **Email:** http://localhost:8025 shows every email the app sends, caught by [Mailpit](https://mailpit.axllent.org/) instead of being delivered.
 - **Reset:** `docker compose down -v` wipes the database, and the next `up` starts from the sample data again.
@@ -235,7 +237,7 @@ Apache with mod_php ran PHP inside the web server. Now nginx, the `web` service,
 - **The environment:** a temporary probe showed the four `CROOGO_*` variables reach PHP, and that one that isn't set stays unset.
 - **Production mode,** in throwaway containers on ports 8098 and 8099. With no variables at all, the site answered 500 and logged which ones to set. With only its own secrets, it worked.
 
-## Moving the contact form to Symfony (step 7, in progress)
+## Moving the contact form to Symfony (step 7)
 
 The first area to move is the public contact form at `/contact`. It's small, and it uses the parts of Symfony most applications need: forms, validation, CSRF protection and the mailer.
 
@@ -255,7 +257,7 @@ The first area to move is the public contact form at `/contact`. It's small, and
 - **A Symfony 7.4 skeleton,** the long-term support version, created with `composer create-project symfony/skeleton`. It has only the framework's core: the front controller `public/index.php`, the kernel, the console and the configuration. Each package comes in with the part that needs it.
 - **Its own PHP-FPM container,** the `symfony` service in `compose.yaml`. It has the same `clear_env = no` fix as Croogo's container, because Symfony reads `APP_ENV` and `APP_SECRET` from the environment. `var/`, which holds the cache and logs, is a volume, owned by PHP-FPM's user.
 - **No secret in git.** Symfony's recipe generated a random `APP_SECRET` into a committed `.env.dev`. That file is removed; `compose.yaml` sets a throwaway local value, as it does for Croogo's salts.
-- **Not routed yet.** nginx still sends every address to Croogo, so the 37 tests ran against Croogo as before. Checked by hand: a temporary nginx location for one throwaway address reached Symfony through PHP-FPM and got its dev-mode "No route found" page, showing that the environment reaches the workers. Then the config was restored.
+- **Not routed at first.** nginx kept sending every address to Croogo until the contact page was ready, so the tests ran against Croogo as before. Checked by hand: a temporary nginx location for one throwaway address reached Symfony through PHP-FPM and got its dev-mode "No route found" page, showing that the environment reaches the workers. Then the config was restored.
 
 **The layout Symfony borrows,** `/legacy-layout` in Croogo (`LegacyLayoutController`):
 - **What it renders:** Croogo's normal page, with `%%LEGACY_LAYOUT_TITLE%%` as the title and `<!--%%LEGACY_LAYOUT_CONTENT%%-->` as the content. Symfony will fetch it, put its own title and content in their place, and cache the result for a short time.
@@ -266,6 +268,30 @@ The first area to move is the public contact form at `/contact`. It's small, and
 - **The tests** check the placeholders and the sidebar, the marked menu link for two paths, the rejected paths, and a block limited to `/contact` through the admin. All failed first, and removing each part of the action (the path switch, the block rebuild, the path check) failed its test.
 - **A `noindex` header** keeps search engines from listing this page. Symfony doesn't copy headers, only the HTML.
 - **PHPStan:** the new controller hit a false positive. PHPStan saw `parent::beforeFilter()` as a call with no effect, because CakePHP's `Controller` declares its hooks empty. Marking `beforeFilter()`, `beforeRender()` and `afterFilter()` as `@phpstan-impure` at the source fixed the new code and removed the same false positive from 12 places in the baseline, from 3,437 findings to 3,425.
+
+**The contact page in Symfony** (`symfony/src`, `symfony/templates`), the same steps as Croogo's `ContactsController::view()`, in the same order:
+- **`ContactController`** finds the published contact form, validates the message, stores it if the form archives messages, emails it if the form notifies, then shows the confirmation. The route is a `#[Route('/contact')]` attribute, and everything it needs (the entity manager, the form factory, the mailer, the layout) arrives through its constructor, wired by the container.
+- **Doctrine on Croogo's tables:** `Contact` maps `contacts` read-only, and `Message` maps `messages`, with only the columns the page needs. No migrations: Croogo owns the schema. `Site.title`, for the email's subject, is one query through Doctrine's DBAL layer, without an entity.
+- **The form** is named `data`, with the message fields under `Message`, so the fields are `data[Message][name]` and so on, exactly as in Croogo. `MessageType` is bound to the `Message` entity, and the entity carries Croogo's validation rules and messages (`NotBlank`, `Email`).
+- **CSRF:** Symfony's own token, kept in the session (`data[_token]`), replaces CakePHP's Security component token. Symfony 7.4's recipe turns on a newer stateless check that relies on the `Origin` header or JavaScript; this form uses the classic session token instead, which works without either.
+- **A form theme** (`templates/form/croogo.html.twig`) renders the fields in Croogo's markup (`div.input`, `div.error-message`), so the theme's CSS applies unchanged.
+- **The email:** Symfony's `Address` quotes the visitor's name where needed, the same protection the Croogo fix added. It goes to Mailpit over SMTP. The text template is plain text, so Twig doesn't escape it.
+- **The layout:** `LegacyLayout` fetches `/legacy-layout?path=/contact` through nginx, keeps it for 60 seconds, and swaps the placeholders for the escaped title and the form.
+
+**The switch:** one exact-match location in `docker/nginx/default.conf` sends `/contact` to the Symfony container. Every other address still goes to Croogo.
+- **The 5 contact tests passed unchanged on the first run against Symfony,** and the whole suite stayed at 41/41.
+- **The tests can tell:** changing a line of Symfony's email template failed the two email tests, and switching archiving off in Symfony's controller failed the archive test.
+- **CI** installs the Symfony app's dependencies and runs `lint:container`, which checks that every service gets what its constructor asks for, and `lint:twig`. Rehearsed on a fresh clone before pushing.
+
+**What differs from Croogo, and why:**
+- **The form's element ids:** `data_Message_name` instead of `MessageName`. The theme's CSS doesn't use them.
+- **The CSRF field,** as described above.
+- **An invalid form still answers 200,** as Croogo did. Symfony's own `render()` would answer 422.
+- **The sidebar can lag by up to a minute,** because of the layout cache: a new blog post shows up in the contact page's "Recent Posts" up to 60 seconds later.
+- **The old address `/contacts/view/contact` still reaches Croogo's controller,** through CakePHP's default routes. Redirecting it to `/contact` would be the next small step.
+- **`symfony/.env`** still has the Doctrine recipe's PostgreSQL placeholder for `DATABASE_URL`. The real value comes from `compose.yaml`, and environment variables win over `.env`.
+
+**Not done yet:** PHPStan doesn't analyse the Symfony app yet; it needs its own configuration with the Symfony and Doctrine extensions.
 
 ## Structure
 
@@ -468,7 +494,7 @@ Each step ends with a commit and, where noted, a tag.
 | 4 | PHP 8.3: the core first, then Croogo, Rector, PHPStan with a baseline, password migration, security fixes | `php83` |
 | 5 | CI on GitHub Actions: tests and PHPStan on every push | |
 | 6 | Apache with mod_php replaced by nginx + PHP-FPM, keeping the `.htaccess` rules (friendly URLs, no PHP in `uploads/`). Done, see [nginx and PHP-FPM](#nginx-and-php-fpm-step-6) | |
-| 7 | One area moved to Symfony 7 behind the same nginx, on the same database (strangler fig). In progress: the contact form, see [Moving the contact form to Symfony](#moving-the-contact-form-to-symfony-step-7-in-progress) | |
+| 7 | One area moved to Symfony 7 behind the same nginx, on the same database (strangler fig). Done for the contact form, see [Moving the contact form to Symfony](#moving-the-contact-form-to-symfony-step-7) | |
 
 ## How this was built
 
