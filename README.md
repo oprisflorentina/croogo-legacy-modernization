@@ -94,7 +94,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, and forged address headers don't get around it. |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
-| `KnownIssuesTest` | Behavior that is wrong but real: the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. Flipped so far: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. |
+| `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
 
 **Built to run again and again:**
@@ -148,7 +148,7 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
         - A login for an unknown username skips the hash check, so it answers faster. That isn't hidden, because Croogo already shows every username on public profile pages (`/user/<name>`).
         - The `password` column stays `varchar(100)`. That fits bcrypt (60 characters) and Argon2id (about 97). PHP recommends 255 for future algorithms.
 
-**Still to do in this step:** removing the File Manager (security findings 3 and 5). Then the `php83` tag.
+**Still to do in this step:** the `php83` tag.
 
 ## Structure
 
@@ -254,6 +254,8 @@ These come from reading the code, then checking it against the running app (step
     - **`FormHelper::_lastAction()`** prepends the base URL to them a second time. The token ends up hashed with a broken path, so it never matches the request.
 
     The hole is still in Croogo's code; it only stays closed by accident, and an older 1.3 core opens it again. A small upgrade with a security fix silently broke a feature, which is exactly what characterization tests are meant to catch.
+
+    *Resolved in step 4 by removing the File Manager,* together with finding 5 (details there).
 4. **Attachment uploads aren't validated.** `AttachmentsController::admin_add()` saves uploads into `webroot/uploads` with the client's file name. It trusts the MIME type the client sends and has no extension allow-list. It also contains a logic bug: `explode(...) > 0` compares an array with a number.
 
     *Confirmed:* a file `probe.php` uploaded as an attachment with the type `image/png` was saved to `/uploads/probe.php`, and requesting it **ran the PHP code**. Anyone with an admin session (or who steals one) can run code on the server.
@@ -267,6 +269,17 @@ These come from reading the code, then checking it against the running app (step
         - Croogo's `app/.gitignore` ignores the uploads folder, so this one file is added to git on purpose.
         - nginx ignores `.htaccess`, so step 6 has to repeat the rule in the nginx config.
 5. **The file manager can edit any file under `app/`,** PHP code included. It is a feature, but in practice it means code execution for anyone with an admin session. The modernized version should remove it or limit it to theme assets. `_isEditable()` also matches by prefix, so `/app` would match `/app_backup`.
+
+    *Resolved in step 4 by removing the File Manager,* together with finding 3:
+    - **Code:** the controller and its five views are deleted. `FilemanagerHelper` stays, cut down to the two methods the Attachments screens use (a file's extension and the icon for its type). Its other methods only built links into the File Manager.
+    - **Admin menu:** the "File Manager" link under Media is gone. Its addresses now answer with the same error page as any unknown address.
+    - **Access control records:** CakePHP's ACL keeps a record (an ACO) for every controller and action, and the permissions screen lists them all. Croogo's "Generate" only ever adds records, so the File Manager's 11 would have stayed for good.
+        - **Fresh installs:** they're removed from the sample data (`croogo_data.sql`) and from the installer's copy of it (`aco_data.php`). The table is a nested set, so every number after them moved down; a script did the renumbering, not a hand edit.
+        - **Existing databases:** `app/config/schema/sql/upgrades/2026-11-12-remove-file-manager-acos.sql` deletes them, with any permissions given on them, and closes the gap. It looks the node up by name, so on a database without it, it does nothing.
+        - **Checked by hand:** the upgrade ran twice on the existing database, and the second run changed nothing. A fresh database loaded from the new sample data came out identical to it, row for row. Both passed a nested set check: no number used twice or missing, and every action inside its controller.
+        - Croogo's own SimpleTest fixtures still list them. That suite isn't bundled or run here, so its fixtures were left as they were.
+    - **The test:** `KnownIssuesTest` no longer expects the forms to be rejected. It checks that the admin menu has no link, that the File Manager's addresses answer with the error page, and that the permissions screen no longer lists it. Each layer was removed on its own: the test failed on the menu link first, then on the address, then on the permissions screen, and passed once the records were gone.
+    - **PHPStan:** the baseline went from 3,568 to 3,524 findings.
 6. **Insecure defaults:**
     - `debug` is 1 in `config/core.php`.
     - `Security.salt` and `Security.cipherSeed` ship as CakePHP's public defaults. The installer replaces them.
