@@ -355,7 +355,21 @@ These come from reading the code, then checking it against the running app (step
         - This part isn't covered by a test: the Docker setup seeds the database and never runs the installer.
         - The local sample data still has `admin` / `password`.
     - **PHPStan:** CakePHP's docblocks for `Configure::write()` and `Configure::read()` were wrong: one only accepted an array, the other always returned a string. Correcting them took the baseline from 3,674 to 3,568 findings.
-7. **Old frontend libraries** bundled for the admin and TinyMCE have known issues. Not inventoried yet: they're left for a later frontend step.
+7. **Old frontend libraries** bundled for the admin and TinyMCE have known issues.
+
+    *Inventoried after step 4.* The versions come from each file's own header. The advisories come from [OSV](https://osv.dev), queried on 2026-11-12 for these exact versions.
+
+    | Library | Version | Loaded on | Advisories in OSV | All fixed by |
+    | --- | --- | --- | --- | --- |
+    | jQuery | 1.4.2 (2010) | every page | 6, all cross-site scripting: CVE-2011-4969, CVE-2012-6708, CVE-2015-9251, CVE-2019-11358, CVE-2020-7656, CVE-2020-11023 | 3.5.0 |
+    | jQuery UI | 1.8.4 (2010) | admin | 5, all cross-site scripting: CVE-2010-5312, CVE-2016-7103, CVE-2021-41182, CVE-2021-41183, CVE-2021-41184. OSV lists 2 more, for the Tooltip and checkboxradio widgets, which 1.8 doesn't have. | 1.13.0 |
+    | TinyMCE | 3.3.8 (2010) | admin content forms, when WYSIWYG editing is on | 19 whose version ranges include 3.3.8, almost all cross-site scripting. Several are in features 3.x doesn't have. | the current major version is 8 |
+    | Thickbox | 3 (2007) | admin | none | |
+    | Superfish 1.4.8, Supersubs 0.2b, hoverIntent r5 | 2007-2010 | every page (the menus) | none | |
+    | cookie, elastic 1.6.1, field 0.9.2, tipsy 1.0.0a, slug, uuid | 2006-2010 | admin | none | |
+
+    - **What this means here.** The jQuery and jQuery UI advisories need the site's own code to pass untrusted input to them: `$(location.hash)`, HTML from a URL or a visitor, a cross-domain AJAX request, or one of the affected widget options. Croogo's own scripts don't. Their only AJAX is three same-site requests in the admin, to URLs from the admin's own links, and they don't use the datepicker, dialogs or `.position()`. That comes from reading `admin.js`, `theme.js` and the other scripts; it says nothing about themes or plugins added later. TinyMCE edits content that only admins can write.
+    - **Why it isn't simply upgraded.** The plugins depend on APIs that jQuery 1.9 removed: the elastic plugin calls `.live()`, and Superfish reads `$.browser`. TinyMCE 3 to 8 means rewriting the editor integration. That's a frontend step of its own, so for now the finding is documented, not fixed.
 8. **Anyone can lock out any account.** After 5 failed logins in 5 minutes, a username is blocked for everyone, including its owner with the right password (`UsersController::beforeFilter`). Knowing that the admin is called `admin` is enough to keep them out.
 
     *Found while writing the tests:* the wrong-password test locked out the admin account the other tests use.
@@ -374,7 +388,7 @@ These come from reading the code, then checking it against the running app (step
 **Fixed in this project:**
 - **Fixed in code:** 1, 2, 4, 6 and 8. For 8, failed attempts are counted per username *and* IP address, so an attacker only locks out themselves.
 - **Removed:** findings 3 and 5 are resolved by removing the File Manager completely, rather than repairing its forms and then hardening them. A CMS doesn't need a web-based editor for server files, and media uploads stay available through Attachments, where finding 4 gets fixed.
-- **Documented only:** 7 is left for a later frontend step.
+- **Documented only:** 7, now with an inventory, is left for a later frontend step.
 
 **Already in place:**
 - **Form protection:** CakePHP's Security component is active on every controller, which gives form tampering protection and CSRF tokens on forms.
