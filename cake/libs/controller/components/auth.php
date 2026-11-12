@@ -338,14 +338,13 @@ class AuthComponent extends CakeObject {
 		$url = Router::normalize($url);
 		$loginAction = Router::normalize($this->loginAction);
 
-		// The login form keeps the plain password: identify() checks it
-		// against the stored hash, because password_hash() adds a random
-		// salt and never produces the same hash twice.
-		if ($loginAction != $url) {
-			$this->data = $controller->data = $this->hashPasswords($controller->data);
-		} else {
-			$this->data = $controller->data;
-		}
+		// Posted passwords stay as typed. CakePHP 1.3 hashed them here, before
+		// the user model could validate them, so its "at least 6 characters"
+		// rule only ever saw a hash. The User model now hashes in beforeSave(),
+		// after validation, as CakePHP 2.0 also changed it to. The login form
+		// needs the plain password anyway: identify() checks it against the
+		// stored hash, because password_hash() never gives the same hash twice.
+		$this->data = $controller->data;
 
 		$allowedActions = array_map('strtolower', $this->allowedActions);
 		$isAllowed = (
@@ -933,7 +932,7 @@ class AuthComponent extends CakeObject {
 			
 			if(isset($data[$model->alias])) {
 				if (isset($data[$model->alias][$this->fields['username']]) && isset($data[$model->alias][$this->fields['password']])) {
-					$data[$model->alias][$this->fields['password']] = $this->password($data[$model->alias][$this->fields['password']]);
+					$data[$model->alias][$this->fields['password']] = static::password($data[$model->alias][$this->fields['password']]);
 				}
 			}
 		}
@@ -951,8 +950,9 @@ class AuthComponent extends CakeObject {
  * @return string Hashed password
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Core-Components/Authentication.html#password
+ * @static The User model calls it from beforeSave(), where no component exists.
  */
-	public function password($password) {
+	public static function password($password) {
 		return password_hash((string)$password, PASSWORD_DEFAULT);
 	}
 
@@ -1014,7 +1014,7 @@ class AuthComponent extends CakeObject {
 	protected function _storePassword(&$model, $id, $password) {
 		$model->create(false);
 		$model->save(
-			[$model->alias => [$model->primaryKey => $id, $this->fields['password'] => $this->password($password)]],
+			[$model->alias => [$model->primaryKey => $id, $this->fields['password'] => static::password($password)]],
 			['validate' => false, 'callbacks' => false, 'fieldList' => [$this->fields['password']]]
 		);
 	}

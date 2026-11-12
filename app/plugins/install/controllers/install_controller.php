@@ -237,12 +237,11 @@ class InstallController extends InstallAppController {
 		}
 
 		// The admin gets a random password, shown once on this page, instead
-		// of "password". It is stored with password_hash(), the same way
-		// AuthComponent::password() does.
+		// of "password". The User model hashes it before saving.
 		$adminPassword = bin2hex(random_bytes(8));
 		$User = ClassRegistry::init('User');
 		$User->id = $User->field('id', ['username' => 'admin']);
-		$User->saveField('password', password_hash($adminPassword, PASSWORD_DEFAULT));
+		$User->saveField('password', $adminPassword);
 		$this->set('adminPassword', $adminPassword);
 	}
 

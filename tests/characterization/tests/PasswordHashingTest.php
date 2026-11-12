@@ -86,6 +86,41 @@ final class PasswordHashingTest extends CroogoTestCase
         }
     }
 
+    /**
+     * Both resets used to validate the new password after it was hashed, so
+     * "at least 6 characters" never failed. A refused reset keeps the old hash.
+     */
+    public function testBothResetsRefuseAShortPassword(): void
+    {
+        $password = 'secret-' . bin2hex(random_bytes(4));
+        $username = $this->createUser('short', $password);
+        $hash = $this->storedHash($username);
+
+        try {
+            $this->loginAsAdmin();
+            $form = $this->visit('/admin/users/reset_password/' . $this->userId($username))->selectButton('Reset')->form([
+                'data[User][current_password]' => $password,
+                'data[User][password]' => 'abc',
+            ]);
+            $this->submit($form);
+            $this->assertStringContainsString('Passwords must be at least 6 characters long.', $this->pageText(), 'Admin reset');
+            $this->assertSame($hash, $this->storedHash($username), 'Admin reset: the hash should not change.');
+
+            $this->browser->getCookieJar()->clear();
+            $form = $this->visit('/users/forgot')->selectButton('Submit')->form(['data[User][username]' => $username]);
+            $this->submit($form);
+            $key = $this->column('activation_key', $username);
+            $form = $this->visit('/users/reset/' . $username . '/' . $key)->selectButton('Submit')->form([
+                'data[User][password]' => 'abc',
+            ]);
+            $this->submit($form);
+            $this->assertStringContainsString('Passwords must be at least 6 characters long.', $this->pageText(), 'Forgotten password');
+            $this->assertSame($hash, $this->storedHash($username), 'Forgotten password: the hash should not change.');
+        } finally {
+            $this->deleteUser($username);
+        }
+    }
+
     public function testForgottenPasswordResetStoresAModernHash(): void
     {
         $username = $this->createUserWithOldHash('secret-' . bin2hex(random_bytes(4)));

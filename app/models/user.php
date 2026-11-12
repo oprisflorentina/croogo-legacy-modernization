@@ -126,6 +126,25 @@ class User extends AppModel {
 		}
 	}
 
+/**
+ * Hash a new password just before it is stored.
+ *
+ * Validation has run by now, so the rules saw the password as typed. Saves
+ * that already hold a hash, like the rehash at login, turn callbacks off.
+ *
+ * @param array $options
+ * @return boolean
+ */
+	public function beforeSave($options = []) {
+		if (isset($this->data[$this->alias]['password'])) {
+			if (!class_exists('AuthComponent')) {
+				App::import('Component', 'Auth');
+			}
+			$this->data[$this->alias]['password'] = AuthComponent::password($this->data[$this->alias]['password']);
+		}
+		return true;
+	}
+
 	public function afterSave($created) {
 		if (!$created) {
 			$parent = $this->parentNode();

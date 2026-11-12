@@ -51,6 +51,40 @@ final class AdminUsersTest extends CroogoTestCase
         }
     }
 
+    /**
+     * "At least 6 characters" used to be checked against the hash, because
+     * AuthComponent hashed every posted password before the model validated
+     * anything. It never failed: an admin could even leave the password empty.
+     */
+    public function testAdminCannotGiveANewUserAShortPassword(): void
+    {
+        $this->loginAsAdmin();
+        $created = [];
+
+        try {
+            foreach (['', 'abc'] as $password) {
+                $username = 'short' . bin2hex(random_bytes(4));
+                $created[] = $username;
+                $form = $this->visit('/admin/users/add')->selectButton('Save')->form([
+                    'data[User][role_id]' => '2',
+                    'data[User][username]' => $username,
+                    'data[User][password]' => $password,
+                    'data[User][name]' => 'Test User',
+                    'data[User][email]' => $username . '@example.com',
+                ]);
+                $form['data[User][status]']->tick();
+                $this->submit($form);
+
+                $this->assertStringContainsString('Passwords must be at least 6 characters long.', $this->pageText(), "Password '$password'");
+                $this->assertCount(0, $this->userRow($username), "Password '$password': the user should not be saved.");
+            }
+        } finally {
+            foreach ($created as $username) {
+                $this->deleteUser($username);
+            }
+        }
+    }
+
     private function userRow(string $username): \Symfony\Component\DomCrawler\Crawler
     {
         return $this->visit('/admin/users')->filter('tr')->reduce(fn ($tr) => str_contains($tr->text(), $username));

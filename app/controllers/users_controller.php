@@ -315,7 +315,8 @@ class UsersController extends AppController {
 
 		if (!empty($this->data) && isset($this->data['User']['password'])) {
 			$this->User->id = $user['User']['id'];
-			$user['User']['password'] = $this->Auth->password($this->data['User']['password']);
+			// As typed: the model validates it, then hashes it in beforeSave().
+			$user['User']['password'] = $this->data['User']['password'];
 			$user['User']['activation_key'] = md5(uniqid());
 			$options = ['fieldList' => ['password', 'activation_key']];
 			if ($this->User->save($user['User'], $options)) {
