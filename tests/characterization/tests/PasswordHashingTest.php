@@ -24,6 +24,21 @@ final class PasswordHashingTest extends CroogoTestCase
      */
     private const SALT = 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi19';
 
+    /**
+     * PASSWORD_DEFAULT can move to a stronger algorithm with a longer hash in
+     * a future PHP version. PHP's documentation recommends room for 255
+     * characters; a shorter column would cut such hashes off.
+     */
+    public function testThePasswordColumnHasRoomForFutureHashes(): void
+    {
+        $query = $this->db()->query(
+            "SELECT CHARACTER_MAXIMUM_LENGTH FROM information_schema.COLUMNS
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'password'"
+        );
+
+        $this->assertSame(255, (int) $query->fetchColumn());
+    }
+
     public function testAnOldSha1HashIsReplacedAtTheFirstLogin(): void
     {
         $password = 'secret-' . bin2hex(random_bytes(4));

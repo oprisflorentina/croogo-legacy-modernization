@@ -310,7 +310,7 @@ class AppSchema extends CakeSchema {
 		'id' => ['type' => 'integer', 'null' => false, 'default' => NULL, 'length' => 20, 'key' => 'primary'],
 		'role_id' => ['type' => 'integer', 'null' => false, 'default' => NULL],
 		'username' => ['type' => 'string', 'null' => false, 'default' => NULL, 'length' => 60, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
-		'password' => ['type' => 'string', 'null' => false, 'default' => NULL, 'length' => 100, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+		'password' => ['type' => 'string', 'null' => false, 'default' => NULL, 'length' => 255, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
 		'name' => ['type' => 'string', 'null' => false, 'default' => NULL, 'length' => 50, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
 		'email' => ['type' => 'string', 'null' => false, 'default' => NULL, 'length' => 100, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
 		'website' => ['type' => 'string', 'null' => true, 'default' => NULL, 'length' => 100, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
