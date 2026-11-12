@@ -146,18 +146,28 @@ final class KnownIssuesTest extends CroogoTestCase
     }
 
     /**
-     * Since CakePHP 1.3.18 form tokens include the target URL, and the File
-     * Manager posts to absolute URLs, so every one of its forms is rejected.
+     * Security findings 3 and 5, resolved by removing the File Manager. Its
+     * upload took any folder and any file type, and its editor could change
+     * any file under app/, PHP code included. Its forms were only rejected
+     * because of an unrelated form token bug. Media uploads go through
+     * Attachments.
      */
-    public function testFileManagerFormsAreRejected(): void
+    public function testFileManagerIsGone(): void
     {
         $this->loginAsAdmin();
 
-        $form = $this->visit('/admin/filemanager/create_file?path=' . urlencode('/var/www/html/app/tmp/'))
-            ->selectButton('Create')->form(['data[Filemanager][name]' => 'probe.txt']);
-        $this->submit($form);
+        $this->visit('/admin/nodes');
+        $this->assertCount(0, $this->browser->getCrawler()->filter('a[href*="/admin/filemanager"]'), 'The admin menu should not link to it.');
 
-        $this->assertStringContainsString('Security Error', $this->pageText());
+        foreach (['/admin/filemanager', '/admin/filemanager/editfile?path=' . urlencode('/var/www/html/app/config/core.php')] as $path) {
+            $this->visit($path);
+            $this->assertSame('Errors » Croogo', $this->title(), $path);
+            $this->assertStringContainsString('The requested address was not found on this server.', $this->pageText(), $path);
+        }
+
+        $this->visit('/admin/acl/acl_permissions');
+        $this->assertStringContainsString('Attachments', $this->pageText(), 'The permissions screen should list the controllers.');
+        $this->assertStringNotContainsString('Filemanager', $this->pageText(), 'Its ACL records should be gone.');
     }
 
     private function postComment(string $name, string $website, string $body): void

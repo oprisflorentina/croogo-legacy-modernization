@@ -11,7 +11,7 @@ class AcoData {
 			'foreign_key' => '',
 			'alias' => 'controllers',
 			'lft' => '1',
-			'rght' => '352'
+			'rght' => '330'
 		],
 		[
 			'id' => '2',
@@ -266,112 +266,13 @@ class AcoData {
 			'rght' => '56'
 		],
 		[
-			'id' => '30',
-			'parent_id' => '1',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'Filemanager',
-			'lft' => '58',
-			'rght' => '79'
-		],
-		[
-			'id' => '31',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_index',
-			'lft' => '59',
-			'rght' => '60'
-		],
-		[
-			'id' => '32',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_browse',
-			'lft' => '61',
-			'rght' => '62'
-		],
-		[
-			'id' => '33',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_editfile',
-			'lft' => '63',
-			'rght' => '64'
-		],
-		[
-			'id' => '34',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_upload',
-			'lft' => '65',
-			'rght' => '66'
-		],
-		[
-			'id' => '35',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_delete_file',
-			'lft' => '67',
-			'rght' => '68'
-		],
-		[
-			'id' => '36',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_delete_directory',
-			'lft' => '69',
-			'rght' => '70'
-		],
-		[
-			'id' => '37',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_rename',
-			'lft' => '71',
-			'rght' => '72'
-		],
-		[
-			'id' => '38',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_create_directory',
-			'lft' => '73',
-			'rght' => '74'
-		],
-		[
-			'id' => '39',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_create_file',
-			'lft' => '75',
-			'rght' => '76'
-		],
-		[
-			'id' => '40',
-			'parent_id' => '30',
-			'model' => '',
-			'foreign_key' => '',
-			'alias' => 'admin_chmod',
-			'lft' => '77',
-			'rght' => '78'
-		],
-		[
 			'id' => '41',
 			'parent_id' => '1',
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Languages',
-			'lft' => '80',
-			'rght' => '95'
+			'lft' => '58',
+			'rght' => '73'
 		],
 		[
 			'id' => '42',
@@ -379,8 +280,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '81',
-			'rght' => '82'
+			'lft' => '59',
+			'rght' => '60'
 		],
 		[
 			'id' => '43',
@@ -388,8 +289,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '83',
-			'rght' => '84'
+			'lft' => '61',
+			'rght' => '62'
 		],
 		[
 			'id' => '44',
@@ -397,8 +298,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '85',
-			'rght' => '86'
+			'lft' => '63',
+			'rght' => '64'
 		],
 		[
 			'id' => '45',
@@ -406,8 +307,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '87',
-			'rght' => '88'
+			'lft' => '65',
+			'rght' => '66'
 		],
 		[
 			'id' => '46',
@@ -415,8 +316,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_moveup',
-			'lft' => '89',
-			'rght' => '90'
+			'lft' => '67',
+			'rght' => '68'
 		],
 		[
 			'id' => '47',
@@ -424,8 +325,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_movedown',
-			'lft' => '91',
-			'rght' => '92'
+			'lft' => '69',
+			'rght' => '70'
 		],
 		[
 			'id' => '48',
@@ -433,8 +334,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_select',
-			'lft' => '93',
-			'rght' => '94'
+			'lft' => '71',
+			'rght' => '72'
 		],
 		[
 			'id' => '49',
@@ -442,8 +343,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Links',
-			'lft' => '96',
-			'rght' => '111'
+			'lft' => '74',
+			'rght' => '89'
 		],
 		[
 			'id' => '50',
@@ -451,8 +352,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '97',
-			'rght' => '98'
+			'lft' => '75',
+			'rght' => '76'
 		],
 		[
 			'id' => '51',
@@ -460,8 +361,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '99',
-			'rght' => '100'
+			'lft' => '77',
+			'rght' => '78'
 		],
 		[
 			'id' => '52',
@@ -469,8 +370,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '101',
-			'rght' => '102'
+			'lft' => '79',
+			'rght' => '80'
 		],
 		[
 			'id' => '53',
@@ -478,8 +379,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '103',
-			'rght' => '104'
+			'lft' => '81',
+			'rght' => '82'
 		],
 		[
 			'id' => '54',
@@ -487,8 +388,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_moveup',
-			'lft' => '105',
-			'rght' => '106'
+			'lft' => '83',
+			'rght' => '84'
 		],
 		[
 			'id' => '55',
@@ -496,8 +397,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_movedown',
-			'lft' => '107',
-			'rght' => '108'
+			'lft' => '85',
+			'rght' => '86'
 		],
 		[
 			'id' => '56',
@@ -505,8 +406,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_process',
-			'lft' => '109',
-			'rght' => '110'
+			'lft' => '87',
+			'rght' => '88'
 		],
 		[
 			'id' => '57',
@@ -514,8 +415,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Menus',
-			'lft' => '112',
-			'rght' => '121'
+			'lft' => '90',
+			'rght' => '99'
 		],
 		[
 			'id' => '58',
@@ -523,8 +424,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '113',
-			'rght' => '114'
+			'lft' => '91',
+			'rght' => '92'
 		],
 		[
 			'id' => '59',
@@ -532,8 +433,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '115',
-			'rght' => '116'
+			'lft' => '93',
+			'rght' => '94'
 		],
 		[
 			'id' => '60',
@@ -541,8 +442,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '117',
-			'rght' => '118'
+			'lft' => '95',
+			'rght' => '96'
 		],
 		[
 			'id' => '61',
@@ -550,8 +451,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '119',
-			'rght' => '120'
+			'lft' => '97',
+			'rght' => '98'
 		],
 		[
 			'id' => '62',
@@ -559,8 +460,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Messages',
-			'lft' => '122',
-			'rght' => '131'
+			'lft' => '100',
+			'rght' => '109'
 		],
 		[
 			'id' => '63',
@@ -568,8 +469,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '123',
-			'rght' => '124'
+			'lft' => '101',
+			'rght' => '102'
 		],
 		[
 			'id' => '64',
@@ -577,8 +478,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '125',
-			'rght' => '126'
+			'lft' => '103',
+			'rght' => '104'
 		],
 		[
 			'id' => '65',
@@ -586,8 +487,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '127',
-			'rght' => '128'
+			'lft' => '105',
+			'rght' => '106'
 		],
 		[
 			'id' => '66',
@@ -595,8 +496,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_process',
-			'lft' => '129',
-			'rght' => '130'
+			'lft' => '107',
+			'rght' => '108'
 		],
 		[
 			'id' => '67',
@@ -604,8 +505,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Nodes',
-			'lft' => '132',
-			'rght' => '161'
+			'lft' => '110',
+			'rght' => '139'
 		],
 		[
 			'id' => '68',
@@ -613,8 +514,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '133',
-			'rght' => '134'
+			'lft' => '111',
+			'rght' => '112'
 		],
 		[
 			'id' => '69',
@@ -622,8 +523,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_create',
-			'lft' => '135',
-			'rght' => '136'
+			'lft' => '113',
+			'rght' => '114'
 		],
 		[
 			'id' => '70',
@@ -631,8 +532,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '137',
-			'rght' => '138'
+			'lft' => '115',
+			'rght' => '116'
 		],
 		[
 			'id' => '71',
@@ -640,8 +541,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '139',
-			'rght' => '140'
+			'lft' => '117',
+			'rght' => '118'
 		],
 		[
 			'id' => '72',
@@ -649,8 +550,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_update_paths',
-			'lft' => '141',
-			'rght' => '142'
+			'lft' => '119',
+			'rght' => '120'
 		],
 		[
 			'id' => '73',
@@ -658,8 +559,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '143',
-			'rght' => '144'
+			'lft' => '121',
+			'rght' => '122'
 		],
 		[
 			'id' => '74',
@@ -667,8 +568,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete_meta',
-			'lft' => '145',
-			'rght' => '146'
+			'lft' => '123',
+			'rght' => '124'
 		],
 		[
 			'id' => '75',
@@ -676,8 +577,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add_meta',
-			'lft' => '147',
-			'rght' => '148'
+			'lft' => '125',
+			'rght' => '126'
 		],
 		[
 			'id' => '76',
@@ -685,8 +586,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_process',
-			'lft' => '149',
-			'rght' => '150'
+			'lft' => '127',
+			'rght' => '128'
 		],
 		[
 			'id' => '77',
@@ -694,8 +595,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'index',
-			'lft' => '151',
-			'rght' => '152'
+			'lft' => '129',
+			'rght' => '130'
 		],
 		[
 			'id' => '78',
@@ -703,8 +604,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'term',
-			'lft' => '153',
-			'rght' => '154'
+			'lft' => '131',
+			'rght' => '132'
 		],
 		[
 			'id' => '79',
@@ -712,8 +613,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'promoted',
-			'lft' => '155',
-			'rght' => '156'
+			'lft' => '133',
+			'rght' => '134'
 		],
 		[
 			'id' => '80',
@@ -721,8 +622,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'search',
-			'lft' => '157',
-			'rght' => '158'
+			'lft' => '135',
+			'rght' => '136'
 		],
 		[
 			'id' => '81',
@@ -730,8 +631,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'view',
-			'lft' => '159',
-			'rght' => '160'
+			'lft' => '137',
+			'rght' => '138'
 		],
 		[
 			'id' => '82',
@@ -739,8 +640,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Regions',
-			'lft' => '162',
-			'rght' => '171'
+			'lft' => '140',
+			'rght' => '149'
 		],
 		[
 			'id' => '83',
@@ -748,8 +649,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '163',
-			'rght' => '164'
+			'lft' => '141',
+			'rght' => '142'
 		],
 		[
 			'id' => '84',
@@ -757,8 +658,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '165',
-			'rght' => '166'
+			'lft' => '143',
+			'rght' => '144'
 		],
 		[
 			'id' => '85',
@@ -766,8 +667,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '167',
-			'rght' => '168'
+			'lft' => '145',
+			'rght' => '146'
 		],
 		[
 			'id' => '86',
@@ -775,8 +676,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '169',
-			'rght' => '170'
+			'lft' => '147',
+			'rght' => '148'
 		],
 		[
 			'id' => '87',
@@ -784,8 +685,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Roles',
-			'lft' => '172',
-			'rght' => '181'
+			'lft' => '150',
+			'rght' => '159'
 		],
 		[
 			'id' => '88',
@@ -793,8 +694,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '173',
-			'rght' => '174'
+			'lft' => '151',
+			'rght' => '152'
 		],
 		[
 			'id' => '89',
@@ -802,8 +703,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '175',
-			'rght' => '176'
+			'lft' => '153',
+			'rght' => '154'
 		],
 		[
 			'id' => '90',
@@ -811,8 +712,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '177',
-			'rght' => '178'
+			'lft' => '155',
+			'rght' => '156'
 		],
 		[
 			'id' => '91',
@@ -820,8 +721,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '179',
-			'rght' => '180'
+			'lft' => '157',
+			'rght' => '158'
 		],
 		[
 			'id' => '92',
@@ -829,8 +730,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Settings',
-			'lft' => '182',
-			'rght' => '201'
+			'lft' => '160',
+			'rght' => '179'
 		],
 		[
 			'id' => '93',
@@ -838,8 +739,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_dashboard',
-			'lft' => '183',
-			'rght' => '184'
+			'lft' => '161',
+			'rght' => '162'
 		],
 		[
 			'id' => '94',
@@ -847,8 +748,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '185',
-			'rght' => '186'
+			'lft' => '163',
+			'rght' => '164'
 		],
 		[
 			'id' => '95',
@@ -856,8 +757,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_view',
-			'lft' => '187',
-			'rght' => '188'
+			'lft' => '165',
+			'rght' => '166'
 		],
 		[
 			'id' => '96',
@@ -865,8 +766,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '189',
-			'rght' => '190'
+			'lft' => '167',
+			'rght' => '168'
 		],
 		[
 			'id' => '97',
@@ -874,8 +775,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '191',
-			'rght' => '192'
+			'lft' => '169',
+			'rght' => '170'
 		],
 		[
 			'id' => '98',
@@ -883,8 +784,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '193',
-			'rght' => '194'
+			'lft' => '171',
+			'rght' => '172'
 		],
 		[
 			'id' => '99',
@@ -892,8 +793,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_prefix',
-			'lft' => '195',
-			'rght' => '196'
+			'lft' => '173',
+			'rght' => '174'
 		],
 		[
 			'id' => '100',
@@ -901,8 +802,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_moveup',
-			'lft' => '197',
-			'rght' => '198'
+			'lft' => '175',
+			'rght' => '176'
 		],
 		[
 			'id' => '101',
@@ -910,8 +811,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_movedown',
-			'lft' => '199',
-			'rght' => '200'
+			'lft' => '177',
+			'rght' => '178'
 		],
 		[
 			'id' => '102',
@@ -919,8 +820,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Terms',
-			'lft' => '202',
-			'rght' => '217'
+			'lft' => '180',
+			'rght' => '195'
 		],
 		[
 			'id' => '103',
@@ -928,8 +829,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '203',
-			'rght' => '204'
+			'lft' => '181',
+			'rght' => '182'
 		],
 		[
 			'id' => '104',
@@ -937,8 +838,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '205',
-			'rght' => '206'
+			'lft' => '183',
+			'rght' => '184'
 		],
 		[
 			'id' => '105',
@@ -946,8 +847,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '207',
-			'rght' => '208'
+			'lft' => '185',
+			'rght' => '186'
 		],
 		[
 			'id' => '106',
@@ -955,8 +856,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '209',
-			'rght' => '210'
+			'lft' => '187',
+			'rght' => '188'
 		],
 		[
 			'id' => '107',
@@ -964,8 +865,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_moveup',
-			'lft' => '211',
-			'rght' => '212'
+			'lft' => '189',
+			'rght' => '190'
 		],
 		[
 			'id' => '108',
@@ -973,8 +874,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_movedown',
-			'lft' => '213',
-			'rght' => '214'
+			'lft' => '191',
+			'rght' => '192'
 		],
 		[
 			'id' => '109',
@@ -982,8 +883,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_process',
-			'lft' => '215',
-			'rght' => '216'
+			'lft' => '193',
+			'rght' => '194'
 		],
 		[
 			'id' => '110',
@@ -991,8 +892,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Types',
-			'lft' => '218',
-			'rght' => '227'
+			'lft' => '196',
+			'rght' => '205'
 		],
 		[
 			'id' => '111',
@@ -1000,8 +901,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '219',
-			'rght' => '220'
+			'lft' => '197',
+			'rght' => '198'
 		],
 		[
 			'id' => '112',
@@ -1009,8 +910,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '221',
-			'rght' => '222'
+			'lft' => '199',
+			'rght' => '200'
 		],
 		[
 			'id' => '113',
@@ -1018,8 +919,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '223',
-			'rght' => '224'
+			'lft' => '201',
+			'rght' => '202'
 		],
 		[
 			'id' => '114',
@@ -1027,8 +928,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '225',
-			'rght' => '226'
+			'lft' => '203',
+			'rght' => '204'
 		],
 		[
 			'id' => '115',
@@ -1036,8 +937,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Users',
-			'lft' => '228',
-			'rght' => '261'
+			'lft' => '206',
+			'rght' => '239'
 		],
 		[
 			'id' => '116',
@@ -1045,8 +946,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '229',
-			'rght' => '230'
+			'lft' => '207',
+			'rght' => '208'
 		],
 		[
 			'id' => '117',
@@ -1054,8 +955,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '231',
-			'rght' => '232'
+			'lft' => '209',
+			'rght' => '210'
 		],
 		[
 			'id' => '118',
@@ -1063,8 +964,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '233',
-			'rght' => '234'
+			'lft' => '211',
+			'rght' => '212'
 		],
 		[
 			'id' => '119',
@@ -1072,8 +973,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_reset_password',
-			'lft' => '235',
-			'rght' => '236'
+			'lft' => '213',
+			'rght' => '214'
 		],
 		[
 			'id' => '120',
@@ -1081,8 +982,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '237',
-			'rght' => '238'
+			'lft' => '215',
+			'rght' => '216'
 		],
 		[
 			'id' => '121',
@@ -1090,8 +991,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_login',
-			'lft' => '239',
-			'rght' => '240'
+			'lft' => '217',
+			'rght' => '218'
 		],
 		[
 			'id' => '122',
@@ -1099,8 +1000,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_logout',
-			'lft' => '241',
-			'rght' => '242'
+			'lft' => '219',
+			'rght' => '220'
 		],
 		[
 			'id' => '123',
@@ -1108,8 +1009,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'index',
-			'lft' => '243',
-			'rght' => '244'
+			'lft' => '221',
+			'rght' => '222'
 		],
 		[
 			'id' => '124',
@@ -1117,8 +1018,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'add',
-			'lft' => '245',
-			'rght' => '246'
+			'lft' => '223',
+			'rght' => '224'
 		],
 		[
 			'id' => '125',
@@ -1126,8 +1027,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'activate',
-			'lft' => '247',
-			'rght' => '248'
+			'lft' => '225',
+			'rght' => '226'
 		],
 		[
 			'id' => '126',
@@ -1135,8 +1036,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'edit',
-			'lft' => '249',
-			'rght' => '250'
+			'lft' => '227',
+			'rght' => '228'
 		],
 		[
 			'id' => '127',
@@ -1144,8 +1045,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'forgot',
-			'lft' => '251',
-			'rght' => '252'
+			'lft' => '229',
+			'rght' => '230'
 		],
 		[
 			'id' => '128',
@@ -1153,8 +1054,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'reset',
-			'lft' => '253',
-			'rght' => '254'
+			'lft' => '231',
+			'rght' => '232'
 		],
 		[
 			'id' => '129',
@@ -1162,8 +1063,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'login',
-			'lft' => '255',
-			'rght' => '256'
+			'lft' => '233',
+			'rght' => '234'
 		],
 		[
 			'id' => '130',
@@ -1171,8 +1072,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'logout',
-			'lft' => '257',
-			'rght' => '258'
+			'lft' => '235',
+			'rght' => '236'
 		],
 		[
 			'id' => '131',
@@ -1180,8 +1081,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'view',
-			'lft' => '259',
-			'rght' => '260'
+			'lft' => '237',
+			'rght' => '238'
 		],
 		[
 			'id' => '132',
@@ -1189,8 +1090,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'Vocabularies',
-			'lft' => '262',
-			'rght' => '271'
+			'lft' => '240',
+			'rght' => '249'
 		],
 		[
 			'id' => '133',
@@ -1198,8 +1099,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '263',
-			'rght' => '264'
+			'lft' => '241',
+			'rght' => '242'
 		],
 		[
 			'id' => '134',
@@ -1207,8 +1108,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '265',
-			'rght' => '266'
+			'lft' => '243',
+			'rght' => '244'
 		],
 		[
 			'id' => '135',
@@ -1216,8 +1117,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '267',
-			'rght' => '268'
+			'lft' => '245',
+			'rght' => '246'
 		],
 		[
 			'id' => '136',
@@ -1225,8 +1126,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '269',
-			'rght' => '270'
+			'lft' => '247',
+			'rght' => '248'
 		],
 		[
 			'id' => '137',
@@ -1234,8 +1135,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'AclAcos',
-			'lft' => '272',
-			'rght' => '281'
+			'lft' => '250',
+			'rght' => '259'
 		],
 		[
 			'id' => '138',
@@ -1243,8 +1144,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '273',
-			'rght' => '274'
+			'lft' => '251',
+			'rght' => '252'
 		],
 		[
 			'id' => '139',
@@ -1252,8 +1153,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '275',
-			'rght' => '276'
+			'lft' => '253',
+			'rght' => '254'
 		],
 		[
 			'id' => '140',
@@ -1261,8 +1162,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '277',
-			'rght' => '278'
+			'lft' => '255',
+			'rght' => '256'
 		],
 		[
 			'id' => '141',
@@ -1270,8 +1171,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '279',
-			'rght' => '280'
+			'lft' => '257',
+			'rght' => '258'
 		],
 		[
 			'id' => '142',
@@ -1279,8 +1180,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'AclActions',
-			'lft' => '282',
-			'rght' => '295'
+			'lft' => '260',
+			'rght' => '273'
 		],
 		[
 			'id' => '143',
@@ -1288,8 +1189,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '283',
-			'rght' => '284'
+			'lft' => '261',
+			'rght' => '262'
 		],
 		[
 			'id' => '144',
@@ -1297,8 +1198,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '285',
-			'rght' => '286'
+			'lft' => '263',
+			'rght' => '264'
 		],
 		[
 			'id' => '145',
@@ -1306,8 +1207,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '287',
-			'rght' => '288'
+			'lft' => '265',
+			'rght' => '266'
 		],
 		[
 			'id' => '146',
@@ -1315,8 +1216,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '289',
-			'rght' => '290'
+			'lft' => '267',
+			'rght' => '268'
 		],
 		[
 			'id' => '147',
@@ -1324,8 +1225,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_move',
-			'lft' => '291',
-			'rght' => '292'
+			'lft' => '269',
+			'rght' => '270'
 		],
 		[
 			'id' => '148',
@@ -1333,8 +1234,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_generate',
-			'lft' => '293',
-			'rght' => '294'
+			'lft' => '271',
+			'rght' => '272'
 		],
 		[
 			'id' => '149',
@@ -1342,8 +1243,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'AclAros',
-			'lft' => '296',
-			'rght' => '305'
+			'lft' => '274',
+			'rght' => '283'
 		],
 		[
 			'id' => '150',
@@ -1351,8 +1252,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '297',
-			'rght' => '298'
+			'lft' => '275',
+			'rght' => '276'
 		],
 		[
 			'id' => '151',
@@ -1360,8 +1261,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '299',
-			'rght' => '300'
+			'lft' => '277',
+			'rght' => '278'
 		],
 		[
 			'id' => '152',
@@ -1369,8 +1270,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '301',
-			'rght' => '302'
+			'lft' => '279',
+			'rght' => '280'
 		],
 		[
 			'id' => '153',
@@ -1378,8 +1279,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '303',
-			'rght' => '304'
+			'lft' => '281',
+			'rght' => '282'
 		],
 		[
 			'id' => '154',
@@ -1387,8 +1288,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'AclPermissions',
-			'lft' => '306',
-			'rght' => '311'
+			'lft' => '284',
+			'rght' => '289'
 		],
 		[
 			'id' => '155',
@@ -1396,8 +1297,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '307',
-			'rght' => '308'
+			'lft' => '285',
+			'rght' => '286'
 		],
 		[
 			'id' => '156',
@@ -1405,8 +1306,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_toggle',
-			'lft' => '309',
-			'rght' => '310'
+			'lft' => '287',
+			'rght' => '288'
 		],
 		[
 			'id' => '159',
@@ -1414,8 +1315,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'ExtensionsHooks',
-			'lft' => '312',
-			'rght' => '317'
+			'lft' => '290',
+			'rght' => '295'
 		],
 		[
 			'id' => '160',
@@ -1423,8 +1324,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '313',
-			'rght' => '314'
+			'lft' => '291',
+			'rght' => '292'
 		],
 		[
 			'id' => '161',
@@ -1432,8 +1333,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_toggle',
-			'lft' => '315',
-			'rght' => '316'
+			'lft' => '293',
+			'rght' => '294'
 		],
 		[
 			'id' => '162',
@@ -1441,8 +1342,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'ExtensionsLocales',
-			'lft' => '318',
-			'rght' => '329'
+			'lft' => '296',
+			'rght' => '307'
 		],
 		[
 			'id' => '163',
@@ -1450,8 +1351,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '319',
-			'rght' => '320'
+			'lft' => '297',
+			'rght' => '298'
 		],
 		[
 			'id' => '164',
@@ -1459,8 +1360,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_activate',
-			'lft' => '321',
-			'rght' => '322'
+			'lft' => '299',
+			'rght' => '300'
 		],
 		[
 			'id' => '165',
@@ -1468,8 +1369,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '323',
-			'rght' => '324'
+			'lft' => '301',
+			'rght' => '302'
 		],
 		[
 			'id' => '166',
@@ -1477,8 +1378,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_edit',
-			'lft' => '325',
-			'rght' => '326'
+			'lft' => '303',
+			'rght' => '304'
 		],
 		[
 			'id' => '167',
@@ -1486,8 +1387,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '327',
-			'rght' => '328'
+			'lft' => '305',
+			'rght' => '306'
 		],
 		[
 			'id' => '168',
@@ -1495,8 +1396,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'ExtensionsPlugins',
-			'lft' => '330',
-			'rght' => '337'
+			'lft' => '308',
+			'rght' => '315'
 		],
 		[
 			'id' => '169',
@@ -1504,8 +1405,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '331',
-			'rght' => '332'
+			'lft' => '309',
+			'rght' => '310'
 		],
 		[
 			'id' => '170',
@@ -1513,8 +1414,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '333',
-			'rght' => '334'
+			'lft' => '311',
+			'rght' => '312'
 		],
 		[
 			'id' => '171',
@@ -1522,8 +1423,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '335',
-			'rght' => '336'
+			'lft' => '313',
+			'rght' => '314'
 		],
 		[
 			'id' => '172',
@@ -1531,8 +1432,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'ExtensionsThemes',
-			'lft' => '338',
-			'rght' => '351'
+			'lft' => '316',
+			'rght' => '329'
 		],
 		[
 			'id' => '173',
@@ -1540,8 +1441,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_index',
-			'lft' => '339',
-			'rght' => '340'
+			'lft' => '317',
+			'rght' => '318'
 		],
 		[
 			'id' => '174',
@@ -1549,8 +1450,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_activate',
-			'lft' => '341',
-			'rght' => '342'
+			'lft' => '319',
+			'rght' => '320'
 		],
 		[
 			'id' => '175',
@@ -1558,8 +1459,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_add',
-			'lft' => '343',
-			'rght' => '344'
+			'lft' => '321',
+			'rght' => '322'
 		],
 		[
 			'id' => '176',
@@ -1567,8 +1468,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_editor',
-			'lft' => '345',
-			'rght' => '346'
+			'lft' => '323',
+			'rght' => '324'
 		],
 		[
 			'id' => '177',
@@ -1576,8 +1477,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_save',
-			'lft' => '347',
-			'rght' => '348'
+			'lft' => '325',
+			'rght' => '326'
 		],
 		[
 			'id' => '178',
@@ -1585,8 +1486,8 @@ class AcoData {
 			'model' => '',
 			'foreign_key' => '',
 			'alias' => 'admin_delete',
-			'lft' => '349',
-			'rght' => '350'
+			'lft' => '327',
+			'rght' => '328'
 		],
 	];
 

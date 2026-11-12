@@ -16,7 +16,7 @@ final class AdminPagesTest extends CroogoTestCase
      * reordering, theme and plugin activation, ACL regeneration) or end the
      * session. A crawler must never follow them.
      */
-    private const UNSAFE = '#delete|logout|toggle|activate|move(up|down)|process|generate|/token:|filemanager/(rename|create|upload|editfile|chmod)#';
+    private const UNSAFE = '#delete|logout|toggle|activate|move(up|down)|process|generate|/token:#';
 
     public function testEveryAdminScreenRendersWithoutPhpErrors(): void
     {

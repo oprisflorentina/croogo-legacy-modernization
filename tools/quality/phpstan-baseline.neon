@@ -379,60 +379,6 @@ parameters:
 			path: ../../app/controllers/contacts_controller.php
 
 		-
-			message: '#^Access to an undefined property FilemanagerController\:\:\$Security\.$#'
-			identifier: property.notFound
-			count: 2
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
-			message: '#^Access to an undefined property FilemanagerController\:\:\$Session\.$#'
-			identifier: property.notFound
-			count: 14
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
-			message: '#^Access to an undefined property FilemanagerController\:\:\$file\.$#'
-			identifier: property.notFound
-			count: 1
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
-			message: '#^Access to an undefined property FilemanagerController\:\:\$folder\.$#'
-			identifier: property.notFound
-			count: 4
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
-			message: '#^Call to function compact\(\) contains possibly undefined variable \$absolutefilepath\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
-			message: '#^Call to function compact\(\) contains possibly undefined variable \$path\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
-			message: '#^Variable \$absolutefilepath might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
-			message: '#^Variable \$path might not be defined\.$#'
-			identifier: variable.undefined
-			count: 14
-			path: ../../app/controllers/filemanager_controller.php
-
-		-
 			message: '#^Access to an undefined property LanguagesController\:\:\$Language\.$#'
 			identifier: property.notFound
 			count: 9
@@ -1321,32 +1267,14 @@ parameters:
 			path: ../../app/plugins/translate/controllers/translate_controller.php
 
 		-
-			message: '#^Access to an undefined property FilemanagerHelper\:\:\$Html\.$#'
-			identifier: property.notFound
-			count: 2
-			path: ../../app/views/helpers/filemanager.php
-
-		-
 			message: '#^Comparison operation "\=\=" between non\-empty\-list\<string\> and 1 results in an error\.$#'
 			identifier: equal.invalid
 			count: 1
 			path: ../../app/views/helpers/filemanager.php
 
 		-
-			message: '#^Loose comparison using \=\= between ''/'' and ''/'' will always evaluate to true\.$#'
-			identifier: equal.alwaysTrue
-			count: 1
-			path: ../../app/views/helpers/filemanager.php
-
-		-
 			message: '#^Loose comparison using \=\= between non\-empty\-list\<string\> and 1 will always evaluate to false\.$#'
 			identifier: equal.alwaysFalse
-			count: 1
-			path: ../../app/views/helpers/filemanager.php
-
-		-
-			message: '#^Method FilemanagerHelper\:\:breadcrumb\(\) should return string but returns array\<string, string\>\.$#'
-			identifier: return.type
 			count: 1
 			path: ../../app/views/helpers/filemanager.php
 

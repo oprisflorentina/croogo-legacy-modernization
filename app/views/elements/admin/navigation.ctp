@@ -74,7 +74,6 @@
 			<?php echo $this->Html->link(__('Media', true), array('plugin' => null, 'controller' => 'attachments', 'action' => 'index')); ?>
 			<ul>
 				<li><?php echo $this->Html->link(__('Attachments', true), array('plugin' => null, 'controller' => 'attachments', 'action' => 'index')); ?></li>
-				<li><?php echo $this->Html->link(__('File Manager', true), array('plugin' => null, 'controller' => 'filemanager', 'action' => 'index')); ?></li>
 			</ul>
 		</li>
 
