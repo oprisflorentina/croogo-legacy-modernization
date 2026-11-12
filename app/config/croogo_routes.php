@@ -35,3 +35,6 @@
 
 	// Contact
 	CroogoRouter::connect('/contact', ['controller' => 'contacts', 'action' => 'view', 'contact']);
+
+	// Croogo's layout around placeholders, for the pages that moved to Symfony
+	CroogoRouter::connect('/legacy-layout', ['controller' => 'legacy_layout', 'action' => 'index']);
