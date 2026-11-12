@@ -7,9 +7,10 @@ namespace Characterization;
 use PHPUnit\Framework\Attributes\Group;
 
 /**
- * Behavior that is wrong but real. These tests pin it down so that each fix
- * in the PHP 8.3 step shows up as a deliberate change: the fix commit flips
- * the matching test from "is vulnerable" to "is safe".
+ * These tests first pinned down behavior that was wrong but real, so that
+ * each fix in the PHP 8.3 step would show up as a deliberate change: the fix
+ * commit flipped the matching test from "is vulnerable" to "is safe". All of
+ * them are flipped now, and they keep the security fixes from coming back.
  */
 #[Group('known-issue')]
 final class KnownIssuesTest extends CroogoTestCase

@@ -89,7 +89,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 
 | File | What it pins down |
 | --- | --- |
-| `AdminPagesTest` | Every admin screen reachable from the menu (about 240 pages) renders without PHP errors. Links that change data through a GET request are never followed. |
+| `AdminPagesTest` | Every admin screen reachable from the menu (219 pages) renders without PHP errors. Links that change data through a GET request are never followed. |
 | `AdminUsersTest` | An admin creates a user, who can then log in. Added when PHPStan showed that user validation was broken on PHP 8. |
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, and forged address headers don't get around it. |
@@ -108,11 +108,25 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
 
 **Checked the other way too:** changing one confirmation message in `contacts_controller.php` made exactly one test fail. Reintroducing a fixed PHP 8 warning made the error check fail the tests that load that page.
 
-## Upgrade to PHP 8.3 (in progress)
+## Upgrade to PHP 8.3
+
+| | Before (`legacy-original`) | After (`php83`) |
+| --- | --- | --- |
+| PHP | 5.2 or later (5.6 here). On PHP 8.3, 141 files don't parse: 37 in the CakePHP runtime, 12 in its console, 86 in its own tests, 6 in Croogo | 8.3. The CakePHP runtime, its console and Croogo's code all parse, and `tools/check-declarations.php` loads every class without a fatal error. Only test code that never runs still fails: CakePHP's own 86 tests and one of Croogo's SimpleTest cases |
+| CakePHP core | 1.3.21 as released: static calls to instance methods, classes named `Object` and `String`, PHP 4 constructors, removed functions | 1.3.21 adapted to PHP 8.3, with the changes written fresh for this repository |
+| Database driver | `mysql_*`, removed in PHP 7 | `mysqli`, which the core already shipped. The other drivers were removed rather than ported untested |
+| Passwords | `sha1(salt + password)` | `password_hash()` (bcrypt). Old hashes are replaced at the next login, so nobody has to reset |
+| Configuration | Debug on. CakePHP's published salt and seed in `core.php` | Production mode unless `CROOGO_DEBUG` is set. Secrets come from environment variables, and production refuses the published ones |
+| Security findings | 8, found by reading the code and checked against the running app | 5 fixed in code (1, 2, 4, 6, 8), 2 resolved by removing the File Manager (3, 5), 1 documented only (7) |
+| Tests | Croogo's 22 SimpleTest cases, which can't run: SimpleTest isn't bundled | 27 characterization tests over HTTP, including a crawl of 219 admin pages that fails on any PHP error |
+| Static analysis | None | PHPStan level 5. The 2012 code's findings are kept in a baseline, which went from 3,696 to 3,524. New and changed code has to pass |
+| Automated refactoring | None | Rector's PHP 8.3 rules on 225 files, with 7 rules skipped on purpose |
+| Running it | Croogo's web installer, on a server you set up yourself | `docker compose up`: the app, MySQL and Mailpit, plus containers for the tests and the quality tools |
+| Not changed in this step | | MySQL 5.5, Apache with mod_php (nginx and PHP-FPM come in step 6), the database schema |
 
 **Steps 1-5 below:** the same working tree ran in two containers, PHP 5.6 on :8056 and PHP 8.3 on :8083, sharing one database. After every change, both ran the full test suite: the PHP 8.3 run showed progress, and the PHP 5.6 run proved nothing changed behavior along the way. The tag `last-php56` marks the end of that phase, with all 18 tests passing on both versions.
 
-**Done so far,** one commit each:
+**What was done,** one commit each:
 
 1. **PHP 4-era syntax:** `=& new`, `$str{0}`, `each()`, `create_function()` (now closures), magic quotes, PHP 4 constructors.
 2. **Reserved class names:** `Object` became `CakeObject` and `String` became `CakeText`, the names CakePHP itself moved to in 2.x.
@@ -148,7 +162,9 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
         - A login for an unknown username skips the hash check, so it answers faster. That isn't hidden, because Croogo already shows every username on public profile pages (`/user/<name>`).
         - The `password` column stays `varchar(100)`. That fits bcrypt (60 characters) and Argon2id (about 97). PHP recommends 255 for future algorithms.
 
-**Still to do in this step:** the `php83` tag.
+9. **Security fixes,** one commit each and each with its test, for the findings picked in step 1. They're described under [Security findings](#security-findings): findings 2, 4, 6 and 8 were fixed in code, and the File Manager was removed for findings 3 and 5.
+
+The tag `php83` marks the end of this step.
 
 ## Structure
 
@@ -298,7 +314,7 @@ These come from reading the code, then checking it against the running app (step
         - This part isn't covered by a test: the Docker setup seeds the database and never runs the installer.
         - The local sample data still has `admin` / `password`.
     - **PHPStan:** CakePHP's docblocks for `Configure::write()` and `Configure::read()` were wrong: one only accepted an array, the other always returned a string. Correcting them took the baseline from 3,674 to 3,568 findings.
-7. **Old frontend libraries** bundled for the admin and TinyMCE have known issues. To be inventoried in step 2.
+7. **Old frontend libraries** bundled for the admin and TinyMCE have known issues. Not inventoried yet: they're left for a later frontend step.
 8. **Anyone can lock out any account.** After 5 failed logins in 5 minutes, a username is blocked for everyone, including its owner with the right password (`UsersController::beforeFilter`). Knowing that the admin is called `admin` is enough to keep them out.
 
     *Found while writing the tests:* the wrong-password test locked out the admin account the other tests use.
