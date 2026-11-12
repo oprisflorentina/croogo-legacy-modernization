@@ -192,6 +192,10 @@ Smaller problems noticed while working on step 4, each fixed in its own commit w
     - **The fix:** before counting, `UsersController` asks the database which account the typed username belongs to, and counts under the stored name. Lowercasing in PHP wouldn't have matched every rule of the collation. A username that matches no account is still counted as typed.
     - **The test** fails five times with five spellings of one account, then expects the right password to be refused. Before the fix, it logged in.
     - **PHPStan:** the fix uses the controller's `User` model, which PHPStan didn't know about. Describing it (`@property User $User`), instead of adding to the baseline, showed that `Model::field()` and `Model::find()` had wrong docblocks, and that `find()` repeated an `is_string()` check that could never fail. Correcting those took the baseline from 3,522 to 3,441, in its own commit before the fix.
+- **The key behind every form token was mostly predictable.** `Security::generateAuthKey()` makes the key for CakePHP's form tokens, which also guards the admin's delete links (`token:…`). It was the SHA-1 of `CakeText::uuid()`, a time-based UUID built from the clock, the process ID and the server's address, with only 26 random bits from `mt_rand()`, which isn't a secure generator.
+    - **The fix:** `generateAuthKey()` now returns 20 bytes from `random_bytes()`, as hex: the same 40-character format, but random. `uuid()` stays as it was, because its other uses are identifiers, not secrets. Its docblock now says so.
+    - **Checked by hand,** because nothing about it shows over HTTP. Three UUIDs made in a row shared the same seconds, process ID and address, and with the same `mt_rand()` seed, two UUIDs differed only in their microseconds. After the fix, the keys don't depend on `mt_rand()`. All 29 tests still pass, and every form submission and admin delete in them goes through these tokens.
+    - **PHPStan:** `uuid()`'s docblock said `@return RFC 4122 UUID`, which PHPStan read as a class named `RFC`. Correcting it and dropping the old code took the baseline from 3,441 to 3,437.
 
 ## Structure
 
