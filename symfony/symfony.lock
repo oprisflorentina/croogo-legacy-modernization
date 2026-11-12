@@ -22,6 +22,9 @@
             "src/Repository/.gitignore"
         ]
     },
+    "phpstan/phpstan": {
+        "version": "2.3.5"
+    },
     "symfony/console": {
         "version": "7.4",
         "recipe": {

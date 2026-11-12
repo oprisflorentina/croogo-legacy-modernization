@@ -1,0 +1,24 @@
+# Static analysis of the Symfony app, in its own container, which has the
+# app's environment (Croogo's database URL among it):
+#   docker compose exec -u www-data symfony php bin/console cache:warmup
+#   docker compose exec -u www-data symfony vendor/bin/phpstan analyse --memory-limit=1G
+includes:
+    # Symfony: what the container holds, and what Request, forms and the
+    # other components return.
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-symfony/rules.neon
+    # Doctrine: entity mapping, repositories, and checks of entities against it.
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon
+    # Stricter checks than any level, such as no loose == and no empty().
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+    level: max
+    paths:
+        - src
+    symfony:
+        # The compiled container, written by cache:warmup in debug mode.
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    doctrine:
+        objectManagerLoader: phpstan/object-manager.php
