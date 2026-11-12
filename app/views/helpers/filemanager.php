@@ -16,22 +16,17 @@
  */
 class FilemanagerHelper extends AppHelper {
 /**
- * Get extension from a file name.
+ * Get extension from a file name, or "file" if it has none.
  *
  * @param string $filename file name
  * @return string
  */
 	public function filename2ext($filename) {
-		$filename = strtolower($filename) ;
-		//$exts = split("[/\\.]", $filename) ;
-		//$n = count($exts)-1;
-		$filename_e = explode(".", $filename);
-		if ($filename_e == 1) {
-			return "file";
-		} else {
-			$n = count($filename_e) - 1;
-			return $filename_e[$n];
+		$filename_e = explode('.', strtolower($filename));
+		if (count($filename_e) == 1) {
+			return 'file';
 		}
+		return end($filename_e);
 	}
 
 /**

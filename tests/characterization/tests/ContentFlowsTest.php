@@ -96,4 +96,34 @@ final class ContentFlowsTest extends CroogoTestCase
         $this->visit('/blog/hello-world');
         $this->assertStringContainsString($body, $this->pageText());
     }
+
+    /**
+     * The admin list shows a file's type and, in brackets, its extension. A
+     * stored name without a dot used to show in full as its "extension":
+     * FilemanagerHelper::filename2ext() compared an array with 1.
+     */
+    public function testAttachmentWithoutAnExtensionIsListedAsFile(): void
+    {
+        $title = 'notes-' . bin2hex(random_bytes(4));
+        $file = sys_get_temp_dir() . '/' . $title . '.txt';
+        file_put_contents($file, 'Plain text.');
+
+        $this->loginAsAdmin();
+        $this->uploadAttachment($file);
+        $this->assertIsArray($this->storedAttachment($title), 'The attachment should be saved.');
+
+        // New uploads always keep an extension, so the stored name is changed
+        // to stand for an older upload without one.
+        $rename = $this->db()->prepare("UPDATE nodes SET slug = ? WHERE type = 'attachment' AND title = ?");
+        $rename->execute([$title, $title]);
+        try {
+            $row = $this->visit('/admin/attachments')->filter('tr')->reduce(fn ($tr) => str_contains($tr->text(), $title));
+            $this->assertStringContainsString('text/plain (file)', $row->text());
+        } finally {
+            // Put the real name back, so the delete removes the file.
+            $rename->execute([basename($file), $title]);
+            unlink($file);
+            $this->deleteAttachment(basename($file));
+        }
+    }
 }

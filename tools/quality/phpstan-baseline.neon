@@ -1267,18 +1267,6 @@ parameters:
 			path: ../../app/plugins/translate/controllers/translate_controller.php
 
 		-
-			message: '#^Comparison operation "\=\=" between non\-empty\-list\<string\> and 1 results in an error\.$#'
-			identifier: equal.invalid
-			count: 1
-			path: ../../app/views/helpers/filemanager.php
-
-		-
-			message: '#^Loose comparison using \=\= between non\-empty\-list\<string\> and 1 will always evaluate to false\.$#'
-			identifier: equal.alwaysFalse
-			count: 1
-			path: ../../app/views/helpers/filemanager.php
-
-		-
 			message: '#^Access to an undefined property ImageHelper\:\:\$Html\.$#'
 			identifier: property.notFound
 			count: 2
