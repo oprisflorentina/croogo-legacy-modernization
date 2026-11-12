@@ -75,7 +75,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 41 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 42 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
@@ -98,7 +98,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, forged address headers don't get around it, and every spelling of a username counts against the same account. |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; an attachment whose stored name has no extension is listed as `file` |
-| `ContactFormTest` | The public contact form, which is the first area to move to Symfony. A message reaches the site owner by email, checked through Mailpit's API: the subject, the sender, and every line of the body. Missing fields are named, and nothing is sent until they pass. The email shows what was typed, and a name that looks like an address can't change the sender. With archiving on, the message is stored as typed and escaped in the admin. |
+| `ContactFormTest` | The public contact form, which is the first area to move to Symfony. A message reaches the site owner by email, checked through Mailpit's API: the subject, the sender, and every line of the body. Missing fields are named, an empty email address gets the same message as an invalid one, and nothing is sent until they pass. The email shows what was typed, and a name that looks like an address can't change the sender. With archiving on, the message is stored as typed and escaped in the admin. |
 | `LegacyLayoutTest` | `/legacy-layout`, Croogo's layout around two placeholders, which Symfony fills in. It renders for the page it's asked for: the main menu marks that page, and a block limited to some pages appears only for them. Anything but a plain path on this site renders for the home page. |
 | `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. CakePHP's web test runner `/test.php` is gone too, and so is CakePHP 1.2's `js/vendors.php`. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Both resets refuse a password shorter than 6 characters and keep the old hash. The `password` column has room for 255 characters. Added with the password migration in step 4. |
@@ -177,7 +177,7 @@ The tag `php83` marks the end of this step.
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request. It uses the same Docker Compose services as a local run, in two jobs:
 
 - **Characterization tests:** builds the stack, waits for the database, and loads every class on PHP 8.3 with `tools/check-declarations.php`, which fails the job if one doesn't load. Then it runs the characterization tests. If anything fails, the job prints the app's and the database's logs.
-- **PHPStan and Rector:** PHPStan at level 5 against the baseline. Then Rector's dry run, which fails if new or changed code misses one of the PHP 8.3 rules the rest of the code already follows.
+- **PHPStan and Rector:** PHPStan at level 5 against the baseline. Then Rector's dry run, which fails if new or changed code misses one of the PHP 8.3 rules the rest of the code already follows. Then the Symfony app's own PHPStan, at level max, in the app's container (see [Moving the contact form to Symfony](#moving-the-contact-form-to-symfony-step-7)).
 
 A long-running local setup hides three things that a fresh CI machine runs into:
 
@@ -291,7 +291,22 @@ The first area to move is the public contact form at `/contact`. It's small, and
 - **The old address `/contacts/view/contact` still reaches Croogo's controller,** through CakePHP's default routes. Redirecting it to `/contact` would be the next small step.
 - **`symfony/.env`** still has the Doctrine recipe's PostgreSQL placeholder for `DATABASE_URL`. The real value comes from `compose.yaml`, and environment variables win over `.env`.
 
-**Not done yet:** PHPStan doesn't analyse the Symfony app yet; it needs its own configuration with the Symfony and Doctrine extensions.
+**PHPStan for the Symfony app** ([`symfony/phpstan.dist.neon`](symfony/phpstan.dist.neon)):
+- **Its own setup.** PHPStan and its extensions are dev dependencies in `symfony/composer.json`, apart from Croogo's tools in `tools/quality`. It analyses `symfony/src` at level max (10 in PHPStan 2), plus PHPStan's strict rules, such as no loose `==` and no `empty()`.
+- **Two extensions read what the code alone doesn't show:**
+    - **phpstan-symfony** reads the compiled container: the class Symfony generates from every service definition. In debug mode Symfony also writes an XML description of it, which `cache:warmup` creates. So PHPStan knows what each service is.
+    - **phpstan-doctrine** gets the app's entity manager from [`symfony/phpstan/object-manager.php`](symfony/phpstan/object-manager.php), which boots the kernel as `bin/console` does. So it knows each entity's table and columns, and checks property types against column types.
+- **It runs in the Symfony app's container,** with the app's PHP and environment. `symfony/.env` has the recipe's PostgreSQL placeholder, and the container has Croogo's MySQL URL, so Doctrine reads the right database type. No database has to run: in CI, only the Symfony container starts.
+
+  ```bash
+  docker compose exec -u www-data symfony php bin/console cache:warmup
+  docker compose exec -u www-data symfony vendor/bin/phpstan analyse --memory-limit=1G
+  ```
+- **What it found:** `Message` declared the name and email as `?string`, but their columns are `NOT NULL`. The form writes the visitor's input into the entity before validation, and an empty text field gives `null`. `NotBlank` stopped it before anything was saved, so nothing broke, but code that saved a `Message` without validating it would have failed in MySQL.
+    - **The fix:** those two fields give `''` for an empty input (the form's `empty_data` option), and the properties are `string`. Validation and its messages are unchanged.
+    - **A test first:** `ContactFormTest` sends an empty email address and expects the invalid-address message. It passed against Symfony, and against Croogo with nginx's `/contact` location switched off for a moment, so it records Croogo's behavior.
+    - **Each layer checked:** with the old property types, PHPStan failed. Without `empty_data` on the name, the missing-fields test failed, and without it on the email, the new test failed: the form passed `null` to a `string` setter, and the page was a 500.
+- **The strict rules found nothing** in the current code. A throwaway file with `empty()` and `==` showed they were active.
 
 ## Structure
 
