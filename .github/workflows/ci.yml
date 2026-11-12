@@ -64,9 +64,23 @@ jobs:
       - name: Install PHPStan and Rector
         run: docker compose run --rm --no-deps quality composer install --no-interaction --no-progress
 
-      - name: Analyse at level 5 against the baseline
+      - name: Analyse Croogo at level 5 against the baseline
         run: docker compose run --rm --no-deps quality vendor/bin/phpstan analyse --memory-limit=2G --no-progress
 
       # Fails if new or changed code misses a PHP 8.3 rule the rest follows.
       - name: Check that Rector has nothing left to change
         run: docker compose run --rm --no-deps quality vendor/bin/rector --dry-run
+
+      # The Symfony app has its own PHPStan, in its composer.json. It runs in
+      # the app's own container, with the app's environment, and reads the
+      # compiled container that cache:warmup writes. No database is started.
+      - name: Install the Symfony app's dependencies
+        run: docker compose run --rm --no-deps -w /app/symfony quality composer install --no-interaction --no-progress
+
+      - name: Start the Symfony app's container
+        run: docker compose up -d --no-deps --wait symfony
+
+      - name: Analyse the Symfony app at level max
+        run: |
+          docker compose exec -T -u www-data symfony php bin/console cache:warmup
+          docker compose exec -T -u www-data symfony vendor/bin/phpstan analyse --memory-limit=1G --no-progress
