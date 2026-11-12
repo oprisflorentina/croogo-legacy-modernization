@@ -44,8 +44,8 @@ jobs:
         if: failure()
         run: docker compose logs php83 db
 
-  phpstan:
-    name: PHPStan
+  static-analysis:
+    name: PHPStan and Rector
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -56,3 +56,7 @@ jobs:
 
       - name: Analyse at level 5 against the baseline
         run: docker compose run --rm --no-deps quality vendor/bin/phpstan analyse --memory-limit=2G --no-progress
+
+      # Fails if new or changed code misses a PHP 8.3 rule the rest follows.
+      - name: Check that Rector has nothing left to change
+        run: docker compose run --rm --no-deps quality vendor/bin/rector --dry-run
