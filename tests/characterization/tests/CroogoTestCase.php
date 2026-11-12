@@ -130,6 +130,43 @@ abstract class CroogoTestCase extends TestCase
         $this->submit($form);
     }
 
+    /**
+     * An admin creates an active registered user through the normal form, so
+     * the ACL records exist too. Returns the username and ends logged out.
+     */
+    protected function createUser(string $prefix, string $password): string
+    {
+        $username = $prefix . bin2hex(random_bytes(4));
+
+        $this->loginAsAdmin();
+        $form = $this->visit('/admin/users/add')->selectButton('Save')->form([
+            'data[User][role_id]' => '2',
+            'data[User][username]' => $username,
+            'data[User][password]' => $password,
+            'data[User][name]' => 'Test User',
+            'data[User][email]' => $username . '@example.com',
+        ]);
+        $form['data[User][status]']->tick();
+        $this->submit($form);
+        $this->browser->getCookieJar()->clear();
+
+        return $username;
+    }
+
+    /** Deletes a user from the admin list, if it is there. Ends logged in as admin. */
+    protected function deleteUser(string $username): void
+    {
+        $this->browser->getCookieJar()->clear();
+        $this->loginAsAdmin();
+        $delete = $this->visit('/admin/users')
+            ->filter('tr')
+            ->reduce(fn ($tr) => str_contains($tr->text(), $username))
+            ->filter('a[href*="/admin/users/delete/"]');
+        if ($delete->count() > 0) {
+            $this->browser->click($delete->link());
+        }
+    }
+
     /** A value no earlier run has used, so tests don't depend on database state. */
     protected function unique(string $prefix): string
     {

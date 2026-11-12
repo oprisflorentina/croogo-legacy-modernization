@@ -101,44 +101,19 @@ final class PasswordHashingTest extends CroogoTestCase
     }
 
     /**
-     * An admin creates the user through the normal form, so the ACL records
-     * exist too. Then the hash is swapped for the one Croogo 1.3 would have
-     * stored, as if the user had registered before the upgrade.
+     * The user is created through the normal form, then the hash is swapped
+     * for the one Croogo 1.3 would have stored, as if the user had registered
+     * before the upgrade.
      */
     private function createUserWithOldHash(string $password): string
     {
-        $username = 'legacy' . bin2hex(random_bytes(4));
-
-        $this->loginAsAdmin();
-        $form = $this->visit('/admin/users/add')->selectButton('Save')->form([
-            'data[User][role_id]' => '2',
-            'data[User][username]' => $username,
-            'data[User][password]' => 'temporary-' . $password,
-            'data[User][name]' => 'Legacy User',
-            'data[User][email]' => $username . '@example.com',
-        ]);
-        $form['data[User][status]']->tick();
-        $this->submit($form);
-        $this->browser->getCookieJar()->clear();
+        $username = $this->createUser('legacy', 'temporary-' . $password);
 
         $this->db()->prepare('UPDATE users SET password = ? WHERE username = ?')
             ->execute([sha1(self::SALT . $password), $username]);
         $this->assertSame(sha1(self::SALT . $password), $this->storedHash($username));
 
         return $username;
-    }
-
-    private function deleteUser(string $username): void
-    {
-        $this->browser->getCookieJar()->clear();
-        $this->loginAsAdmin();
-        $delete = $this->visit('/admin/users')
-            ->filter('tr')
-            ->reduce(fn ($tr) => str_contains($tr->text(), $username))
-            ->filter('a[href*="/admin/users/delete/"]');
-        if ($delete->count() > 0) {
-            $this->browser->click($delete->link());
-        }
     }
 
     /** Logs in from a fresh session and stops at the redirect. */
