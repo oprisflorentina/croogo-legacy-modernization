@@ -49,6 +49,27 @@ services:
       mailpit:
         condition: service_started
 
+  # The Symfony app in symfony/, as PHP-FPM. nginx passes it the addresses
+  # that have moved from Croogo (the strangler fig); Croogo keeps the rest.
+  # var/ (cache and logs) is a volume, out of the working tree.
+  symfony:
+    build: docker/symfony
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+      start_interval: 1s
+    environment:
+      # Debug mode, like CROOGO_DEBUG for Croogo.
+      APP_ENV: dev
+      # Signs CSRF tokens and other values. A throwaway local value.
+      APP_SECRET: local-development-symfony-secret-not-for-production
+    volumes:
+      - ./symfony:/var/www/symfony
+      - symfony-var:/var/www/symfony/var
+
   mailpit:
     image: axllent/mailpit:v1.33.0
     ports:
@@ -118,3 +139,4 @@ volumes:
   db-data:
   composer-cache:
   php83-tmp:
+  symfony-var:
