@@ -71,12 +71,14 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 24 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 26 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
 - One comment test changes a saved row, to stand for data stored before a fix.
 - The attachment tests read the stored file name and type.
+
+**A second visitor:** the `relay` service in `compose.yaml` ([socat](http://www.dest-unreach.org/socat/)) passes TCP connections to the app unchanged. A request sent through it reaches the app from the relay's IP address instead of the tests container's. The login lockout tests use it to stand for an attacker on another address. It adds no header, so the test doesn't depend on anything the app would have to trust.
 
 ```bash
 docker compose run --rm tests composer install   # once
@@ -90,7 +92,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `AdminPagesTest` | Every admin screen reachable from the menu (about 240 pages) renders without PHP errors. Links that change data through a GET request are never followed. |
 | `AdminUsersTest` | An admin creates a user, who can then log in. Added when PHPStan showed that user validation was broken on PHP 8. |
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
-| `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts |
+| `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, and forged address headers don't get around it. |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
 | `KnownIssuesTest` | Behavior that is wrong but real: the rejected File Manager forms. Each fix in step 4 flips one of these on purpose. Flipped so far: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
@@ -146,7 +148,7 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
         - A login for an unknown username skips the hash check, so it answers faster. That isn't hidden, because Croogo already shows every username on public profile pages (`/user/<name>`).
         - The `password` column stays `varchar(100)`. That fits bcrypt (60 characters) and Argon2id (about 97). PHP recommends 255 for future algorithms.
 
-**Still to do in this step:** the security fixes. Then the `php83` tag.
+**Still to do in this step:** removing the File Manager (security findings 3 and 5). Then the `php83` tag.
 
 ## Structure
 
@@ -286,6 +288,16 @@ These come from reading the code, then checking it against the running app (step
 8. **Anyone can lock out any account.** After 5 failed logins in 5 minutes, a username is blocked for everyone, including its owner with the right password (`UsersController::beforeFilter`). Knowing that the admin is called `admin` is enough to keep them out.
 
     *Found while writing the tests:* the wrong-password test locked out the admin account the other tests use.
+
+    *Fixed in step 4:* failed attempts are counted per username **and** IP address, so whoever fails only locks themselves out.
+    - **Which address:** `$_SERVER['REMOTE_ADDR']`, the other end of the connection, which a client can't choose. Two CakePHP helpers looked like the obvious choice, and both would have let an attacker send a new address with every attempt and never be locked out:
+        - `RequestHandler::getClientIP()` prefers the `Client-IP` and `ClientAddress` request headers, even in its default "safe" mode.
+        - `env('REMOTE_ADDR')` returns the `PC-Remote-Addr` header instead when the connection comes from the server's own address, for example from a reverse proxy on the same machine.
+    - **The cache key** is a hash of the username and the address, so what was typed as a username no longer ends up in a cache file name.
+    - **The tests:** a new test fails five times through the relay, then checks that the relay's address is locked and that the owner still logs in directly. It failed before the fix: the owner was locked out too. A second test sends a new forged address in `Client-IP`, `ClientAddress` and `X-Forwarded-For` with each attempt and expects the lockout anyway.
+    - **Each layer checked:** with `getClientIP()` swapped in, the forged-header test failed. The `env()` behavior can't be reached over the network from the tests, because the request would have to come from the server's own address. It was checked by hand instead: with the same address for client and server, `env('REMOTE_ADDR')` returned the forged header.
+    - **Behind a reverse proxy,** `REMOTE_ADDR` is the proxy's address, and every visitor would share one counter per username again. The web server then has to restore the client's address from the proxy's header, trusting only that proxy: `mod_remoteip` in Apache, the realip module in nginx.
+    - **Trade-off:** an attacker spread over many addresses gets 5 attempts per address every 5 minutes. Rate limiting at the proxy, or a higher limit per username across all addresses, would cover that. It isn't built here.
 
 **Fixed in this project:**
 - **Fixed in code:** 1, 2, 4, 6 and 8. For 8, failed attempts are counted per username *and* IP address, so an attacker only locks out themselves.
