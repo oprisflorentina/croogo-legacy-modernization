@@ -12,6 +12,7 @@
  * @link     http://www.croogo.org
  *
  * @property AuthComponent $Auth
+ * @property User $User
  */
 class UsersController extends AppController {
 /**

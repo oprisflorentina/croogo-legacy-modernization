@@ -10,6 +10,10 @@
  * @author   Fahad Ibnay Heylaal <contact@fahad19.com>
  * @license  http://www.opensource.org/licenses/mit-license.php The MIT License
  * @link     http://www.croogo.org
+ *
+ * @property Role $Role
+ * @method array|false findById(mixed $id)
+ * @method array|false findByUsername(string $username)
  */
 class User extends AppModel {
 /**

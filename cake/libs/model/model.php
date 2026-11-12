@@ -1149,7 +1149,7 @@ class Model extends Overloadable {
  * @param string $name Name of field to get
  * @param array $conditions SQL conditions (defaults to NULL)
  * @param string $order SQL ORDER BY fragment
- * @return string field contents, or false if not found
+ * @return mixed field contents, or false if not found
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-with-CakePHP/Models.html#Retrieving-Your-Data#field-1028
  */
@@ -2083,7 +2083,7 @@ class Model extends Overloadable {
  *  Note: find(list) + database views have issues with MySQL 5.0. Try upgrading to MySQL 5.1 if you
  *  have issues with database views.
  *
- * @param array $conditions SQL conditions array, or type of find operation (all / first / count /
+ * @param string|array|null $conditions SQL conditions array, or type of find operation (all / first / count /
  *    neighbors / list / threaded)
  * @param mixed $fields Either a single string of a field name, or an array of field names, or
  *    options for matching
@@ -2094,7 +2094,7 @@ class Model extends Overloadable {
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-with-CakePHP/Models.html#find
  */
 	public function find($conditions = null, $fields = [], $order = null, $recursive = null) {
-		if (!is_string($conditions) || (is_string($conditions) && !array_key_exists($conditions, $this->_findMethods))) {
+		if (!is_string($conditions) || !array_key_exists($conditions, $this->_findMethods)) {
 			$type = 'first';
 			$query = array_merge(compact('conditions', 'fields', 'order', 'recursive'), ['limit' => 1]);
 		} else {
