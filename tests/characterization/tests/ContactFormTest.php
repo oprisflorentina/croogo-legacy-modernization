@@ -67,6 +67,18 @@ final class ContactFormTest extends CroogoTestCase
         $this->assertSame(0, $this->emailsContaining($marker)['messages_count']);
     }
 
+    /** An empty email address gets the same message as an invalid one, and nothing is sent. */
+    public function testEmptyEmailAddressIsRefused(): void
+    {
+        $marker = $this->unique('contact-no-email');
+        $this->sendContactMessage('Visitor ' . $marker, '', 'Subject ' . $marker, 'Hello ' . $marker);
+
+        $this->assertStringNotContainsString('Your message has been received', $this->pageText());
+        $this->assertStringContainsString('Please provide a valid email address.', $this->pageText());
+        $this->assertStringNotContainsString('This field cannot be left blank.', $this->pageText());
+        $this->assertSame(0, $this->emailsContaining($marker)['messages_count']);
+    }
+
     /**
      * The form used to run htmlspecialchars() on the name, subject and message
      * before validating and emailing them, so the plain-text email showed
