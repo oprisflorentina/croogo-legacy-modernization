@@ -71,7 +71,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 26 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 27 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
@@ -94,7 +94,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, and forged address headers don't get around it. |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API) |
-| `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. |
+| `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. CakePHP's web test runner `/test.php` is gone too. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
 
 **Built to run again and again:**
@@ -287,6 +287,7 @@ These come from reading the code, then checking it against the running app (step
 
     *Fixed in step 4:*
     - **Debug:** `core.php` reads `CROOGO_DEBUG`, so production mode is the default and development has to opt in. With debug off, CakePHP's old web test runner `/test.php` stops at "Debug setting does not allow access". With debug on, it showed a PHP parse error with server paths.
+    - **The web test runner is removed.** `/test.php` could only fail: SimpleTest isn't bundled, and CakePHP's own test library in `cake/tests/` was never ported to PHP 8. Its address now gets the error page, like any unknown address, and a test in `KnownIssuesTest` checks that. The test failed first on the parse error. `cake/tests/` stays where it is, unreachable from the web: the root `.htaccess` sends every request into `app/webroot/`.
     - **Secrets from the environment:** `CROOGO_SECURITY_SALT` and `CROOGO_CIPHER_SEED` replace the values in `core.php`, so they don't have to be stored in the repository. An installed site with debug off refuses to start with the published values.
         - Before installation it still starts, because the installer is what replaces them.
         - Checked by hand in throwaway containers: production mode without its own secrets answered 500 and logged which variables to set. With them, the site worked.
