@@ -89,11 +89,31 @@ class UsersController extends AppController {
  *
  * Hashed, so what was typed as the username never ends up in a file name.
  *
- * @param string $username Username as typed
+ * @param mixed $username Username as typed
  * @return string
  */
 	protected function _failedLoginsKey($username) {
-		return 'auth_failed_' . sha1($username . '|' . ($_SERVER['REMOTE_ADDR'] ?? ''));
+		return 'auth_failed_' . sha1($this->_accountName($username) . '|' . ($_SERVER['REMOTE_ADDR'] ?? ''));
+	}
+
+/**
+ * The stored username of the account a typed username logs in to.
+ *
+ * MySQL compares usernames by the column's collation (utf8_unicode_ci), which
+ * ignores case, accents and trailing spaces: "ÀDMIN  " logs in as "admin".
+ * Counting failures per typed string would give every spelling its own
+ * attempts, so the database decides which account it is. A username that
+ * matches no account is counted as typed.
+ *
+ * @param mixed $username Username as typed
+ * @return mixed
+ */
+	protected function _accountName($username) {
+		if (!is_string($username) || $username === '') {
+			return $username;
+		}
+		$stored = $this->User->field('username', ['User.username' => $username]);
+		return is_string($stored) ? $stored : $username;
 	}
 
 	public function admin_index() {

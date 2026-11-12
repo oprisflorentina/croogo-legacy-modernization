@@ -82,6 +82,37 @@ final class AdminAuthTest extends CroogoTestCase
     }
 
     /**
+     * MySQL compares usernames without regard to case, accents or trailing
+     * spaces (utf8_unicode_ci), so "OWNER", "ówner" and "owner   " all log in
+     * to the account "owner". They have to share one counter: if each
+     * spelling had its own five attempts, trailing spaces alone would let an
+     * attacker keep guessing the password forever.
+     */
+    public function testEverySpellingOfAUsernameSharesOneCounter(): void
+    {
+        $password = 'secret-' . bin2hex(random_bytes(4));
+        $username = $this->createUser('owner', $password);
+        $spellings = [
+            strtoupper($username),
+            ucfirst($username),
+            'ó' . substr($username, 1),
+            $username . ' ',
+            $username . '   ',
+        ];
+
+        try {
+            foreach ($spellings as $spelling) {
+                $this->attemptLogin($spelling, 'wrong');
+                $this->assertStringContainsString('Invalid username or password', $this->pageText(), $spelling);
+            }
+            $this->attemptLogin($username, $password);
+            $this->assertStringContainsString(self::LOCKED, $this->pageText(), 'Five failures under any spelling should lock the account.');
+        } finally {
+            $this->deleteUser($username);
+        }
+    }
+
+    /**
      * The address is the one the connection comes from. Client-IP,
      * ClientAddress and X-Forwarded-For are written by the client, so forging
      * a new address with every attempt must not avoid the lockout. CakePHP's
