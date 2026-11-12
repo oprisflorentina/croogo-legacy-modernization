@@ -196,31 +196,4 @@ final class KnownIssuesTest extends CroogoTestCase
         $this->submit($form);
     }
 
-    private function uploadAttachment(string $file): void
-    {
-        $form = $this->visit('/admin/attachments/add')->filter('#NodeAdminAddForm')->form();
-        $form['data[Node][file]']->upload($file);
-        $this->submit($form);
-    }
-
-    /** @return array{path: string, mime_type: string}|false */
-    private function storedAttachment(string $title): array|false
-    {
-        $query = $this->db()->prepare("SELECT path, mime_type FROM nodes WHERE type = 'attachment' AND title = ?");
-        $query->execute([$title]);
-
-        return $query->fetch(\PDO::FETCH_ASSOC);
-    }
-
-    private function deleteAttachment(string $name): void
-    {
-        // The list shows the attachment's title: the file name without its extension.
-        $title = pathinfo($name, PATHINFO_FILENAME);
-        $delete = $this->visit('/admin/attachments')
-            ->filter('tr')->reduce(fn ($row) => str_contains($row->text(), $title))
-            ->filter('a[href*="/admin/attachments/delete/"]');
-        if ($delete->count() > 0) {
-            $this->browser->click($delete->link());
-        }
-    }
 }

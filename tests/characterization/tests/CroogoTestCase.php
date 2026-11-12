@@ -167,6 +167,36 @@ abstract class CroogoTestCase extends TestCase
         }
     }
 
+    /** Uploads a file through the admin's attachment form. Needs an admin session. */
+    protected function uploadAttachment(string $file): void
+    {
+        $form = $this->visit('/admin/attachments/add')->filter('#NodeAdminAddForm')->form();
+        $form['data[Node][file]']->upload($file);
+        $this->submit($form);
+    }
+
+    /** @return array{path: string, mime_type: string}|false */
+    protected function storedAttachment(string $title): array|false
+    {
+        $query = $this->db()->prepare("SELECT path, mime_type FROM nodes WHERE type = 'attachment' AND title = ?");
+        $query->execute([$title]);
+
+        return $query->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    /** Deletes an attachment from the admin list, if it is there. Needs an admin session. */
+    protected function deleteAttachment(string $name): void
+    {
+        // The list shows the attachment's title: the file name without its extension.
+        $title = pathinfo($name, PATHINFO_FILENAME);
+        $delete = $this->visit('/admin/attachments')
+            ->filter('tr')->reduce(fn ($row) => str_contains($row->text(), $title))
+            ->filter('a[href*="/admin/attachments/delete/"]');
+        if ($delete->count() > 0) {
+            $this->browser->click($delete->link());
+        }
+    }
+
     /** A value no earlier run has used, so tests don't depend on database state. */
     protected function unique(string $prefix): string
     {
