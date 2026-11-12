@@ -2491,18 +2491,6 @@ parameters:
 			path: ../../cake/libs/cake_text.php
 
 		-
-			message: '#^Method CakeText\:\:uuid\(\) has invalid return type RFC\.$#'
-			identifier: class.notFound
-			count: 1
-			path: ../../cake/libs/cake_text.php
-
-		-
-			message: '#^Method CakeText\:\:uuid\(\) should return RFC but returns string\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../cake/libs/cake_text.php
-
-		-
 			message: '#^Offset ''after'' does not exist on string\.$#'
 			identifier: offsetAccess.notFound
 			count: 3
@@ -3218,12 +3206,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../cake/libs/controller/components/email.php
-
-		-
-			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, RFC given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../cake/libs/controller/components/email.php

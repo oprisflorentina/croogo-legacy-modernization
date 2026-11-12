@@ -28,10 +28,12 @@
 class CakeText {
 
 /**
- * Generate a random UUID
+ * Generate a UUID from the time, the process and the server's address. Only
+ * 26 bits are random, from mt_rand(): fine for an identifier, not for a
+ * secret.
  *
  * @see http://www.ietf.org/rfc/rfc4122.txt
- * @return RFC 4122 UUID
+ * @return string RFC 4122 UUID
  * @static
  */
 	public static function uuid() {
