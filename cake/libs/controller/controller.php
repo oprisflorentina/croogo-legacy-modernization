@@ -1242,8 +1242,12 @@ class Controller extends CakeObject {
 /**
  * Called before the controller action.
  *
+ * Empty here, but a hook: the app's controllers do their work in it, so
+ * calling parent::beforeFilter() matters. @phpstan-impure tells PHPStan so.
+ *
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-With-CakePHP/Controllers.html#Callbacks
+ * @phpstan-impure
  */
 	public function beforeFilter() {
 	}
@@ -1251,8 +1255,11 @@ class Controller extends CakeObject {
 /**
  * Called after the controller action is run, but before the view is rendered.
  *
+ * Empty here, but a hook that the app's controllers fill in.
+ *
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-With-CakePHP/Controllers.html#Callbacks
+ * @phpstan-impure
  */
 	public function beforeRender() {
 	}
@@ -1260,8 +1267,11 @@ class Controller extends CakeObject {
 /**
  * Called after the controller action is run and rendered.
  *
+ * Empty here, but a hook that the app's controllers fill in.
+ *
  * @access public
  * @link http://book.cakephp.org/1.3/en/The-Manual/Developing-With-CakePHP/Controllers.html#Callbacks
+ * @phpstan-impure
  */
 	public function afterFilter() {
 	}

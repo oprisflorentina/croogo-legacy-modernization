@@ -19,12 +19,6 @@ parameters:
 			path: ../../app/app_controller.php
 
 		-
-			message: '#^Call to Controller\:\:afterFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/app_controller.php
-
-		-
 			message: '#^Cannot call method initialize\(\) on string\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -97,12 +91,6 @@ parameters:
 			path: ../../app/controllers/attachments_controller.php
 
 		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/controllers/attachments_controller.php
-
-		-
 			message: '#^Access to an undefined property BlocksController\:\:\$Block\.$#'
 			identifier: property.notFound
 			count: 20
@@ -166,12 +154,6 @@ parameters:
 			message: '#^Access to an undefined property CommentsController\:\:\$Session\.$#'
 			identifier: property.notFound
 			count: 24
-			path: ../../app/controllers/comments_controller.php
-
-		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
 			path: ../../app/controllers/comments_controller.php
 
 		-
@@ -499,12 +481,6 @@ parameters:
 			path: ../../app/controllers/nodes_controller.php
 
 		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/controllers/nodes_controller.php
-
-		-
 			message: '#^Call to function compact\(\) contains possibly undefined variable \$node\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -607,12 +583,6 @@ parameters:
 			path: ../../app/controllers/terms_controller.php
 
 		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/controllers/terms_controller.php
-
-		-
 			message: '#^Access to an undefined property TypesController\:\:\$Security\.$#'
 			identifier: property.notFound
 			count: 2
@@ -631,12 +601,6 @@ parameters:
 			path: ../../app/controllers/types_controller.php
 
 		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/controllers/types_controller.php
-
-		-
 			message: '#^Access to an undefined property UsersController\:\:\$Email\.$#'
 			identifier: property.notFound
 			count: 10
@@ -652,18 +616,6 @@ parameters:
 			message: '#^Access to an undefined property UsersController\:\:\$Session\.$#'
 			identifier: property.notFound
 			count: 26
-			path: ../../app/controllers/users_controller.php
-
-		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/controllers/users_controller.php
-
-		-
-			message: '#^Call to Controller\:\:beforeRender\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
 			path: ../../app/controllers/users_controller.php
 
 		-
@@ -1051,12 +1003,6 @@ parameters:
 			path: ../../app/plugins/extensions/controllers/extensions_locales_controller.php
 
 		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/plugins/extensions/controllers/extensions_locales_controller.php
-
-		-
 			message: '#^Offset ''0'' on non\-empty\-list\<string\> in isset\(\) always exists and is not nullable\.$#'
 			identifier: isset.offset
 			count: 1
@@ -1084,12 +1030,6 @@ parameters:
 			message: '#^Access to an undefined property ExtensionsPluginsController\:\:\$Session\.$#'
 			identifier: property.notFound
 			count: 11
-			path: ../../app/plugins/extensions/controllers/extensions_plugins_controller.php
-
-		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
 			path: ../../app/plugins/extensions/controllers/extensions_plugins_controller.php
 
 		-
@@ -1129,12 +1069,6 @@ parameters:
 			path: ../../app/plugins/extensions/controllers/extensions_themes_controller.php
 
 		-
-			message: '#^Call to Controller\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
-			count: 1
-			path: ../../app/plugins/extensions/controllers/extensions_themes_controller.php
-
-		-
 			message: '#^Offset ''0'' on non\-empty\-list\<string\> in isset\(\) always exists and is not nullable\.$#'
 			identifier: isset.offset
 			count: 1
@@ -1161,12 +1095,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property InstallController\:\:\$folder\.$#'
 			identifier: property.notFound
-			count: 1
-			path: ../../app/plugins/install/controllers/install_controller.php
-
-		-
-			message: '#^Call to InstallAppController\:\:beforeFilter\(\) on a separate line has no effect\.$#'
-			identifier: staticMethod.resultUnused
 			count: 1
 			path: ../../app/plugins/install/controllers/install_controller.php
 
