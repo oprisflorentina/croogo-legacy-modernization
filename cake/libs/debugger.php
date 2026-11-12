@@ -499,7 +499,7 @@ class Debugger extends CakeObject {
 				return '"' . h($var) . '"';
 			break;
 			case 'object':
-				return get_class($var) . "\n" . $_this->__object($var);
+				return $var::class . "\n" . $_this->__object($var);
 			case 'array':
 				$var = array_merge($var,  array_intersect_key([
 					'password' => '*****',
