@@ -170,6 +170,20 @@ final class KnownIssuesTest extends CroogoTestCase
         $this->assertStringNotContainsString('Filemanager', $this->pageText(), 'Its ACL records should be gone.');
     }
 
+    /**
+     * Part of security finding 6. CakePHP's web test runner could only fail:
+     * SimpleTest isn't bundled, and CakePHP's own test library was never
+     * ported to PHP 8. With debug on it printed a parse error with server
+     * paths. Now it gets the error page, like any unknown address.
+     */
+    public function testCakeWebTestRunnerIsGone(): void
+    {
+        $this->visit('/test.php');
+
+        $this->assertStringContainsString('The requested address was not found on this server.', $this->pageText());
+        $this->assertSame('Errors » Croogo', $this->title());
+    }
+
     private function postComment(string $name, string $website, string $body): void
     {
         $form = $this->visit('/blog/hello-world')->selectButton('Post comment')->form([
