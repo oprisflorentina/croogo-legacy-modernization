@@ -1,0 +1,58 @@
+# Runs on every push and pull request. Both jobs use the same Docker Compose
+# services as a local run, so CI checks exactly what a developer runs.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Characterization tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      # On Linux the checkout belongs to the runner's user, and Apache runs as
+      # www-data, so the attachment tests couldn't store their uploads.
+      # Docker Desktop on Windows and macOS doesn't enforce this.
+      - name: Let the web server write to uploads
+        run: chmod -R a+w app/webroot/uploads
+
+      - name: Start the app and wait for the database
+        run: docker compose up -d --build --wait
+
+      - name: Install the test dependencies
+        run: docker compose run --rm tests composer install --no-interaction --no-progress
+
+      - name: Load every class on PHP 8.3
+        run: docker compose exec -T php83 php tools/check-declarations.php
+
+      - name: Run the characterization tests
+        run: docker compose run --rm tests
+
+      - name: Show the logs
+        if: failure()
+        run: docker compose logs php83 db
+
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install PHPStan and Rector
+        run: docker compose run --rm --no-deps quality composer install --no-interaction --no-progress
+
+      - name: Analyse at level 5 against the baseline
+        run: docker compose run --rm --no-deps quality vendor/bin/phpstan analyse --memory-limit=2G --no-progress

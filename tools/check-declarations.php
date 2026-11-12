@@ -74,3 +74,4 @@ foreach ($files as $file) {
     }
 }
 echo count($files), " files loaded, $failed with fatal errors\n";
+exit($failed > 0 ? 1 : 0);
