@@ -73,7 +73,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 37 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 41 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
@@ -97,6 +97,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, forged address headers don't get around it, and every spelling of a username counts against the same account. |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; an attachment whose stored name has no extension is listed as `file` |
 | `ContactFormTest` | The public contact form, which is the first area to move to Symfony. A message reaches the site owner by email, checked through Mailpit's API: the subject, the sender, and every line of the body. Missing fields are named, and nothing is sent until they pass. The email shows what was typed, and a name that looks like an address can't change the sender. With archiving on, the message is stored as typed and escaped in the admin. |
+| `LegacyLayoutTest` | `/legacy-layout`, Croogo's layout around two placeholders, which Symfony fills in. It renders for the page it's asked for: the main menu marks that page, and a block limited to some pages appears only for them. Anything but a plain path on this site renders for the home page. |
 | `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. CakePHP's web test runner `/test.php` is gone too, and so is CakePHP 1.2's `js/vendors.php`. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Both resets refuse a password shorter than 6 characters and keep the old hash. The `password` column has room for 255 characters. Added with the password migration in step 4. |
 
@@ -255,6 +256,16 @@ The first area to move is the public contact form at `/contact`. It's small, and
 - **Its own PHP-FPM container,** the `symfony` service in `compose.yaml`. It has the same `clear_env = no` fix as Croogo's container, because Symfony reads `APP_ENV` and `APP_SECRET` from the environment. `var/`, which holds the cache and logs, is a volume, owned by PHP-FPM's user.
 - **No secret in git.** Symfony's recipe generated a random `APP_SECRET` into a committed `.env.dev`. That file is removed; `compose.yaml` sets a throwaway local value, as it does for Croogo's salts.
 - **Not routed yet.** nginx still sends every address to Croogo, so the 37 tests ran against Croogo as before. Checked by hand: a temporary nginx location for one throwaway address reached Symfony through PHP-FPM and got its dev-mode "No route found" page, showing that the environment reaches the workers. Then the config was restored.
+
+**The layout Symfony borrows,** `/legacy-layout` in Croogo (`LegacyLayoutController`):
+- **What it renders:** Croogo's normal page, with `%%LEGACY_LAYOUT_TITLE%%` as the title and `<!--%%LEGACY_LAYOUT_CONTENT%%-->` as the content. Symfony will fetch it, put its own title and content in their place, and cache the result for a short time.
+- **Rendered for the visitor's page.** The main menu marks the current page, and blocks can be limited to some pages. Both read the path being viewed, so the page to render for is passed as `?path=/contact`.
+    - Auth and CakePHP's Security component check the request at its own address first. Inside the action, the path is switched, and the Croogo component rebuilds the blocks for it.
+    - Only a plain path on this site is accepted. `//evil.example`, `javascript:` and markup fall back to the home page.
+- **Rendered for an anonymous visitor.** The request comes from Symfony, not from the visitor's browser. That matters only if a block is limited to some roles; none are in the sample data.
+- **The tests** check the placeholders and the sidebar, the marked menu link for two paths, the rejected paths, and a block limited to `/contact` through the admin. All failed first, and removing each part of the action (the path switch, the block rebuild, the path check) failed its test.
+- **A `noindex` header** keeps search engines from listing this page. Symfony doesn't copy headers, only the HTML.
+- **PHPStan:** the new controller hit a false positive. PHPStan saw `parent::beforeFilter()` as a call with no effect, because CakePHP's `Controller` declares its hooks empty. Marking `beforeFilter()`, `beforeRender()` and `afterFilter()` as `@phpstan-impure` at the source fixed the new code and removed the same false positive from 12 places in the baseline, from 3,437 findings to 3,425.
 
 ## Structure
 
