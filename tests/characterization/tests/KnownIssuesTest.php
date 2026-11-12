@@ -185,6 +185,25 @@ final class KnownIssuesTest extends CroogoTestCase
         $this->assertSame('Errors » Croogo', $this->title());
     }
 
+    /**
+     * CakePHP 1.2's js/vendors.php served files named in its URL from
+     * app/vendors/javascript/. That folder doesn't exist, so the script only
+     * ever answered an empty 404, but a script that reads files by name has
+     * no place in the web root. Now the address gets the error page, like any
+     * unknown address.
+     */
+    public function testCakeVendorsScriptIsGone(): void
+    {
+        $this->visit('/js/vendors.php?file=' . urlencode('scripts/app.js'));
+
+        $this->assertStringContainsString(
+            'The requested address was not found on this server.',
+            $this->browser->getInternalResponse()->getContent(),
+            'Expected the error page, got status ' . $this->statusCode() . '.',
+        );
+        $this->assertSame('Errors » Croogo', $this->title());
+    }
+
     private function postComment(string $name, string $website, string $body): void
     {
         $form = $this->visit('/blog/hello-world')->selectButton('Post comment')->form([
