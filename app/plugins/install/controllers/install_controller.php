@@ -225,7 +225,7 @@ class InstallController extends InstallAppController {
 			require LIBS . 'security.php';
 		}
 		// random_bytes() and random_int() use the operating system's secure
-		// generator. mt_rand() and the uuid() behind generateAuthKey() don't.
+		// generator. mt_rand() doesn't.
 		// The seed stays within PHP's integer range, as srand() expects.
 		$salt = bin2hex(random_bytes(20));
 		$seed = (string)random_int(1000000000, PHP_INT_MAX);

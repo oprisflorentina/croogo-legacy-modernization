@@ -7702,12 +7702,6 @@ parameters:
 			path: ../../cake/libs/security.php
 
 		-
-			message: '#^Parameter \#1 \$string of static method Security\:\:hash\(\) expects string, RFC given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../cake/libs/security.php
-
-		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
 			count: 3

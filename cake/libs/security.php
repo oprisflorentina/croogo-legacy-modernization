@@ -74,15 +74,18 @@ class Security extends CakeObject {
 /**
  * Generate authorization hash.
  *
+ * The key behind the Security component's form tokens, which also guards the
+ * admin's delete links. It used to be the hash of a time-based UUID whose
+ * only random part was 26 bits from mt_rand(), which isn't a secure
+ * generator. random_bytes() uses the operating system's; 20 bytes keep the
+ * 40-character format of a SHA-1 hash.
+ *
  * @return string Hash
  * @access public
  * @static
  */
 	public static function generateAuthKey() {
-		if (!class_exists('CakeText')) {
-			App::import('Core', 'CakeText');
-		}
-		return Security::hash(CakeText::uuid());
+		return bin2hex(random_bytes(20));
 	}
 
 /**
