@@ -34,15 +34,25 @@ jobs:
       - name: Install the test dependencies
         run: docker compose run --rm tests composer install --no-interaction --no-progress
 
+      # nginx sends /contact to the Symfony app, which needs its vendor/ too.
+      - name: Install the Symfony app's dependencies
+        run: docker compose run --rm --no-deps -w /app/symfony quality composer install --no-interaction --no-progress
+
       - name: Load every class on PHP 8.3
         run: docker compose exec -T php83 php tools/check-declarations.php
+
+      # Every service gets what its constructor asks for, and the templates parse.
+      - name: Check the Symfony app's container and templates
+        run: |
+          docker compose exec -T -u www-data symfony php bin/console lint:container
+          docker compose exec -T -u www-data symfony php bin/console lint:twig templates
 
       - name: Run the characterization tests
         run: docker compose run --rm tests
 
       - name: Show the logs
         if: failure()
-        run: docker compose logs web php83 db
+        run: docker compose logs web php83 symfony db
 
   static-analysis:
     name: PHPStan and Rector
