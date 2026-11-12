@@ -43,7 +43,7 @@ You need Docker.
 docker compose up -d --build
 ```
 
-- **Site:** http://localhost:8083 (PHP 8.3)
+- **Site:** http://localhost:8083 (PHP 8.3 as PHP-FPM, behind nginx)
 - **Admin:** http://localhost:8083/admin, user `admin`, password `password`. This is the account from Croogo's sample data (see security finding 6).
 - **Email:** http://localhost:8025 shows every email the app sends, caught by [Mailpit](https://mailpit.axllent.org/) instead of being delivered.
 - **Reset:** `docker compose down -v` wipes the database, and the next `up` starts from the sample data again.
@@ -178,7 +178,7 @@ The tag `php83` marks the end of this step.
 A long-running local setup hides three things that a fresh CI machine runs into:
 
 - **A database that isn't ready yet.** On its first start, MySQL loads the sample data into a temporary server with networking off, then restarts. `compose.yaml` gives the database a healthcheck that pings it over TCP, and the app starts only once it answers. This also helps locally, after `docker compose down -v`.
-- **File ownership.** On Linux the checkout belongs to the runner's user, and Apache runs as `www-data`, so the workflow makes `app/webroot/uploads` writable before the attachment tests. Docker Desktop on Windows and macOS doesn't enforce this. On Linux, do the same locally.
+- **File ownership.** On Linux the checkout belongs to the runner's user, and PHP runs as `www-data` (Apache's at first, PHP-FPM's since step 6), so the workflow makes `app/webroot/uploads` writable before the attachment tests. Docker Desktop on Windows and macOS doesn't enforce this. On Linux, do the same locally.
 - **Files git doesn't track.** The first run failed in PHPStan: `cake/basics.php` includes `app/config/database.php`, which git ignores, and locally Docker had left an empty placeholder there. A rehearsal on a fresh clone missed it, because it started the app before running PHPStan. PHPStan now skips the "included file exists" check for that one include, which only runs after a `file_exists()` check.
 
 **Rector joined CI after one leftover was settled.** Its dry run still proposed `get_class($var)` to `$var::class` in `Debugger::exportVar()`. Rector had made that change, and the PHPStan fixes turned it back, because the docblock then said `$var` was a string, so PHPStan rejected `::class`. The docblock now says `mixed`, and the line sits under `case 'object':`, so the change is safe and is applied. Checked by hand: `exportVar()` still prints an object's class and properties.
@@ -207,6 +207,31 @@ Smaller problems noticed while working on step 4, each fixed in its own commit w
     - **Each layer checked:** without `beforeSave()`, passwords were stored as typed and 4 tests failed. With `AuthComponent` hashing early again, they were hashed twice and 6 failed.
     - **Checked by hand:** the installer's path, a `saveField()` of the password, isn't reached by the tests, because Docker seeds the database. Run through the `User` model on a throwaway user, it stored one bcrypt hash that verifies.
 - **`app/webroot/js/vendors.php` is removed.** It's a CakePHP 1.2 script that served JavaScript files named in its URL from `app/vendors/javascript/`. That folder doesn't exist, so it only ever answered an empty 404. Still, a script that reads files by name has no place in the web root. Found while inventorying finding 7. Its address now gets the error page, like any unknown address, and a test in `KnownIssuesTest` checks that. The test failed first on the empty 404.
+
+## nginx and PHP-FPM (step 6)
+
+Apache with mod_php ran PHP inside the web server. Now nginx, the `web` service, serves the files in `app/webroot` itself and passes PHP requests to a separate PHP-FPM container, `php83`, over FastCGI. This step changes only the server, so that if a later step breaks something, the server can be ruled out. The 33 characterization tests passed without any change on the first run. Only the address they talk to moved from `php83` to `web`, in `compose.yaml`.
+
+**What nginx repeats,** because it doesn't read `.htaccess` files ([`docker/nginx/default.conf`](docker/nginx/default.conf)):
+
+| Under Apache | Under nginx |
+| --- | --- |
+| The root `.htaccess` rewrites every request into `app/webroot/`. | `app/webroot` is the document root. It's also the only folder the nginx container gets, read-only. |
+| `app/webroot/.htaccess` sends anything that isn't a file or a folder to `index.php?url=…`. | `try_files $uri $uri/ /index.php?url=$uri&$args`. A missing `.php` file is an unknown address too, as before. |
+| `uploads/.htaccess` turns PHP off and refuses script extensions. | `location ^~ /uploads/` never passes anything to PHP, and script extensions get 403. |
+| Debian's Apache configuration refuses `.ht*` files. | The same, with `deny all`. |
+
+**Three things that would have broken quietly:**
+- **The environment.** PHP-FPM starts its workers with an empty environment by default (`clear_env`). The app reads `CROOGO_DEBUG` and its secrets with `getenv()`, so it would have run in production mode with CakePHP's published salt, and refused to start. `docker/php83/croogo-pool.conf` keeps the container's environment, as mod_php did.
+- **Upload size.** nginx refuses request bodies over 1 MB unless told otherwise; Apache had no limit of its own. It's set to 8 MB, PHP's `post_max_size`.
+- **Start-up order.** PHP-FPM gets a healthcheck, and nginx starts only once it accepts connections, so the first requests don't get a 502.
+
+`SERVER_NAME` is set to the host name the browser asked for, as Apache did. Croogo uses it in the registration email's sender address.
+
+**Checked by hand:**
+- **`uploads/`:** a PHP probe there answered 403. With the deny rule removed, nginx served its source as text. With `^~` removed as well, PHP ran it and printed `php-exec-42`. Both `.htaccess` files answered 403.
+- **The environment:** a temporary probe showed the four `CROOGO_*` variables reach PHP, and that one that isn't set stays unset.
+- **Production mode,** in throwaway containers on ports 8098 and 8099. With no variables at all, the site answered 500 and logged which ones to set. With only its own secrets, it worked.
 
 ## Structure
 
@@ -325,7 +350,7 @@ These come from reading the code, then checking it against the running app (step
     - **No PHP in `uploads/`:** `webroot/uploads/.htaccess` switches PHP off and denies script extensions. It covers any other way a file could get there.
         - Checked by hand, because the HTTP tests can't put a file into that folder. A PHP probe placed there answered **403** with the file and printed `php-exec-42` without it.
         - Croogo's `app/.gitignore` ignores the uploads folder, so this one file is added to git on purpose.
-        - nginx ignores `.htaccess`, so step 6 has to repeat the rule in the nginx config.
+        - nginx ignores `.htaccess`, so step 6 repeats the rule in the nginx config. See [nginx and PHP-FPM](#nginx-and-php-fpm-step-6).
 5. **The file manager can edit any file under `app/`,** PHP code included. It is a feature, but in practice it means code execution for anyone with an admin session. The modernized version should remove it or limit it to theme assets. `_isEditable()` also matches by prefix, so `/app` would match `/app_backup`.
 
     *Resolved in step 4 by removing the File Manager,* together with finding 3:
@@ -408,7 +433,7 @@ Each step ends with a commit and, where noted, a tag.
 | 3 | Characterization tests: HTTP tests (PHPUnit) in a separate PHP 8.3 container that don't depend on the app's code | |
 | 4 | PHP 8.3: the core first, then Croogo, Rector, PHPStan with a baseline, password migration, security fixes | `php83` |
 | 5 | CI on GitHub Actions: tests and PHPStan on every push | |
-| 6 | Apache with mod_php replaced by nginx + PHP-FPM, keeping the `.htaccess` rules (friendly URLs, no PHP in `uploads/`) | |
+| 6 | Apache with mod_php replaced by nginx + PHP-FPM, keeping the `.htaccess` rules (friendly URLs, no PHP in `uploads/`). Done, see [nginx and PHP-FPM](#nginx-and-php-fpm-step-6) | |
 | 7 | One area moved to Symfony 7 behind the same nginx, on the same database (strangler fig) | |
 
 ## How this was built
