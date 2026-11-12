@@ -173,7 +173,7 @@ The tag `php83` marks the end of this step.
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request. It uses the same Docker Compose services as a local run, in two jobs:
 
 - **Characterization tests:** builds the stack, waits for the database, and loads every class on PHP 8.3 with `tools/check-declarations.php`, which fails the job if one doesn't load. Then it runs the 27 tests. If anything fails, the job prints the app's and the database's logs.
-- **PHPStan:** level 5 against the baseline.
+- **PHPStan and Rector:** PHPStan at level 5 against the baseline. Then Rector's dry run, which fails if new or changed code misses one of the PHP 8.3 rules the rest of the code already follows.
 
 A long-running local setup hides three things that a fresh CI machine runs into:
 
@@ -181,7 +181,7 @@ A long-running local setup hides three things that a fresh CI machine runs into:
 - **File ownership.** On Linux the checkout belongs to the runner's user, and Apache runs as `www-data`, so the workflow makes `app/webroot/uploads` writable before the attachment tests. Docker Desktop on Windows and macOS doesn't enforce this. On Linux, do the same locally.
 - **Files git doesn't track.** The first run failed in PHPStan: `cake/basics.php` includes `app/config/database.php`, which git ignores, and locally Docker had left an empty placeholder there. A rehearsal on a fresh clone missed it, because it started the app before running PHPStan. PHPStan now skips the "included file exists" check for that one include, which only runs after a `file_exists()` check.
 
-**Not in CI yet: Rector.** Its dry run still proposes one change, `get_class($var)` to `$var::class` in `cake/libs/debugger.php`, so it would fail every run until that change is either made or skipped on purpose.
+**Rector joined CI after one leftover was settled.** Its dry run still proposed `get_class($var)` to `$var::class` in `Debugger::exportVar()`. Rector had made that change, and the PHPStan fixes turned it back, because the docblock then said `$var` was a string, so PHPStan rejected `::class`. The docblock now says `mixed`, and the line sits under `case 'object':`, so the change is safe and is applied. Checked by hand: `exportVar()` still prints an object's class and properties.
 
 ## Structure
 
