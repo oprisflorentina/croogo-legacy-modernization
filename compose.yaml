@@ -66,9 +66,20 @@ services:
       APP_ENV: dev
       # Signs CSRF tokens and other values. A throwaway local value.
       APP_SECRET: local-development-symfony-secret-not-for-production
+      # Croogo's database, the same tables and the same user as Croogo.
+      DATABASE_URL: "mysql://croogo:croogo@db:3306/croogo?serverVersion=5.5.62&charset=utf8"
+      # Mailpit catches the email, as it does Croogo's.
+      MAILER_DSN: smtp://mailpit:1025
+      # Where LegacyLayout fetches Croogo's /legacy-layout: through nginx.
+      CROOGO_INTERNAL_URL: http://web
     volumes:
       - ./symfony:/var/www/symfony
       - symfony-var:/var/www/symfony/var
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
 
   mailpit:
     image: axllent/mailpit:v1.33.0

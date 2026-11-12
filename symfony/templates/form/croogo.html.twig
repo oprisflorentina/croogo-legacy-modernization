@@ -1,0 +1,22 @@
+{#
+    Croogo's form markup, so the moved form looks the same and the theme's CSS
+    (form .input, form .error-message) still applies. Each field sits in a
+    div.input with its kind and "required" (every field on this form is). With
+    an error, the div also gets "error", the input gets "form-error", and each
+    message follows in a div.error-message.
+#}
+{% block form_row -%}
+    {%- set kind = 'textarea' in block_prefixes ? 'textarea' : 'text' -%}
+    {%- set widget_attr = errors|length > 0 ? attr|merge({class: (attr.class|default('') ~ ' form-error')|trim}) : attr -%}
+    <div class="input {{ kind }} required{{ errors|length > 0 ? ' error' }}">
+        {{- form_label(form) -}}
+        {{- form_widget(form, {attr: widget_attr}) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock form_row %}
+
+{% block form_errors -%}
+    {%- for error in errors -%}
+        <div class="error-message">{{ error.message }}</div>
+    {%- endfor -%}
+{%- endblock form_errors %}

@@ -1,0 +1,25 @@
+{#
+    The contact page's content, as Croogo's app/views/contacts/view.ctp
+    rendered it. LegacyLayout puts it inside Croogo's layout.
+#}
+{% form_theme form 'form/croogo.html.twig' %}
+<div id="contact-{{ contact.id }}" class="">
+	<h2>{{ contact.title }}</h2>
+	<div class="contact-body">
+	{# HTML an admin wrote in Croogo, shown as HTML, as Croogo does. #}
+	{{ contact.body|raw }}
+	</div>
+{% if contact.acceptsMessages %}
+	<div class="contact-form">
+	{{ form_start(form, {action: path('contact'), attr: {id: 'MessageViewForm', 'accept-charset': 'utf-8'}}) }}
+	{{ form_errors(form) }}
+	{{ form_row(form.Message.name) }}
+	{{ form_row(form.Message.email) }}
+	{{ form_row(form.Message.title) }}
+	{{ form_row(form.Message.body) }}
+	<div class="submit"><input type="submit" value="Send" /></div>
+	{# form_end also renders the hidden CSRF token. #}
+	{{ form_end(form) }}
+	</div>
+{% endif %}
+</div>
