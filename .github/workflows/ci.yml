@@ -42,7 +42,7 @@ jobs:
 
       - name: Show the logs
         if: failure()
-        run: docker compose logs php83 db
+        run: docker compose logs web php83 db
 
   static-analysis:
     name: PHPStan and Rector
