@@ -73,7 +73,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 29 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 30 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
@@ -97,7 +97,7 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, forged address headers don't get around it, and every spelling of a username counts against the same account. |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API); an attachment whose stored name has no extension is listed as `file` |
 | `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. CakePHP's web test runner `/test.php` is gone too. |
-| `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Added with the password migration in step 4. |
+| `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. The `password` column has room for 255 characters. Added with the password migration in step 4. |
 
 **Built to run again and again:**
 - Every run uses fresh random values.
@@ -162,7 +162,7 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
     - **PHPStan:** the baseline went from 3,696 to 3,683 findings. `identify()`'s docblock now says it can return `null` or `false`.
     - **Not done, on purpose:**
         - A login for an unknown username skips the hash check, so it answers faster. That isn't hidden, because Croogo already shows every username on public profile pages (`/user/<name>`).
-        - The `password` column stays `varchar(100)`. That fits bcrypt (60 characters) and Argon2id (about 97). PHP recommends 255 for future algorithms.
+        - The `password` column stayed `varchar(100)`. That fits bcrypt (60 characters) and Argon2id (about 97). PHP recommends 255 for future algorithms. *Widened later,* see [Follow-ups](#follow-ups-after-the-php-83-step).
 
 9. **Security fixes,** one commit each and each with its test, for the findings picked in step 1. They're described under [Security findings](#security-findings): findings 2, 4, 6 and 8 were fixed in code, and the File Manager was removed for findings 3 and 5.
 
@@ -196,6 +196,10 @@ Smaller problems noticed while working on step 4, each fixed in its own commit w
     - **The fix:** `generateAuthKey()` now returns 20 bytes from `random_bytes()`, as hex: the same 40-character format, but random. `uuid()` stays as it was, because its other uses are identifiers, not secrets. Its docblock now says so.
     - **Checked by hand,** because nothing about it shows over HTTP. Three UUIDs made in a row shared the same seconds, process ID and address, and with the same `mt_rand()` seed, two UUIDs differed only in their microseconds. After the fix, the keys don't depend on `mt_rand()`. All 29 tests still pass, and every form submission and admin delete in them goes through these tokens.
     - **PHPStan:** `uuid()`'s docblock said `@return RFC 4122 UUID`, which PHPStan read as a class named `RFC`. Correcting it and dropping the old code took the baseline from 3,441 to 3,437.
+- **The `password` column is 255 characters wide.** It was `varchar(100)`, enough for bcrypt and Argon2id, but `PASSWORD_DEFAULT` can move to a stronger algorithm with a longer hash, and PHP's documentation recommends 255. A longer hash in a 100-character column would be cut off, and nobody could log in.
+    - **Fresh installs:** `croogo.sql`, which Docker loads, and `schema.php`, which the installer uses.
+    - **Existing databases:** `app/config/schema/sql/upgrades/2026-11-12-widen-password-column.sql`. Checked by hand on this database: the column changed, the stored hashes stayed intact, and a second run changed nothing.
+    - **The test** reads the column's length from MySQL's `information_schema`. It failed with 100 first.
 
 ## Structure
 
