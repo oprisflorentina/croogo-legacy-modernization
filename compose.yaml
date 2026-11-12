@@ -23,8 +23,10 @@ services:
       - ./docker/php83/database.php:/var/www/html/app/config/database.php:ro
       - php83-tmp:/var/www/html/app/tmp
     depends_on:
-      - db
-      - mailpit
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
 
   mailpit:
     image: axllent/mailpit:v1.33.0
@@ -44,6 +46,14 @@ services:
       - ./app/config/schema/sql/croogo.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./app/config/schema/sql/croogo_data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
       - db-data:/var/lib/mysql
+    # On its first start, MySQL loads the files above into a temporary server
+    # with networking off, then restarts. A ping over TCP only answers once
+    # the data is in and the real server is up, so the app waits for that.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
 
   # Characterization tests: docker compose run --rm tests
   tests:
