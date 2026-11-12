@@ -73,7 +73,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 33 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 37 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
@@ -95,7 +95,8 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | `AdminUsersTest` | An admin creates a user, who can then log in, and can't give a new user a password shorter than 6 characters. Added when PHPStan showed that user validation was broken on PHP 8. |
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, forged address headers don't get around it, and every spelling of a username counts against the same account. |
-| `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API); an attachment whose stored name has no extension is listed as `file` |
+| `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; an attachment whose stored name has no extension is listed as `file` |
+| `ContactFormTest` | The public contact form, which is the first area to move to Symfony. A message reaches the site owner by email, checked through Mailpit's API: the subject, the sender, and every line of the body. Missing fields are named, and nothing is sent until they pass. The email shows what was typed, and a name that looks like an address can't change the sender. With archiving on, the message is stored as typed and escaped in the admin. |
 | `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. CakePHP's web test runner `/test.php` is gone too, and so is CakePHP 1.2's `js/vendors.php`. |
 | `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Both resets refuse a password shorter than 6 characters and keep the old hash. The `password` column has room for 255 characters. Added with the password migration in step 4. |
 
@@ -232,6 +233,22 @@ Apache with mod_php ran PHP inside the web server. Now nginx, the `web` service,
 - **`uploads/`:** a PHP probe there answered 403. With the deny rule removed, nginx served its source as text. With `^~` removed as well, PHP ran it and printed `php-exec-42`. Both `.htaccess` files answered 403.
 - **The environment:** a temporary probe showed the four `CROOGO_*` variables reach PHP, and that one that isn't set stays unset.
 - **Production mode,** in throwaway containers on ports 8098 and 8099. With no variables at all, the site answered 500 and logged which ones to set. With only its own secrets, it worked.
+
+## Moving the contact form to Symfony (step 7, in progress)
+
+The first area to move is the public contact form at `/contact`. It's small, and it uses the parts of Symfony most applications need: forms, validation, CSRF protection and the mailer.
+
+**Decided before any Symfony code:**
+- **The page layout stays Croogo's.** Croogo's sidebar is built from shortcodes (`[menu:meta]`, `[vocabulary:categories]`, `[node:recent_posts …]`), so rebuilding it in Twig would mean a second copy of the layout to keep in sync. Instead, Symfony will fetch the layout from Croogo and put its form inside, a technique called transclusion. Rebuilding the layout can come later, when more of the site has moved.
+- **The escaping bug is fixed in Croogo first,** so the tests pin the right behavior and Symfony never has to copy a bug to pass them.
+- **Akismet and the captcha aren't moved.** Both are off in the sample data. The captcha is reCAPTCHA v1, which Google shut down in 2018, and Akismet needs an API key. A modern replacement can be its own step.
+
+**Done so far, in Croogo:**
+- **More tests first.** `ContactFormTest` gathers everything about the form. Before any change, it recorded the exact email (the link back, one line per field, the visitor's IP address, the sender) and the validation messages, and that nothing is sent until they pass. These are the tests Symfony will have to pass unchanged.
+- **The contact form had the comments' escaping bug** (security finding 2): it ran `htmlspecialchars()` on the name, subject and message before validating, emailing and storing them. The plain-text email showed `&amp;` and `&lt;`, and archived messages were stored as entities.
+    - **Fixed in three layers:** the controller keeps the text as typed. The `From` header quotes the visitor's name when it contains a character that means something in an address. The admin's message list escapes the name, email and subject.
+    - **The quoting matters.** The encoding had also been keeping the name harmless in the `From` header. Without the quotes, a visitor named `Boss <boss@your-site.com>` would be the sender as far as Mailpit, and any mail client, can tell: the check showed `boss@your-site.com`.
+    - **The tests:** one checks the email's text and sender with `O'Brien & "Sons" <boss@your-site.com>` as the name. Another switches archiving on through the admin, then checks the stored row and the admin list. Both failed first. Each layer was then removed on its own, and its test failed.
 
 ## Structure
 
@@ -434,7 +451,7 @@ Each step ends with a commit and, where noted, a tag.
 | 4 | PHP 8.3: the core first, then Croogo, Rector, PHPStan with a baseline, password migration, security fixes | `php83` |
 | 5 | CI on GitHub Actions: tests and PHPStan on every push | |
 | 6 | Apache with mod_php replaced by nginx + PHP-FPM, keeping the `.htaccess` rules (friendly URLs, no PHP in `uploads/`). Done, see [nginx and PHP-FPM](#nginx-and-php-fpm-step-6) | |
-| 7 | One area moved to Symfony 7 behind the same nginx, on the same database (strangler fig) | |
+| 7 | One area moved to Symfony 7 behind the same nginx, on the same database (strangler fig). In progress: the contact form, see [Moving the contact form to Symfony](#moving-the-contact-form-to-symfony-step-7-in-progress) | |
 
 ## How this was built
 
