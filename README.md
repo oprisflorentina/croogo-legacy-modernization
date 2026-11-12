@@ -1,5 +1,7 @@
 # Croogo 1.3 legacy modernization
 
+[![CI](https://github.com/oprisflorentina/croogo-legacy-modernization/actions/workflows/ci.yml/badge.svg)](https://github.com/oprisflorentina/croogo-legacy-modernization/actions/workflows/ci.yml)
+
 This repository takes a 2012-era PHP application, the Croogo 1.3 CMS on CakePHP 1.3, and modernizes it step by step:
 
 1. **Run it as it was:** the original code in Docker, plus tests that capture its behavior.
@@ -165,6 +167,21 @@ The suite passed three runs in a row on the same database. Writing it surfaced t
 9. **Security fixes,** one commit each and each with its test, for the findings picked in step 1. They're described under [Security findings](#security-findings): findings 2, 4, 6 and 8 were fixed in code, and the File Manager was removed for findings 3 and 5.
 
 The tag `php83` marks the end of this step.
+
+## Continuous integration
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request. It uses the same Docker Compose services as a local run, in two jobs:
+
+- **Characterization tests:** builds the stack, waits for the database, and loads every class on PHP 8.3 with `tools/check-declarations.php`, which fails the job if one doesn't load. Then it runs the 27 tests. If anything fails, the job prints the app's and the database's logs.
+- **PHPStan:** level 5 against the baseline.
+
+A long-running local setup hides three things that a fresh CI machine runs into:
+
+- **A database that isn't ready yet.** On its first start, MySQL loads the sample data into a temporary server with networking off, then restarts. `compose.yaml` gives the database a healthcheck that pings it over TCP, and the app starts only once it answers. This also helps locally, after `docker compose down -v`.
+- **File ownership.** On Linux the checkout belongs to the runner's user, and Apache runs as `www-data`, so the workflow makes `app/webroot/uploads` writable before the attachment tests. Docker Desktop on Windows and macOS doesn't enforce this. On Linux, do the same locally.
+- **Files git doesn't track.** The first run failed in PHPStan: `cake/basics.php` includes `app/config/database.php`, which git ignores, and locally Docker had left an empty placeholder there. A rehearsal on a fresh clone missed it, because it started the app before running PHPStan. PHPStan now skips the "included file exists" check for that one include, which only runs after a `file_exists()` check.
+
+**Not in CI yet: Rector.** Its dry run still proposes one change, `get_class($var)` to `$var::class` in `cake/libs/debugger.php`, so it would fail every run until that change is either made or skipped on purpose.
 
 ## Structure
 
