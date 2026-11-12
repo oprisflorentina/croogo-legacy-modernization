@@ -123,9 +123,8 @@ class ContactsController extends AppController {
 		}
 		if (!empty($this->data) && $continue === true) {
 			$this->data['Message']['contact_id'] = $contact['Contact']['id'];
-			$this->data['Message']['title'] = htmlspecialchars($this->data['Message']['title']);
-			$this->data['Message']['name'] = htmlspecialchars($this->data['Message']['name']);
-			$this->data['Message']['body'] = htmlspecialchars($this->data['Message']['body']);
+			// Kept as typed: the email is plain text, and pages that show a
+			// message escape it there.
 			$continue = $this->__validation($continue, $contact);
 			$continue = $this->__spam_protection($continue, $contact);
 			$continue = $this->__captcha($continue, $contact);
@@ -186,10 +185,28 @@ class ContactsController extends AppController {
 		return $continue;
 	}
 
+/**
+ * The visitor's name as the display name in the From header.
+ *
+ * A name with a character that means something in an address (RFC 5322's
+ * "specials", such as < > @ , ; : " .) is put in quotes, with its own quotes
+ * and backslashes escaped. Otherwise "Boss <boss@example.com>" would read as
+ * a second address, and a mail client could show it as the sender.
+ *
+ * @param string $name Name as typed
+ * @return string
+ */
+	private function __displayName($name) {
+		if (!preg_match('/[()<>\[\]:;@\\\\,."]/', $name)) {
+			return $name;
+		}
+		return '"' . addcslashes($name, '"\\') . '"';
+	}
+
 	private function __send_email($continue, $contact) {
 		if ($contact['Contact']['message_notify'] && $continue === true) {
 			$this->Email->to = $contact['Contact']['email'];
-			$this->Email->from = $this->data['Message']['name'] . ' <' . $this->data['Message']['email'] . '>';
+			$this->Email->from = $this->__displayName($this->data['Message']['name']) . ' <' . $this->data['Message']['email'] . '>';
 			$this->Email->subject = '[' . Configure::read('Site.title') . '] ' . $contact['Contact']['title'];
 			$this->Email->template = 'contact';
 

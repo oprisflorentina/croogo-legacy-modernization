@@ -67,6 +67,69 @@ final class ContactFormTest extends CroogoTestCase
         $this->assertSame(0, $this->emailsContaining($marker)['messages_count']);
     }
 
+    /**
+     * The form used to run htmlspecialchars() on the name, subject and message
+     * before validating and emailing them, so the plain-text email showed
+     * &amp; and &lt; instead of what was typed, like comments did (security
+     * finding 2). The name also goes in the From header, quoted, so a name
+     * that looks like an address can't take the visitor's place as sender.
+     */
+    public function testEmailShowsTheMessageAsTyped(): void
+    {
+        $marker = $this->unique('contact-typed');
+        $name = 'O\'Brien & "Sons" <boss@your-site.com>';
+        $this->sendContactMessage($name, 'visitor@example.com', 'Price < 5 & "cheap"', '<b>Bold</b> & ' . $marker);
+
+        $email = $this->onlyEmailContaining($marker);
+        $this->assertStringContainsString("Name: $name\n", $email['Text']);
+        $this->assertStringContainsString("Subject: Price < 5 & \"cheap\"\n", $email['Text']);
+        $this->assertStringContainsString('Message: <b>Bold</b> & ' . $marker, $email['Text']);
+        $this->assertSame('visitor@example.com', $email['From']['Address'], 'The visitor stays the sender.');
+        $this->assertSame($name, $email['From']['Name']);
+    }
+
+    /**
+     * With archiving switched on, the message is also stored. It's stored as
+     * typed, and the admin's message list escapes it when showing it.
+     */
+    public function testArchivedMessageIsStoredAsTypedAndEscapedInTheAdmin(): void
+    {
+        $marker = $this->unique('contact-archive');
+        $name = '<i>' . $marker . '</i>';
+        $this->setMessageArchive(true);
+
+        try {
+            $this->browser->getCookieJar()->clear();
+            $this->sendContactMessage($name, 'visitor@example.com', '<b>Subject</b>', 'Hello');
+            $this->assertStringContainsString('Your message has been received...', $this->pageText());
+
+            $query = $this->db()->prepare('SELECT name, title FROM messages WHERE name LIKE ?');
+            $query->execute(['%' . $marker . '%']);
+            $this->assertSame(['name' => $name, 'title' => '<b>Subject</b>'], $query->fetch(\PDO::FETCH_ASSOC));
+
+            $this->loginAsAdmin();
+            $row = $this->visit('/admin/messages')->filter('tr')->reduce(fn ($tr) => str_contains($tr->text(), $marker));
+            $this->assertStringContainsString($name, $row->text(), 'The name should show as typed.');
+            $this->assertStringContainsString('<b>Subject</b>', $row->text(), 'The subject should show as typed.');
+            $this->assertCount(0, $row->filter('i, b'), 'The tags should be text, not HTML.');
+        } finally {
+            $this->db()->prepare('DELETE FROM messages WHERE name LIKE ?')->execute(['%' . $marker . '%']);
+            $this->setMessageArchive(false);
+        }
+    }
+
+    /** Switches "Save messages in database" for the sample contact form, through the admin. */
+    private function setMessageArchive(bool $on): void
+    {
+        $this->browser->getCookieJar()->clear();
+        $this->loginAsAdmin();
+        $form = $this->visit('/admin/contacts/edit/1')->selectButton('Save')->form();
+        $on ? $form['data[Contact][message_archive]']->tick() : $form['data[Contact][message_archive]']->untick();
+        $this->submit($form);
+        $this->assertStringContainsString('The Contact has been saved', $this->pageText());
+        $this->browser->getCookieJar()->clear();
+    }
+
     private function sendContactMessage(string $name, string $email, string $subject, string $body): void
     {
         $form = $this->visit('/contact')->selectButton('Send')->form([

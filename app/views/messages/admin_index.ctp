@@ -45,9 +45,9 @@
 				$this->Form->checkbox('Message.'.$message['Message']['id'].'.id'),
 				$message['Message']['id'],
 				$message['Contact']['title'],
-				$message['Message']['name'],
-				$message['Message']['email'],
-				$message['Message']['title'],
+				h($message['Message']['name']),
+				h($message['Message']['email']),
+				h($message['Message']['title']),
 				$this->Html->image('/img/icons/comment.png'),
 				$actions,
 			);
