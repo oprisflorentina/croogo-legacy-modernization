@@ -73,7 +73,7 @@ PHP's `mail()` hands messages to Mailpit. That matters for more than convenience
 
 ## Characterization tests
 
-`tests/characterization/` holds 30 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
+`tests/characterization/` holds 32 tests that record how the app behaves today. They run in their own PHP 8.3 container (PHPUnit 12 and Symfony BrowserKit) and talk to the site over HTTP, like a browser. They don't load any of the app's code, so the same tests run unchanged against PHP 5.6, against PHP 8.3, and later against Symfony.
 
 A few tests also use the database directly. They don't depend on which app serves the site, because the tables stay the same:
 - The password tests read the stored hash, which is what they check.
@@ -92,12 +92,12 @@ Besides what each test checks, **every page any test loads fails the test if it 
 | File | What it pins down |
 | --- | --- |
 | `AdminPagesTest` | Every admin screen reachable from the menu (219 pages) renders without PHP errors. Links that change data through a GET request are never followed. |
-| `AdminUsersTest` | An admin creates a user, who can then log in. Added when PHPStan showed that user validation was broken on PHP 8. |
+| `AdminUsersTest` | An admin creates a user, who can then log in, and can't give a new user a password shorter than 6 characters. Added when PHPStan showed that user validation was broken on PHP 8. |
 | `PublicPagesTest` | Home page and main menu, a blog post, a static page, search, the RSS feed, and unknown addresses (which answer **200** with an error page, not 404) |
 | `AdminAuthTest` | Redirect to login, rejected passwords, a working admin login, and the lockout after 5 failed attempts. The lockout counts per username and address: failures through the relay don't lock the owner out, forged address headers don't get around it, and every spelling of a username counts against the same account. |
 | `ContentFlowsTest` | An admin creates, edits and deletes a blog post; a visitor comments; a visitor's contact message reaches the site owner by email (checked through Mailpit's API); an attachment whose stored name has no extension is listed as `file` |
 | `KnownIssuesTest` | Behavior that was wrong but real when the tests were written. Each fix in step 4 flipped one of these on purpose, and all of them are flipped now: a `javascript:` website is refused, and one already stored is not shown as a link. Comment text is stored as typed and escaped when shown, no longer double-encoded. A `.php` attachment is refused, and other attachments get a safe name and the type the server detects. The File Manager is gone: no menu link, no pages, no ACL records. CakePHP's web test runner `/test.php` is gone too. |
-| `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. The `password` column has room for 255 characters. Added with the password migration in step 4. |
+| `PasswordHashingTest` | An old SHA1 hash is replaced at the first successful login and left alone after a failed one. The admin reset and "forgot password" flows accept an old hash and store a new one. Both resets refuse a password shorter than 6 characters and keep the old hash. The `password` column has room for 255 characters. Added with the password migration in step 4. |
 
 **Built to run again and again:**
 - Every run uses fresh random values.
@@ -200,6 +200,12 @@ Smaller problems noticed while working on step 4, each fixed in its own commit w
     - **Fresh installs:** `croogo.sql`, which Docker loads, and `schema.php`, which the installer uses.
     - **Existing databases:** `app/config/schema/sql/upgrades/2026-11-12-widen-password-column.sql`. Checked by hand on this database: the column changed, the stored hashes stayed intact, and a second run changed nothing.
     - **The test** reads the column's length from MySQL's `information_schema`. It failed with 100 first.
+- **"At least 6 characters" was checked against the hash.** CakePHP 1.3's `AuthComponent` hashed every posted password as soon as a request started, before the `User` model validated anything. The rule only ever saw a 60-character hash, so it never failed: an admin could create a user with an empty password, and both resets accepted any length. The original Croogo had the same bug with 40-character SHA-1 hashes.
+    - **The fix,** the same change CakePHP 2.0 made: `AuthComponent` leaves posted passwords as typed, and `User::beforeSave()` hashes the password after validation has passed. One rule now covers the admin's "add user" form, both resets, and registration. `AuthComponent::password()` became static, so the model can call it.
+    - **Hashes are made exactly once.** The "forgot password" reset and the installer now pass the typed password, which the model hashes. The rehash at login already saves with callbacks off, so `beforeSave()` doesn't hash it again.
+    - **The tests:** the admin adds a user with an empty and with a 3-character password, and both resets try `abc`. All failed first: the user was created, and the reset was accepted. Now each is refused with the rule's message, and a refused reset keeps the old hash.
+    - **Each layer checked:** without `beforeSave()`, passwords were stored as typed and 4 tests failed. With `AuthComponent` hashing early again, they were hashed twice and 6 failed.
+    - **Checked by hand:** the installer's path, a `saveField()` of the password, isn't reached by the tests, because Docker seeds the database. Run through the `User` model on a throwaway user, it stored one bcrypt hash that verifies.
 
 ## Structure
 
